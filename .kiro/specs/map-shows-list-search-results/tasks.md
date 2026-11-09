@@ -44,7 +44,7 @@ Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each t
   - Requirements: 3.1, 3.2, 1.4
   - Verify: `-only-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITests/<new test names>` pass.
 
-- [ ] 9. Full verification
+- [x] 9. Full verification
   - Run the full unit and UI test suites; confirm existing tests (including `SingleMarketMapTests` and `testMapPinMoreInfoAndClose`) still pass.
   - Requirements: 1.5, 4.2
   - Verify: `xcodebuild ... test` exits 0.
