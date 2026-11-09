@@ -24,7 +24,7 @@ Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each t
   - Requirements: 1.3, 4.2, Assumptions (query survives tab switches)
   - Verify: build succeeds; existing UI test `testSearchFiltersList` and `testSearchAutoExpandsMatchingBoroughs` still pass.
 
-- [ ] 5. Add the `searchFilter` icon
+- [x] 5. Add the `searchFilter` icon
   - Modify `NYCFarmerMarkets/Theme/AppIcon.swift`: add `case searchFilter`; in the source switch `.symbol("line.3.horizontal.decrease.circle.fill")`; in `accessibilityName` `"Filtered"` (both switches are exhaustive).
   - Requirements: 3.4
   - Verify: build succeeds.
