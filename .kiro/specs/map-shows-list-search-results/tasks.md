@@ -9,7 +9,7 @@ Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each t
   - Requirements: 1.2, 1.5, 3.1, 3.3, 4.1
   - Verify: build succeeds.
 
-- [ ] 2. Unit tests for `MarketSearch` (Swift Testing)
+- [x] 2. Unit tests for `MarketSearch` (Swift Testing)
   - Create `/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/NYCFarmerMarketsTests/MarketSearchTests.swift` using `Fixture` from `NYCFarmerMarketsTests.swift` (parse via `MarketService.parse`). Cover: empty and whitespace-only return all markets in order and `isActive == false`; match on name, address, borough; case and diacritic insensitivity; trimmed query; no results; `filter` equals flattened `MarketGrouping.sections` markets (as a set) for several queries; `summary` for 0, 1, many and trimmed query; `SectionExpansionState.isSearching` agrees with `MarketSearch.isActive`.
   - Requirements: 4.1, 4.2, 1.2
   - Verify: `-only-testing:NYCFarmerMarketsTests/MarketSearchTests` passes.
