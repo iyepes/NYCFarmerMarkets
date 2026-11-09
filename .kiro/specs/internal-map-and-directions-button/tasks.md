@@ -14,7 +14,7 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
   - Requirements: 2.1, 3.1
   - Verify: build; unit tests pass, including the new test and `everyIconResolves` (checks the symbol exists on iOS).
 
-- [ ] 2. Add the pure `SingleMarketMap` logic with unit tests
+- [x] 2. Add the pure `SingleMarketMap` logic with unit tests
   - Files: create `NYCFarmerMarkets/Models/SingleMarketMap.swift`; create `NYCFarmerMarketsTests/SingleMarketMapTests.swift`
   - Implement `nonisolated enum SingleMarketMap` as in the design: nested `nonisolated struct Pin: Identifiable, Equatable, Sendable` (explicit `nonisolated`, project default isolation is MainActor) with `id`, `name`, `latitude`, `longitude` and computed `coordinate`; `static let span = MKCoordinateSpan(0.01, 0.01)`; `static func pins(for: Market) -> [Pin]` (empty unless both latitude and longitude exist); `static func region(for: Market) -> MKCoordinateRegion?`. Read `Market`'s `latitude`/`longitude`/`coordinate` in `NYCFarmerMarkets/Models/` first and use the actual property types.
   - Tests (`import MapKit`, `import Testing`, `@testable import NYCFarmerMarkets`, using `Fixture.market(...)` from `NYCFarmerMarketsTests.swift`): one pin with the market's id, name and coordinates; `[]` when `lat: nil, lon: nil`; `[]` when only one is nil; `region(for:)` centered on the coordinate with `SingleMarketMap.span`; `region(for:)` nil without a coordinate.
