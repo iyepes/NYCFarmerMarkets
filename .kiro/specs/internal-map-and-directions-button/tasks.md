@@ -21,7 +21,7 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
   - Requirements: 1.4, 1.5, 2.3
   - Verify: unit tests pass, including the new suite.
 
-- [ ] 3. Move `MarketPin` to a shared file
+- [x] 3. Move `MarketPin` to a shared file
   - Files: create `NYCFarmerMarkets/Views/Shared/MarketPin.swift`; modify `NYCFarmerMarkets/Views/MarketMapView.swift`
   - Cut `private struct MarketPin` from `MarketMapView.swift` (line ~67) into the new file as an internal struct, body unchanged. Add `var identifier: String = "market-pin"` after `isSelected` and use it in `.accessibilityIdentifier(identifier)`. Existing `MarketPin(name:isFavorite:isSelected:)` call in `MarketMapView` keeps compiling (memberwise init default).
   - Requirements: 3.2 (pin label unchanged), keeps Map tab behavior (Out of Scope)
