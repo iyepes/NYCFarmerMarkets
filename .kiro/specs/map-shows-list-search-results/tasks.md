@@ -4,7 +4,7 @@ Build: `xcodebuild -project /Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/
 
 Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each task leaves the project buildable. New files are auto-included (synchronized groups). No colors/icons outside `NYCFarmerMarkets/Theme/`.
 
-- [ ] 1. Add the pure shared search rule `MarketSearch` (`nonisolated enum`)
+- [x] 1. Add the pure shared search rule `MarketSearch` (`nonisolated enum`)
   - Create `/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/NYCFarmerMarkets/Models/MarketSearch.swift` with `normalized(_:)`, `isActive(_:)`, `filter(_:query:)` (`markets.filter { MarketGrouping.matches($0, query: query) }`, original order), and `summary(query:count:)` (`Showing N results for "q"`, singular `1 result`, plural for 0, trimmed query, straight quotes).
   - Requirements: 1.2, 1.5, 3.1, 3.3, 4.1
   - Verify: build succeeds.
