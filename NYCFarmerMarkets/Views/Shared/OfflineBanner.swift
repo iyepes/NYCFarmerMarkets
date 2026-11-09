@@ -31,27 +31,3 @@ extension View {
         }
     }
 }
-
-/// Full-screen error state with a retry button.
-struct LoadErrorView: View {
-    let message: String
-    let retry: () -> Void
-
-    var body: some View {
-        ContentUnavailableView {
-            Label {
-                Text("Something spooked the data")
-            } icon: {
-                IconView(.warning, size: 40)
-            }
-            .foregroundStyle(AppPalette.textPrimary.color)
-        } description: {
-            Text(message)
-                .foregroundStyle(AppPalette.textSecondary.color)
-        } actions: {
-            Button("Retry", action: retry)
-                .buttonStyle(ThemedButtonStyle())
-                .accessibilityIdentifier("retry-button")
-        }
-    }
-}

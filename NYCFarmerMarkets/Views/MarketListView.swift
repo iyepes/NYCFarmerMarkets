@@ -8,7 +8,9 @@ import SwiftUI
 /// Tab 1: searchable list of markets grouped by borough.
 struct MarketListView: View {
     @Environment(MarketStore.self) private var store
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var query = ""
+    @State private var expansion = SectionExpansionState()
 
     private var sections: [BoroughSection] {
         MarketGrouping.sections(from: store.markets, query: query)
@@ -21,25 +23,14 @@ struct MarketListView: View {
                 .themedBackground()
                 .navigationTitle("Markets")
                 .searchable(text: $query, prompt: "Search name, address or borough")
+                .onChange(of: SectionExpansionState.isSearching(query)) { _, searching in
+                    if !searching { expansion.endSearch() }
+                }
         }
     }
 
     @ViewBuilder
     private var content: some View {
-        if store.markets.isEmpty, case .error(let message) = store.state {
-            LoadErrorView(message: message) { Task { await store.refresh() } }
-        } else if store.markets.isEmpty, store.state == .idle || store.state == .loading {
-            ProgressView("Summoning markets…")
-                .tint(AppPalette.accent.color)
-                .foregroundStyle(AppPalette.textSecondary.color)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            list
-        }
-    }
-
-    @ViewBuilder
-    private var list: some View {
         let sections = sections
         if sections.isEmpty {
             ContentUnavailableView {
@@ -57,16 +48,18 @@ struct MarketListView: View {
             List {
                 ForEach(sections) { section in
                     Section {
-                        ForEach(section.markets) { market in
-                            Button {
-                                store.selectedMarket = market
-                            } label: {
-                                MarketRow(market: market)
+                        if expansion.isExpanded(section.borough, query: query) {
+                            ForEach(section.markets) { market in
+                                Button {
+                                    store.selectedMarket = market
+                                } label: {
+                                    MarketRow(market: market)
+                                }
+                                .buttonStyle(.plain)
+                                .listRowBackground(AppPalette.card.color)
+                                .listRowSeparatorTint(AppPalette.separator.color)
+                                .accessibilityIdentifier("market-row")
                             }
-                            .buttonStyle(.plain)
-                            .listRowBackground(AppPalette.card.color)
-                            .listRowSeparatorTint(AppPalette.separator.color)
-                            .accessibilityIdentifier("market-row")
                         }
                     } header: {
                         sectionHeader(section)
@@ -81,20 +74,37 @@ struct MarketListView: View {
     }
 
     private func sectionHeader(_ section: BoroughSection) -> some View {
-        HStack {
-            Text(section.borough)
-                .font(.subheadline.weight(.bold))
-            Spacer()
-            Text("\(section.markets.count)")
-                .font(.caption.weight(.semibold))
+        let isExpanded = expansion.isExpanded(section.borough, query: query)
+        let count = section.markets.count
+        return Button {
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
+                expansion.toggle(section.borough, query: query)
+            }
+        } label: {
+            HStack {
+                Text(section.borough)
+                    .font(.subheadline.weight(.bold))
+                Spacer()
+                Text("\(count)")
+                    .font(.caption.weight(.semibold))
+                IconView(.sectionChevron, size: 12)
+                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
+            }
+            .textCase(nil)
+            .foregroundStyle(AppPalette.textPrimary.color)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .background(AppPalette.sectionHeader.color)
+            .contentShape(Rectangle())
         }
-        .textCase(nil)
-        .foregroundStyle(AppPalette.textPrimary.color)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 6)
-        .frame(maxWidth: .infinity)
-        .background(AppPalette.sectionHeader.color)
+        .buttonStyle(.plain)
         .listRowInsets(EdgeInsets())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(SectionHeaderAccessibility.label(borough: section.borough, count: count))
+        .accessibilityValue(SectionHeaderAccessibility.value(isExpanded: isExpanded))
+        .accessibilityHint(SectionHeaderAccessibility.hint(isExpanded: isExpanded))
         .accessibilityAddTraits(.isHeader)
+        .accessibilityIdentifier(SectionHeaderAccessibility.identifier(borough: section.borough))
     }
 }

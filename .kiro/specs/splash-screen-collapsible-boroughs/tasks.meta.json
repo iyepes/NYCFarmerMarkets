@@ -1,0 +1,482 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Create `Models/SplashDecision.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188865878
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188889703
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188943566
+      }
+    ],
+    "1.2 Create `Models/SectionExpansion.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188865960
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188890496
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188944352
+      }
+    ],
+    "1.3 Create `Models/SectionHeaderAccessibility.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188865999
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188891544
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188945380
+      }
+    ],
+    "1.4 Create `Models/LaunchOptions.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866068
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188893147
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188946190
+      }
+    ],
+    "2.1 Add `AppPalette.onAppIconBackground`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866094
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188893424
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188946936
+      }
+    ],
+    "2.2 Create the `logo-carrot` imageset": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866120
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188894102
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189005676
+      }
+    ],
+    "2.3 Add `AppIcon.logo` and `AppIcon.sectionChevron`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866151
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189017216
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189179665
+      }
+    ],
+    "3. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866183
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189532069
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189615363
+      }
+    ],
+    "4.1 Create `Views/SplashLoadingIndicator.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866212
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189194008
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189266984
+      }
+    ],
+    "4.2 Create `Views/SplashView.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866240
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189276575
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189358198
+      }
+    ],
+    "4.3 Create `Views/AppRootView.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866266
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189367687
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189461445
+      }
+    ],
+    "4.4 Wire `NYCFarmerMarketsApp` and remove the `RootTabView` load task": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866297
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189466556
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189516626
+      }
+    ],
+    "5.1 Update `Views/MarketListView.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866328
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189194052
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189266144
+      }
+    ],
+    "5.2 Delete `LoadErrorView`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866357
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189276653
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189358364
+      }
+    ],
+    "6. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866383
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794192396331
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794192626234
+      }
+    ],
+    "7.1 Update existing UI tests for collapsed sections": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866425
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189616330
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189813340
+      }
+    ],
+    "8. Final checkpoint - Full build, tests and static checks": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188866504
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794192626881
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794192753100
+      }
+    ],
+    "1.5 Write tests for `SplashDecision` in `SplashDecisionTests.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188872276
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189194103
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189264895
+      }
+    ],
+    "1.6 Write tests for `SectionExpansionState` in `SectionExpansionTests.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188873028
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189194172
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189264971
+      }
+    ],
+    "1.7 Write tests for `SectionHeaderAccessibility` in `SectionHeaderAccessibilityTests.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188874040
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189194206
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189265157
+      }
+    ],
+    "1.8 Extend `MarketGroupingTests` with a search property test": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188874831
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189276937
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189360292
+      }
+    ],
+    "1.9 Write unit tests for `LaunchOptions` in `LaunchOptionsTests.swift`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188875629
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189276689
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189359422
+      }
+    ],
+    "2.4 Extend icon and contrast tests": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188876683
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189367718
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189461536
+      }
+    ],
+    "4.5 Extend `MarketStoreTests`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188877582
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189467371
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189516926
+      }
+    ],
+    "7.2 Add new UI tests to the existing UI test class": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188878576
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189817768
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794192278639
+      }
+    ],
+    "7.3 Create `SplashFailureUITests`": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188879263
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794192278712
+      },
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794192395727
+      }
+    ],
+    "1. Pure logic types and their tests": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794188946225
+      }
+    ],
+    "2. Palette token, logo asset and icon registry": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189179715
+      }
+    ],
+    "5. Collapsible Markets list sections": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189358398
+      }
+    ],
+    "4. Splash views and app root wiring": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189516696
+      }
+    ],
+    "7. UI tests": [
+      {
+        "executionId": "52196384-318e-4c97-8ec4-2263b807d329",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1794189813405
+      }
+    ]
+  }
+}

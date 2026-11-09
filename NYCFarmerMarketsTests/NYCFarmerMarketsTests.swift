@@ -192,6 +192,62 @@ struct CacheAndStoreTests {
         #expect(store.markets == fresh)
         #expect(store.isShowingCachedData == false)
     }
+
+    // Requirement 2.3: cached markets count as data available even when the fetch fails.
+    @Test func cachedMarketsAreAvailableAfterLoad() async throws {
+        let cache = temporaryCache()
+        let cached = [Fixture.market("Cached")]
+        try cache.save(cached)
+        let store = MarketStore(cache: cache) { throw URLError(.notConnectedToInternet) }
+        await store.load()
+        #expect(!store.markets.isEmpty)
+        #expect(store.markets == cached)
+    }
+
+    // A successful refresh replaces cached data.
+    @Test func successfulLoadReplacesCachedData() async throws {
+        let cache = temporaryCache()
+        try cache.save([Fixture.market("Old")])
+        let fresh = [Fixture.market("New")]
+        let store = MarketStore(cache: cache) { fresh }
+        await store.load()
+        #expect(store.markets == fresh)
+        #expect(store.isShowingCachedData == false)
+    }
+
+    // Requirements 3.3, 3.5: fail first, then a retry succeeds.
+    @Test func failThenRetrySucceeds() async {
+        let fresh = [Fixture.market("Fresh")]
+        nonisolated(unsafe) var attempts = 0
+        let store = MarketStore(cache: temporaryCache()) {
+            attempts += 1
+            if attempts == 1 { throw URLError(.notConnectedToInternet) }
+            return fresh
+        }
+        await store.load()
+        guard case .error = store.state else {
+            Issue.record("Expected error state, got \(store.state)")
+            return
+        }
+        #expect(store.markets.isEmpty)
+
+        await store.refresh()
+        #expect(store.state == .loaded)
+        #expect(store.markets == fresh)
+        #expect(store.isShowingCachedData == false)
+    }
+
+    // A retry that fails again stays in the error state.
+    @Test func retryFailingAgainStaysInError() async {
+        let store = MarketStore(cache: temporaryCache()) { throw URLError(.notConnectedToInternet) }
+        await store.load()
+        await store.refresh()
+        guard case .error = store.state else {
+            Issue.record("Expected error state, got \(store.state)")
+            return
+        }
+        #expect(store.markets.isEmpty)
+    }
 }
 
 // MARK: - Grouping
@@ -225,6 +281,75 @@ struct GroupingTests {
 
     @Test func noMatchGivesNoSections() {
         #expect(MarketGrouping.sections(from: markets, query: "zzz").isEmpty)
+    }
+
+    // Feature: splash-screen-collapsible-boroughs, Property 6: Search results contain exactly the matching markets
+    // Validates: Requirements 7.2
+    @Test func searchResultsContainExactlyTheMatchingMarkets() {
+        var rng = GroupingSeededGenerator(seed: 0x6A09E667F3BCC908)
+        let names = ["Union Square", "café Verde", "CAFE Rouge", "Harlem Fresh", "Fort Greene", "Jackson Heights", "Bronx Borough Market", "Saint George"]
+        let boroughs = ["Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island", "Unknown", "manhattan", "brooklyn"]
+        let addresses = ["E. 17th St.", "Atlantic Ave.", "Café Plaza", "1 Main St.", "W. 175th St.", "Grand Concourse", "Bay St."]
+        let randomChars = Array("abcdeéxyz1 .")
+
+        for iteration in 0..<200 {
+            let count = Int.random(in: 0...12, using: &rng)
+            // A unique numeric suffix keeps each generated market's id distinct.
+            let input: [Market] = (0..<count).map { i in
+                Fixture.market(
+                    "\(names.randomElement(using: &rng)!) \(i)",
+                    borough: boroughs.randomElement(using: &rng)!,
+                    address: "\(i) \(addresses.randomElement(using: &rng)!)"
+                )
+            }
+
+            // Queries: partly substrings of generated data, partly random strings.
+            var query = ""
+            if !input.isEmpty && Bool.random(using: &rng) {
+                let m = input.randomElement(using: &rng)!
+                let source = Array([m.name, m.address, m.borough].randomElement(using: &rng)!)
+                let start = Int.random(in: 0..<source.count, using: &rng)
+                let end = Int.random(in: (start + 1)...source.count, using: &rng)
+                var sub = String(source[start..<end])
+                if Bool.random(using: &rng) { sub = sub.uppercased() }
+                query = sub
+            } else {
+                let length = Int.random(in: 1...4, using: &rng)
+                query = String((0..<length).map { _ in randomChars.randomElement(using: &rng)! })
+            }
+            guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { continue }
+
+            let sections = MarketGrouping.sections(from: input, query: query)
+            let returned = sections.flatMap(\.markets)
+
+            #expect(sections.allSatisfy { !$0.markets.isEmpty }, "empty section (iteration \(iteration), query '\(query)')")
+            #expect(Set(sections.map(\.borough)).count == sections.count, "duplicate section (iteration \(iteration))")
+            for section in sections {
+                #expect(section.markets.allSatisfy { $0.borough == section.borough },
+                        "market in wrong section (iteration \(iteration), query '\(query)')")
+            }
+            #expect(returned.allSatisfy { MarketGrouping.matches($0, query: query) },
+                    "non-matching market returned (iteration \(iteration), query '\(query)')")
+
+            let expectedIDs = input.filter { MarketGrouping.matches($0, query: query) }.map(\.id).sorted()
+            #expect(returned.map(\.id).sorted() == expectedIDs,
+                    "result set differs from matching inputs (iteration \(iteration), query '\(query)')")
+        }
+    }
+}
+
+/// Deterministic SplitMix64 generator so the property test is reproducible.
+private struct GroupingSeededGenerator: RandomNumberGenerator {
+    private var state: UInt64
+
+    init(seed: UInt64) { state = seed }
+
+    mutating func next() -> UInt64 {
+        state &+= 0x9E3779B97F4A7C15
+        var z = state
+        z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+        z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+        return z ^ (z >> 31)
     }
 }
 
@@ -301,6 +426,28 @@ struct ThemeTests {
         #expect(AppPalette.Base.deep == 0x525919)
         #expect(AppPalette.Base.highlight == 0xE6F28D)
         #expect(AppPalette.Base.surface == 0xF2F2F2)
+        #expect(AppPalette.Base.appIconOlive == 0x78872B)
+    }
+
+    @Test func splashIconsAndLabels() {
+        #expect(AppIcon.logo.source == .asset("logo-carrot"))
+        #expect(AppIcon.sectionChevron.source == .symbol("chevron.right"))
+        #expect(AppIcon.logo.accessibilityName == "NYC Farmer Markets")
+    }
+
+    /// Splash content (logo, dots, message) over the app icon olive.
+    /// Normal-size text would need 4.5:1, but the measured ratio is about 3.5:1.
+    /// That is intentional: the splash message uses `.title3.weight(.semibold)`
+    /// (large/bold text per WCAG) and the logo and dots are graphics, so 3.0 applies.
+    /// Deliberately not part of the 4.5 list in `textContrastMeetsAA`.
+    @Test func splashContrastMeetsLargeTextAndGraphics() {
+        for isDark in [false, true] {
+            let ratio = AppPalette.contrast(
+                AppPalette.onAppIconBackground.hex(isDark: isDark),
+                AppPalette.appIconBackground.hex(isDark: isDark)
+            )
+            #expect(ratio >= 3.0, "splash onAppIconBackground/appIconBackground \(isDark ? "dark" : "light") contrast \(ratio) is below 3.0")
+        }
     }
 
     #if canImport(UIKit)

@@ -29,6 +29,5 @@ struct RootTabView: View {
         .sheet(item: $store.selectedMarket) { market in
             MarketDetailView(market: market)
         }
-        .task { await store.load() }
     }
 }

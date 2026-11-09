@@ -23,8 +23,23 @@ final class NYCFarmerMarketsUITests: XCTestCase {
 
     private var firstMarketRow: XCUIElement { app.buttons.matching(identifier: "market-row").firstMatch }
 
+    private var firstSectionHeader: XCUIElement {
+        app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'section-header-'"))
+            .firstMatch
+    }
+
+    /// Waits for the splash to dismiss and sections to load, expands the first section if needed,
+    /// then waits for a market row.
     private func waitForMarkets(file: StaticString = #filePath, line: UInt = #line) {
-        XCTAssertTrue(firstMarketRow.waitForExistence(timeout: 30), "Markets did not load", file: file, line: line)
+        let header = firstSectionHeader
+        XCTAssertTrue(header.waitForExistence(timeout: 30), "Markets did not load", file: file, line: line)
+        if !firstMarketRow.exists { header.tap() }
+        XCTAssertTrue(firstMarketRow.waitForExistence(timeout: 5), "Section did not expand", file: file, line: line)
+    }
+
+    private func waitForSectionHeader(file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertTrue(firstSectionHeader.waitForExistence(timeout: 30), "Markets did not load", file: file, line: line)
     }
 
     private func selectTab(_ name: String) {
@@ -59,6 +74,7 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["favorites-empty"].waitForExistence(timeout: 5))
 
         selectTab("Markets")
+        waitForMarkets()
         firstMarketRow.tap()
         XCTAssertTrue(closeButton.waitForExistence(timeout: 5))
         app.buttons["favorite-toggle"].tap()
@@ -105,9 +121,97 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         XCTAssertTrue(app.buttons["more-info"].waitForExistence(timeout: 5), "Did not return to the map")
     }
 
+    // MARK: Splash and collapsible sections
+
+    private func element(_ identifier: String) -> XCUIElement {
+        app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+    }
+
+    private func waitUntilGone(_ element: XCUIElement, timeout: TimeInterval = 10, _ message: String,
+                               file: StaticString = #filePath, line: UInt = #line) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element)
+        XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: timeout), .completed, message, file: file, line: line)
+    }
+
+    private func waitForValue(_ value: String, of element: XCUIElement, timeout: TimeInterval = 5,
+                              file: StaticString = #filePath, line: UInt = #line) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", value), object: element)
+        XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: timeout), .completed,
+                       "Expected value \(value) but was \(String(describing: element.value))", file: file, line: line)
+    }
+
+    @MainActor
+    func testSplashAppearsAtLaunch() throws {
+        // launch() returns only once the app is idle (~3 s), which is after the default 1 s splash,
+        // so relaunch with a longer minimum display time to observe the splash.
+        app.terminate()
+        app.launchArguments = ["-uiTestingReset", "-uiTestingSplashMinimumSeconds", "6"]
+        app.launch()
+        XCTAssertTrue(element("splash-screen").waitForExistence(timeout: 2), "Splash did not appear at launch")
+        XCTAssertTrue(element("splash-loading").exists, "Splash should show the loading indicator")
+        XCTAssertFalse(app.tabBars.firstMatch.exists, "Tabs should not show while the splash is visible")
+
+        waitForSectionHeader()
+        waitUntilGone(element("splash-screen"), "Splash did not dismiss after markets loaded")
+    }
+
+    @MainActor
+    func testSectionsStartCollapsed() throws {
+        waitForSectionHeader()
+        XCTAssertFalse(firstMarketRow.exists, "No market rows should be visible at launch")
+        for borough in ["Manhattan", "Brooklyn", "Queens"] {
+            let header = element("section-header-\(borough)")
+            XCTAssertTrue(header.waitForExistence(timeout: 5), "Missing header for \(borough)")
+            XCTAssertEqual(header.value as? String, "Collapsed", "\(borough) should start collapsed")
+        }
+    }
+
+    @MainActor
+    func testTappingHeaderExpandsAndCollapses() throws {
+        waitForSectionHeader()
+        let header = element("section-header-Manhattan")
+        XCTAssertTrue(header.waitForExistence(timeout: 5))
+
+        header.tap()
+        waitForValue("Expanded", of: header)
+        XCTAssertTrue(firstMarketRow.waitForExistence(timeout: 5), "Expanding should show market rows")
+
+        header.tap()
+        waitForValue("Collapsed", of: header)
+        waitUntilGone(firstMarketRow, "Collapsing should hide market rows")
+    }
+
+    @MainActor
+    func testSearchAutoExpandsMatchingBoroughs() throws {
+        waitForSectionHeader()
+        let header = element("section-header-Manhattan")
+        XCTAssertTrue(header.waitForExistence(timeout: 5))
+        XCTAssertEqual(header.value as? String, "Collapsed")
+
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("Manhattan")
+
+        waitForValue("Expanded", of: header)
+        XCTAssertTrue(firstMarketRow.waitForExistence(timeout: 5), "Matching section should show rows")
+
+        header.tap()
+        waitForValue("Collapsed", of: header)
+
+        let clear = search.buttons["Clear text"]
+        if clear.exists {
+            clear.tap()
+        } else {
+            search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: "Manhattan".count))
+        }
+        XCTAssertTrue(header.waitForExistence(timeout: 5))
+        waitForValue("Collapsed", of: header)
+    }
+
     @MainActor
     func testSearchFiltersList() throws {
-        waitForMarkets()
+        waitForSectionHeader()
         let search = app.searchFields.firstMatch
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         search.tap()

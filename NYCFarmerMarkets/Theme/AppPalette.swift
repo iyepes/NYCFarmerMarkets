@@ -92,6 +92,8 @@ nonisolated enum AppPalette {
     static let separator = ColorToken(Base.secondary)
     /// App icon background.
     static let appIconBackground = ColorToken(Base.appIconOlive)
+    /// Content drawn on top of `appIconBackground` (splash logo, loading indicator, text).
+    static let onAppIconBackground = ColorToken(Base.surface)
 
     // MARK: Helpers
 
