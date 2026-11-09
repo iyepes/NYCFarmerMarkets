@@ -33,7 +33,7 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
   - Requirements: design decision 9 (Close and favorite stay available on the pushed screen)
   - Verify: build; existing UI tests `testOpenDetailFromListAndClose` and `testFavoriteAppearsInFavoritesTabAndSwipeRemoves` still pass.
 
-- [ ] 5. Create the pushed screen `MarketLocationMapView`
+- [x] 5. Create the pushed screen `MarketLocationMapView`
   - Files: create `NYCFarmerMarkets/Views/MarketLocationMapView.swift`
   - `struct MarketLocationMapView: View` with `let market: Market`, `let onClose: () -> Void`, `@Environment(FavoritesStore.self)`, `@State private var position: MapCameraPosition`. Write the init explicitly: set `self.market`, `self.onClose`, and `_position = State(initialValue: SingleMarketMap.region(for: market).map { MapCameraPosition.region($0) } ?? .automatic)`.
   - Body: `Map(position: $position) { ForEach(SingleMarketMap.pins(for: market)) { pin in Annotation(pin.name, coordinate: pin.coordinate, anchor: .center) { MarketPin(name: pin.name, isFavorite: favorites.isFavorite(market), isSelected: false, identifier: "selected-market-pin") } } }`, `.mapStyle(.standard)`, `.navigationTitle(market.name)`, `#if !os(macOS) .navigationBarTitleDisplayMode(.inline) #endif`, `.toolbar { MarketDetailToolbar(market: market, onClose: onClose) }`. Put `.accessibilityIdentifier("market-location-map")` on a wrapping `ZStack` around the `Map` (not on the `Map`) so child pins stay queryable. No `MarketStore`, no `@Environment(\.dismiss)`, no raw colors or symbol names.
