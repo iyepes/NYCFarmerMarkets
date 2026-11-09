@@ -14,7 +14,7 @@ Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each t
   - Requirements: 4.1, 4.2, 1.2
   - Verify: `-only-testing:NYCFarmerMarketsTests/MarketSearchTests` passes.
 
-- [ ] 3. Route list grouping and expansion state through the shared rule
+- [x] 3. Route list grouping and expansion state through the shared rule
   - Modify `NYCFarmerMarkets/Models/MarketGrouping.swift`: in `sections(from:query:)` replace `markets.filter { matches($0, query: query) }` with `MarketSearch.filter(markets, query: query)`. Modify `NYCFarmerMarkets/Models/SectionExpansion.swift`: `isSearching` returns `MarketSearch.isActive(query)`.
   - Requirements: 1.2, 4.2
   - Verify: full `NYCFarmerMarketsTests` run passes, including existing `SectionExpansionTests` and grouping tests in `NYCFarmerMarketsTests.swift`, plus the parity test from task 2.

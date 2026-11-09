@@ -25,7 +25,7 @@ nonisolated enum MarketGrouping {
     /// Filters by `query`, groups by borough (fixed order, unknown boroughs last
     /// alphabetically), sorts markets by name, and drops empty sections.
     static func sections(from markets: [Market], query: String = "") -> [BoroughSection] {
-        let grouped = Dictionary(grouping: markets.filter { matches($0, query: query) }, by: \.borough)
+        let grouped = Dictionary(grouping: MarketSearch.filter(markets, query: query), by: \.borough)
 
         func rank(_ borough: String) -> Int {
             boroughOrder.firstIndex(of: borough) ?? boroughOrder.count
