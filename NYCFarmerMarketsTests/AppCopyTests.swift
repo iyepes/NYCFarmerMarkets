@@ -24,7 +24,10 @@ struct AppCopyTests {
     }
 
     @Test func functionsArePure() {
-        #expect(AppCopy.mapFilterSummary(query: "a", count: 3) == AppCopy.mapFilterSummary(query: "a", count: 3))
+        let first = AppCopy.mapFilterSummary(query: "a", count: 3)
+        let second = AppCopy.mapFilterSummary(query: "a", count: 3)
+        #expect(first == second)
+        #expect(first == "3 markets lurking for “a”")
         #expect(AppCopy.noResultsHint(query: "zz") == "No markets match “zz”. Try another search.")
     }
 
