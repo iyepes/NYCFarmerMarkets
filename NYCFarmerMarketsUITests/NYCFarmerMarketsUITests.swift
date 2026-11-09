@@ -272,7 +272,9 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         search.tap()
         search.typeText("zzzzzz")
-        XCTAssertTrue(app.staticTexts["No markets found"].waitForExistence(timeout: 5))
+        let title = element("search-no-results-title")
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertEqual(title.label, "No markets found")
     }
 
     /// Search on Markets -> Map shows the filter indicator with the same query.

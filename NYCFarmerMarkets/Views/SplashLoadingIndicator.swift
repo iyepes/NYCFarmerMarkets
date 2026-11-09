@@ -17,10 +17,15 @@ struct SplashLoadingIndicator: View {
     private let spacing: CGFloat = 10
 
     var body: some View {
-        HStack(spacing: spacing) {
-            ForEach(0..<dotCount, id: \.self) { index in
-                dot(at: index)
+        VStack(spacing: 16) {
+            HStack(spacing: spacing) {
+                ForEach(0..<dotCount, id: \.self) { index in
+                    dot(at: index)
+                }
             }
+            Text(AppCopy.splashLoadingCaption)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(AppPalette.onAppIconBackground.color)
         }
         .onAppear {
             if !reduceMotion {
@@ -28,7 +33,7 @@ struct SplashLoadingIndicator: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Loading farmers markets")
+        .accessibilityLabel(AppCopy.splashLoadingAccessibility)
         .accessibilityIdentifier("splash-loading")
     }
 

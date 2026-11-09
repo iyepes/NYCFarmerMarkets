@@ -54,13 +54,6 @@ struct MarketSearchTests {
         }
     }
 
-    @Test func summaryText() {
-        #expect(MarketSearch.summary(query: "kale", count: 0) == "Showing 0 results for \"kale\"")
-        #expect(MarketSearch.summary(query: "kale", count: 1) == "Showing 1 result for \"kale\"")
-        #expect(MarketSearch.summary(query: "kale", count: 5) == "Showing 5 results for \"kale\"")
-        #expect(MarketSearch.summary(query: "  kale ", count: 2) == "Showing 2 results for \"kale\"")
-    }
-
     @Test func expansionStateAgreesWithSharedRule() {
         for query in ["", " ", "\n", "a", " a ", "market"] {
             #expect(SectionExpansionState.isSearching(query) == MarketSearch.isActive(query))

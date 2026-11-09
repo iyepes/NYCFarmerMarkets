@@ -16,27 +16,27 @@ Add `AppCopy` and move the covered text into it, then update the views, then the
     - No technical error text; plain accessibility strings contain no spooky vocabulary
     - _Requirements: 7.4, 7.5, 8.1, 8.2_
 
-- [ ] 2. Wire the views
-  - [ ] 2.1 Splash: add the visible caption "Summoning markets…" inside `SplashLoadingIndicator`, keeping one accessibility element, the plain label and the `splash-loading` identifier
+- [x] 2. Wire the views
+  - [x] 2.1 Splash: add the visible caption "Summoning markets…" inside `SplashLoadingIndicator`, keeping one accessibility element, the plain label and the `splash-loading` identifier
     - _Requirements: 2.1-2.4_
-  - [ ] 2.2 Offline banner: use `AppCopy.offlineBanner` with the plain accessibility label; keep `offline-banner`
+  - [x] 2.2 Offline banner: use `AppCopy.offlineBanner` with the plain accessibility label; keep `offline-banner`
     - _Requirements: 3.1-3.3_
-  - [ ] 2.3 Markets tab: search prompt, no-results title and hint, with the plain label for the title
+  - [x] 2.3 Markets tab: search prompt, no-results title and hint, with the plain label for the title
     - _Requirements: 4.1-4.3_
-  - [ ] 2.4 Map filter indicator: use `AppCopy.mapFilterSummary` and the plain accessibility label; remove `MarketSearch.summary` and update its callers; keep `map-filter-indicator`
+  - [x] 2.4 Map filter indicator: use `AppCopy.mapFilterSummary` and the plain accessibility label; remove `MarketSearch.summary` and update its callers; keep `map-filter-indicator`
     - _Requirements: 5.1-5.6_
-  - [ ] 2.5 Detail view: show `AppCopy.missingValue` for blank fields with the plain accessibility value "Not listed"
+  - [x] 2.5 Detail view: show `AppCopy.missingValue` for blank fields with the plain accessibility value "Not listed"
     - _Requirements: 6.1, 6.2_
-  - [ ] 2.6 Check no view covered by this spec still has a string literal for the replaced text
+  - [x] 2.6 Check no view covered by this spec still has a string literal for the replaced text
     - _Requirements: 1.3, 7.1-7.3_
 
-- [ ] 3. Update existing tests
-  - [ ] 3.1 Remove the old `summary` expectations from `MarketSearchTests`
+- [x] 3. Update existing tests
+  - [x] 3.1 Remove the old `summary` expectations from `MarketSearchTests`
     - _Requirements: 8.3_
-  - [ ] 3.2 Update `testSearchFiltersList` to wait for the element with identifier `search-no-results-title` and assert its label is "No markets found"; make sure other UI tests that read the indicator or banner still pass
+  - [x] 3.2 Update `testSearchFiltersList` to wait for the element with identifier `search-no-results-title` and assert its label is "No markets found"; make sure other UI tests that read the indicator or banner still pass
     - _Requirements: 8.3, 8.4_
 
-- [ ] 4. Verification
+- [x] 4. Verification
   - Build for the iOS simulator and macOS
   - Run the full unit and UI test suites
   - Search for color literals, hex values and raw symbol names outside `Theme/`

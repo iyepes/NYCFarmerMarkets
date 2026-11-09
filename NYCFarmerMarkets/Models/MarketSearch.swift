@@ -21,10 +21,4 @@ nonisolated enum MarketSearch {
     static func filter(_ markets: [Market], query: String) -> [Market] {
         markets.filter { MarketGrouping.matches($0, query: query) }
     }
-
-    /// Text such as `Showing 3 results for "kale"`.
-    static func summary(query: String, count: Int) -> String {
-        let noun = count == 1 ? "result" : "results"
-        return "Showing \(count) \(noun) for \"\(normalized(query))\""
-    }
 }

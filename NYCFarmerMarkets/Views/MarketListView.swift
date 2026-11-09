@@ -24,7 +24,7 @@ struct MarketListView: View {
                 .offlineBanner(store.isShowingCachedData)
                 .themedBackground()
                 .navigationTitle("Markets")
-                .searchable(text: $store.searchQuery, prompt: "Search name, address or borough")
+                .searchable(text: $store.searchQuery, prompt: AppCopy.searchPrompt)
                 .onChange(of: SectionExpansionState.isSearching(query)) { _, searching in
                     if !searching { expansion.endSearch() }
                 }
@@ -37,13 +37,15 @@ struct MarketListView: View {
         if sections.isEmpty {
             ContentUnavailableView {
                 Label {
-                    Text("No markets found")
+                    Text(AppCopy.noResultsTitle)
+                        .accessibilityLabel(AppCopy.noResultsTitleAccessibility)
+                        .accessibilityIdentifier("search-no-results-title")
                 } icon: {
                     IconView(.emptySearch, size: 40)
                 }
                 .foregroundStyle(AppPalette.textPrimary.color)
             } description: {
-                Text("Nothing matches “\(query)”.")
+                Text(AppCopy.noResultsHint(query: query))
                     .foregroundStyle(AppPalette.textSecondary.color)
             }
         } else {
