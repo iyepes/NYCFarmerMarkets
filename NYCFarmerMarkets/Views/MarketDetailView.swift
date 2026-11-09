@@ -11,6 +11,7 @@ struct MarketDetailView: View {
     let market: Market
 
     @Environment(\.dismiss) private var dismiss
+    @State private var showsMap = false
 
     var body: some View {
         NavigationStack {
@@ -28,22 +29,39 @@ struct MarketDetailView: View {
                         detailRow(.year, "Data year", market.year)
                     }
                     if market.coordinate != nil {
-                        Button {
-                            openInMaps()
-                        } label: {
-                            Label {
-                                Text("Open in Maps")
-                            } icon: {
-                                IconView(.openInMaps, size: 18)
+                        VStack(spacing: 10) {
+                            Button {
+                                showsMap = true
+                            } label: {
+                                Label {
+                                    Text("Open in Maps")
+                                } icon: {
+                                    IconView(.openInMaps, size: 18)
+                                }
                             }
+                            .buttonStyle(ThemedButtonStyle())
+                            .accessibilityIdentifier("open-in-maps")
+
+                            Button {
+                                openInExternalMaps()
+                            } label: {
+                                Label {
+                                    Text("Look for directions")
+                                } icon: {
+                                    IconView(.directions, size: 18)
+                                }
+                            }
+                            .buttonStyle(ThemedButtonStyle())
+                            .accessibilityIdentifier("look-for-directions")
                         }
-                        .buttonStyle(ThemedButtonStyle())
-                        .accessibilityIdentifier("open-in-maps")
                     }
                 }
                 .padding()
             }
             .themedBackground()
+            .navigationDestination(isPresented: $showsMap) {
+                MarketLocationMapView(market: market, onClose: { dismiss() })
+            }
             .navigationTitle("Market details")
             #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
@@ -87,7 +105,7 @@ struct MarketDetailView: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func openInMaps() {
+    private func openInExternalMaps() {
         guard let coordinate = market.coordinate else { return }
         let item = MKMapItem(
             location: CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude),

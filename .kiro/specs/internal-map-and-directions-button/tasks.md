@@ -40,7 +40,7 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
   - Requirements: 1.4, 1.5, 1.6, 3.2, 3.3
   - Verify: build succeeds for iOS; also build for macOS (`-destination 'platform=macOS'`) to confirm the view and toolbar compile there.
 
-- [ ] 6. Wire the two buttons and the push in `MarketDetailView`
+- [x] 6. Wire the two buttons and the push in `MarketDetailView`
   - Files: modify `NYCFarmerMarkets/Views/MarketDetailView.swift`
   - Add `@State private var showsMap = false`. Replace the single button inside `if market.coordinate != nil` with `VStack(spacing: 10)` holding: (a) "Open in Maps" (existing label, `IconView(.openInMaps, size: 18)`, `ThemedButtonStyle()`, id `open-in-maps`, action `showsMap = true`); (b) "Look for directions" (`Label { Text("Look for directions") } icon: { IconView(.directions, size: 18) }`, `ThemedButtonStyle()`, id `look-for-directions`, action `openInExternalMaps()`).
   - Rename private `openInMaps()` to `openInExternalMaps()` with the body unchanged (not unit tested, per the design).
