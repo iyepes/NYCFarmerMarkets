@@ -96,8 +96,9 @@ struct MarketDetailView: View {
                 Text(title)
                     .font(.caption)
                     .foregroundStyle(AppPalette.textSecondary.color)
-                Text(value ?? "Not listed")
+                Text(value ?? AppCopy.missingValue)
                     .font(.body)
+                    .accessibilityLabel(value ?? AppCopy.missingValueAccessibility)
                     .foregroundStyle(AppPalette.textPrimary.color)
             }
         }

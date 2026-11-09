@@ -13,7 +13,7 @@ struct MapFilterIndicator: View {
     var body: some View {
         HStack(spacing: 8) {
             IconView(.searchFilter, size: 16)
-            Text(MarketSearch.summary(query: query, count: count))
+            Text(AppCopy.mapFilterSummary(query: query, count: count))
                 .font(.footnote.weight(.medium))
         }
         .foregroundStyle(AppPalette.textPrimary.color)
@@ -21,6 +21,7 @@ struct MapFilterIndicator: View {
         .padding(.vertical, 8)
         .background(AppPalette.cardSelected.color)
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(AppCopy.mapFilterAccessibility(query: query, count: count))
         .accessibilityIdentifier("map-filter-indicator")
     }
 }

@@ -9,7 +9,7 @@ struct OfflineBanner: View {
     var body: some View {
         HStack(spacing: 8) {
             IconView(.offline, size: 16)
-            Text("Offline, showing saved data")
+            Text(AppCopy.offlineBanner)
                 .font(.footnote.weight(.medium))
         }
         .foregroundStyle(AppPalette.textPrimary.color)
@@ -17,6 +17,7 @@ struct OfflineBanner: View {
         .padding(.vertical, 8)
         .background(AppPalette.cardSelected.color)
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(AppCopy.offlineBannerAccessibility)
         .accessibilityIdentifier("offline-banner")
     }
 }
