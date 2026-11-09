@@ -29,7 +29,7 @@ Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each t
   - Requirements: 3.4
   - Verify: build succeeds.
 
-- [ ] 6. Add `MapFilterIndicator` view
+- [x] 6. Add `MapFilterIndicator` view
   - Create `NYCFarmerMarkets/Views/Shared/MapFilterIndicator.swift`: takes `query` and `count`; `HStack` with `IconView(.searchFilter, size: 16)` and `Text(MarketSearch.summary(query:count:))`, `.font(.footnote.weight(.medium))`, `AppPalette.textPrimary.color`, background `AppPalette.cardSelected.color` (mirror `OfflineBanner`), `.accessibilityElement(children: .combine)`, `.accessibilityIdentifier("map-filter-indicator")`. Check `OfflineBanner` for exact styling before copying.
   - Requirements: 3.1, 3.3, 3.4
   - Verify: build succeeds; no `Color(`/hex/raw symbol names in the file.
