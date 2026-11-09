@@ -24,14 +24,14 @@ Key decisions:
 
 ```mermaid
 flowchart TD
-    A[NYCFarmerMarketsApp] -->|LaunchOptions, builds stores| B[AppRootView]
-    B -->|phase != dismissed| C[SplashView]
-    B -->|phase == dismissed| D[RootTabView]
+    A[NYCFarmerMarketsApp] -->|"LaunchOptions, builds stores"| B[AppRootView]
+    B -->|"phase is loading or failed"| C[SplashView]
+    B -->|"phase is dismissed"| D[RootTabView]
     D --> E[MarketListView]
-    B -. task: store.load once .-> S[(MarketStore)]
-    B -. task: sleep 1s .-> T[minimumTimeElapsed]
-    C -->|Retry| S
-    E -->|SectionExpansionState| F[Section headers + rows]
+    B -.->|"task: store.load once"| S[("MarketStore")]
+    B -.->|"task: sleep 1s"| T["minimumTimeElapsed"]
+    C -->|"Retry"| S
+    E -->|"SectionExpansionState"| F["Section headers and rows"]
 ```
 
 Launch sequence:

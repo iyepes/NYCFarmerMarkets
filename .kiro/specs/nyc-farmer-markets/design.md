@@ -24,7 +24,7 @@ flowchart TD
     Root --> List[MarketListView]
     Root --> Map[MarketMapView]
     Root --> Fav[FavoritesView]
-    Root -- sheet(item: selectedMarket) --> Detail[MarketDetailView]
+    Root -->|"sheet item: selectedMarket"| Detail[MarketDetailView]
     List --> MS[(MarketStore)]
     Map --> MS
     Fav --> MS
@@ -32,7 +32,7 @@ flowchart TD
     Fav --> FS
     MS --> Svc[MarketService]
     MS --> Cache[MarketCache]
-    Svc --> API[(NYC Open Data 8vwk-6iz2)]
+    Svc --> API[("NYC Open Data 8vwk-6iz2")]
 ```
 
 Change since this was written: `NYCFarmerMarketsApp` now shows `AppRootView` (splash gate), which creates `RootTabView` once data is available.
