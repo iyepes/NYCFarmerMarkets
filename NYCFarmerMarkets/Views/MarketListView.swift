@@ -9,20 +9,22 @@ import SwiftUI
 struct MarketListView: View {
     @Environment(MarketStore.self) private var store
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var query = ""
     @State private var expansion = SectionExpansionState()
+
+    private var query: String { store.searchQuery }
 
     private var sections: [BoroughSection] {
         MarketGrouping.sections(from: store.markets, query: query)
     }
 
     var body: some View {
+        @Bindable var store = store
         NavigationStack {
             content
                 .offlineBanner(store.isShowingCachedData)
                 .themedBackground()
                 .navigationTitle("Markets")
-                .searchable(text: $query, prompt: "Search name, address or borough")
+                .searchable(text: $store.searchQuery, prompt: "Search name, address or borough")
                 .onChange(of: SectionExpansionState.isSearching(query)) { _, searching in
                     if !searching { expansion.endSearch() }
                 }

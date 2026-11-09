@@ -19,7 +19,7 @@ nonisolated struct SectionExpansionState: Equatable, Sendable {
 
     /// True if the query is non-empty after trimming whitespace and newlines.
     static func isSearching(_ query: String) -> Bool {
-        !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        MarketSearch.isActive(query)
     }
 
     /// While searching, sections default to expanded unless overridden.

@@ -20,11 +20,16 @@ struct MarketMapView: View {
     )
     @State private var selectedID: String?
 
-    private var mappable: [Market] { store.markets.filter { $0.coordinate != nil } }
+    /// Markets matching the list's search (all markets when no search is active).
+    private var visibleMarkets: [Market] {
+        MarketSearch.filter(store.markets, query: store.searchQuery)
+    }
+
+    private var mappable: [Market] { visibleMarkets.filter { $0.coordinate != nil } }
 
     private var selectedMarket: Market? {
         guard let selectedID else { return nil }
-        return store.markets.first { $0.id == selectedID }
+        return visibleMarkets.first { $0.id == selectedID }
     }
 
     var body: some View {
@@ -43,6 +48,8 @@ struct MarketMapView: View {
             }
         }
         .mapStyle(.standard)
+        // Scoped to the Map so it does not override identifiers inside the overlays.
+        .accessibilityIdentifier("market-map")
         .safeAreaInset(edge: .bottom) {
             if let market = selectedMarket {
                 MarketCard(market: market) { store.selectedMarket = market }
@@ -51,8 +58,18 @@ struct MarketMapView: View {
             }
         }
         .animation(.snappy, value: selectedID)
+        .onChange(of: store.searchQuery) {
+            if let selectedID, !visibleMarkets.contains(where: { $0.id == selectedID }) {
+                self.selectedID = nil
+            }
+        }
         .overlay(alignment: .top) {
-            if store.isShowingCachedData { OfflineBanner() }
+            VStack(spacing: 0) {
+                if store.isShowingCachedData { OfflineBanner() }
+                if MarketSearch.isActive(store.searchQuery) {
+                    MapFilterIndicator(query: store.searchQuery, count: visibleMarkets.count)
+                }
+            }
         }
         .overlay {
             if store.state == .loading && store.markets.isEmpty {
@@ -60,7 +77,6 @@ struct MarketMapView: View {
                     .tint(AppPalette.accent.color)
             }
         }
-        .accessibilityIdentifier("market-map")
     }
 }
 

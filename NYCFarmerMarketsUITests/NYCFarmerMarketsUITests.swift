@@ -274,4 +274,40 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         search.typeText("zzzzzz")
         XCTAssertTrue(app.staticTexts["No markets found"].waitForExistence(timeout: 5))
     }
+
+    /// Search on Markets -> Map shows the filter indicator with the same query.
+    @MainActor
+    func testMapShowsIndicatorForListSearch() throws {
+        waitForSectionHeader()
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        // Submit with return so the keyboard closes and stops covering the tab bar.
+        search.typeText("Manhattan\n")
+        XCTAssertTrue(firstMarketRow.waitForExistence(timeout: 5))
+
+        selectTab("Map")
+        let indicator = element("map-filter-indicator")
+        XCTAssertTrue(indicator.waitForExistence(timeout: 5))
+        XCTAssertTrue(indicator.label.contains("Manhattan"), "Indicator should mention the query: \(indicator.label)")
+    }
+
+    /// Search then clear on Markets -> Map shows no filter indicator.
+    @MainActor
+    func testMapHidesIndicatorWithoutSearch() throws {
+        waitForSectionHeader()
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("Manhattan\n")
+        let clear = search.buttons["Clear text"]
+        XCTAssertTrue(clear.waitForExistence(timeout: 5))
+        clear.tap()
+        XCTAssertEqual(search.value as? String, search.placeholderValue, "Search was not cleared")
+        XCTAssertTrue(app.keyboards.count == 0 || app.tabBars.buttons["Map"].isHittable, "Keyboard covers the tab bar")
+
+        selectTab("Map")
+        XCTAssertTrue(element("market-map").waitForExistence(timeout: 5))
+        XCTAssertFalse(element("map-filter-indicator").waitForExistence(timeout: 2))
+    }
 }
