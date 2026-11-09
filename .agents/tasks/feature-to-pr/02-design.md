@@ -1,7 +1,7 @@
 # Design: Internal map and directions button (issue #1)
 
 ## Overview
-`MarketDetailView` currently has one button, "Open in Maps", which calls `MKMapItem.openInMaps()`. After this change, "Open in Maps" pushes a new in-app screen (`MarketLocationMapView`) onto the NavigationStack the sheet already owns. That screen shows a MapKit `Map` with exactly one annotation, for the selected market, and keeps the sheet's Close and favorite toolbar. A second button, "Directions", takes over the old `openInMaps()` code unchanged. Both buttons appear only when `market.coordinate != nil`, as today.
+`MarketDetailView` currently has one button, "Go to Map", which calls `MKMapItem.openInMaps()`. After this change, "Go to Map" pushes a new in-app screen (`MarketLocationMapView`) onto the NavigationStack the sheet already owns. That screen shows a MapKit `Map` with exactly one annotation, for the selected market, and keeps the sheet's Close and favorite toolbar. A second button, "Directions", takes over the old `openInMaps()` code unchanged. Both buttons appear only when `market.coordinate != nil`, as today.
 
 **Technology stack (locked):** Swift, SwiftUI, MapKit's SwiftUI `Map` (already used by `MarketMapView`), Swift Testing for unit tests, XCTest for UI tests. No new dependencies, no project file edits (synchronized groups).
 
@@ -91,7 +91,7 @@ struct MarketDetailToolbar: ToolbarContent {
 The two `ToolbarItem`s move verbatim from `MarketDetailView` (same icons, `close-detail` and `favorite-toggle` identifiers, accessibility labels, spring animation, sensory feedback). `MarketDetailView` uses `.toolbar { MarketDetailToolbar(market: market, onClose: { dismiss() }) }` and the pushed screen uses the same type, so behavior cannot drift. Close on the pushed screen dismisses the whole sheet; the system back button pops. If the `.cancellationAction` item does not render on the pushed bar on some platform, that is caught by the UI assertion below and the manual iOS/macOS check, and the implementer reports it rather than redesigning.
 
 **Detail view changes** (`MarketDetailView.swift`): inside `if market.coordinate != nil`, a `VStack(spacing: 10)` with two buttons.
-1. "Open in Maps": the existing `Label { Text("Open in Maps") } icon: { IconView(.openInMaps, size: 18) }`, `ThemedButtonStyle()`, identifier `open-in-maps` (kept), action `showsMap = true`.
+1. "Go to Map": the existing `Label { Text("Go to Map") } icon: { IconView(.openInMaps, size: 18) }`, `ThemedButtonStyle()`, identifier `open-in-maps` (kept), action `showsMap = true`.
 2. "Directions": the label mirrors the first one exactly, `Label { Text("Directions") } icon: { IconView(.directions, size: 18) }`, `ThemedButtonStyle()`, identifier `look-for-directions`, action: the existing private `openInMaps()` renamed `openInExternalMaps()` with an unchanged body (`MKMapItem(location:address:)`, `name = market.name`, `openInMaps()`). The accessibility label is the visible title (the icon is hidden by `IconView`), so Req 3.1 needs no extra modifier.
 
 `.navigationDestination(isPresented: $showsMap) { MarketLocationMapView(market: market, onClose: { dismiss() }) }` is attached to the `ScrollView`; `dismiss` is the sheet-level action `MarketDetailView` already holds.

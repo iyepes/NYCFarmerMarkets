@@ -21,7 +21,7 @@ Verdict: CHANGES_REQUESTED (2 MEDIUM, 5 NIT)
 7. NIT, Req 2.2 / Acceptance 5: "same map item as before" is covered only by manual verification. The Non-Functional Requirements ask for pure logic to be unit tested "e.g. the external map item". Optional fix: state explicitly that the body is left unchanged and untested by design. The rename to `openInExternalMaps()` is the only edit.
 
 ## Verified Assumptions
-- `MarketDetailView` has a single "Open in Maps" button. It is guarded by `market.coordinate != nil`, uses `ThemedButtonStyle` and identifier `open-in-maps`, and calls a private `openInMaps()` built from `MKMapItem(location:address:)`, with `name` set and `openInMaps()` called. Verified.
+- `MarketDetailView` has a single "Go to Map" button. It is guarded by `market.coordinate != nil`, uses `ThemedButtonStyle` and identifier `open-in-maps`, and calls a private `openInMaps()` built from `MKMapItem(location:address:)`, with `name` set and `openInMaps()` called. Verified.
 - `MarketDetailView` owns the `NavigationStack`, and `@Environment(\.dismiss)` is read at the sheet level, outside the stack. Passing `{ dismiss() }` down closes the sheet. Verified.
 - The toolbar contents (`close-detail`, `favorite-toggle`, labels, spring animation, `sensoryFeedback`) match the design's description and can be moved verbatim. Verified.
 - `MarketPin` is `private` in `MarketMapView.swift`, has a `market-pin` identifier, and is used only there. Moving it causes no name collision. Verified.

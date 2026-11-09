@@ -79,7 +79,7 @@ Pure. `matches(_:query:)` is a case- and diacritic-insensitive substring match o
 - `MarketListView`: `NavigationStack` with `List`/`Section` per borough, `.searchable`, `.refreshable`, an offline banner, and "No markets found". Section headers are tinted with the palette. (Collapsible sections were added later.)
 - `MarketMapView`: SwiftUI `Map` with `Annotation` per mappable market and selection by ID. The pin is a circle with a bat icon (ghost for favorites); a selected pin is scaled up. A bottom card shows the name, borough and "More info", which sets `selectedMarket`. The offline banner is an overlay at the top.
 - `FavoritesView`: `List` of favorites with `swipeActions` (Remove), a plain tap that sets `selectedMarket`, and a `ContentUnavailableView` empty state. No Edit button.
-- `MarketDetailView`: `NavigationStack` with a Close button and the ghost favorite toggle in the toolbar, one themed card per field, and "Open in Maps" via `MKMapItem`. On macOS it sets a minimum frame.
+- `MarketDetailView`: `NavigationStack` with a Close button and the ghost favorite toggle in the toolbar, one themed card per field, and "Go to Map" via `MKMapItem`. On macOS it sets a minimum frame.
 - `MarketRow`: shared row with the pumpkin icon, name, address (and borough in Favorites), days, and the favorite ghost.
 - `OfflineBanner` and the `offlineBanner(_:)` modifier: a banner stacked above the content when the offline flag is set.
 

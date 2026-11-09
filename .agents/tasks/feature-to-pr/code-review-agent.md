@@ -4,7 +4,7 @@ Verdict: no blockers.
 
 Checked against issue #1, the spec in `.kiro/specs/internal-map-and-directions-button/`, and the project conventions.
 
-- Open in Maps now sets `showsMap`. `.navigationDestination` pushes `MarketLocationMapView` inside the sheet's existing NavigationStack (`MarketDetailView.swift`). It is not a separate sheet and does not open external Maps (Req 1.2, 1.3, 1.8).
+- Go to Map now sets `showsMap`. `.navigationDestination` pushes `MarketLocationMapView` inside the sheet's existing NavigationStack (`MarketDetailView.swift`). It is not a separate sheet and does not open external Maps (Req 1.2, 1.3, 1.8).
 - The pushed map shows exactly one annotation, via `SingleMarketMap.pins`. It is centered with a 0.01 span and uses the market name as its title (Req 1.4 to 1.6).
 - Directions calls `openInExternalMaps()`. This is the old `openInMaps` body, unchanged and renamed, so the external map item is built exactly as before (Req 2.2).
 - Both buttons sit inside the existing `market.coordinate != nil` guard (Req 2.1, 2.3).

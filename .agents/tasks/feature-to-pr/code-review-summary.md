@@ -5,7 +5,7 @@ Verdict: APPROVED
 Both reviewers (agent, semantic) found no blocking issues. All 9 tasks in `.kiro/specs/internal-map-and-directions-button/tasks.md` are checked `- [x]`; no unchecked tasks.
 
 ## Agreement (high confidence)
-- Open in Maps pushes the in-app single-market map inside the sheet's NavigationStack; exactly one pin (Req 1.x).
+- Go to Map pushes the in-app single-market map inside the sheet's NavigationStack; exactly one pin (Req 1.x).
 - Directions runs the unchanged old external Apple Maps action, renamed `openInExternalMaps` (Req 2.x).
 - Conventions respected (AppIcon, nonisolated logic, tests, no .agents committed). The `MarketPin` and toolbar refactors preserve behavior.
 - Tests: iOS full run succeeded, macOS build succeeded.

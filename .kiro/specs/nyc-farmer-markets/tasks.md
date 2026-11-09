@@ -33,7 +33,7 @@ Retroactive task list. The app was built from a nine-task plan agreed in chat, t
   - _Requirements: 2.6, 2.7, 3.1-3.7_
 
 - [x] 5. Detail sheet
-  - Create `MarketDetailView` with all fields, Close, "Open in Maps" and the shared `.sheet(item:)`
+  - Create `MarketDetailView` with all fields, Close, "Go to Map" and the shared `.sheet(item:)`
   - Verified by: UI test that opens the sheet from a row and closes it; simulator screenshot
   - _Requirements: 5.1-5.4_
 

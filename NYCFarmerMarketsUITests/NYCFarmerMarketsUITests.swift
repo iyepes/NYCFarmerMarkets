@@ -134,15 +134,15 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         XCTAssertTrue(closeButton.waitForExistence(timeout: 5), "Detail sheet did not open")
     }
 
-    /// Taps "Open in Maps" and waits for the pushed single-market map.
+    /// Taps "Go to Map" and waits for the pushed single-market map.
     private func pushSingleMarketMap() {
         let openInMaps = app.buttons["open-in-maps"]
-        XCTAssertTrue(openInMaps.waitForExistence(timeout: 5), "Open in Maps button missing")
+        XCTAssertTrue(openInMaps.waitForExistence(timeout: 5), "Go to Map button missing")
         openInMaps.tap()
         XCTAssertTrue(element("market-location-map").waitForExistence(timeout: 10), "Single-market map did not appear")
     }
 
-    /// Detail -> Open in Maps pushes the in-app map with one pin -> Back returns to the same detail.
+    /// Detail -> Go to Map pushes the in-app map with one pin -> Back returns to the same detail.
     @MainActor
     func testOpenInMapsPushesSingleMarketMap() throws {
         openDetailFromMapPin()

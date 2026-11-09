@@ -34,7 +34,7 @@ struct MarketDetailView: View {
                                 showsMap = true
                             } label: {
                                 Label {
-                                    Text("Open in Maps")
+                                    Text("Go to Map")
                                 } icon: {
                                     IconView(.openInMaps, size: 18)
                                 }

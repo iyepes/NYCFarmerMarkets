@@ -42,7 +42,7 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
 
 - [ ] 6. Wire the two buttons and the push in `MarketDetailView`
   - Files: modify `NYCFarmerMarkets/Views/MarketDetailView.swift`
-  - Add `@State private var showsMap = false`. Replace the single button inside `if market.coordinate != nil` with `VStack(spacing: 10)` holding: (a) "Open in Maps" (existing label, `IconView(.openInMaps, size: 18)`, `ThemedButtonStyle()`, id `open-in-maps`, action `showsMap = true`); (b) "Directions" (`Label { Text("Directions") } icon: { IconView(.directions, size: 18) }`, `ThemedButtonStyle()`, id `look-for-directions`, action `openInExternalMaps()`).
+  - Add `@State private var showsMap = false`. Replace the single button inside `if market.coordinate != nil` with `VStack(spacing: 10)` holding: (a) "Go to Map" (existing label, `IconView(.openInMaps, size: 18)`, `ThemedButtonStyle()`, id `open-in-maps`, action `showsMap = true`); (b) "Directions" (`Label { Text("Directions") } icon: { IconView(.directions, size: 18) }`, `ThemedButtonStyle()`, id `look-for-directions`, action `openInExternalMaps()`).
   - Rename private `openInMaps()` to `openInExternalMaps()` with the body unchanged (not unit tested, per the design).
   - Attach `.navigationDestination(isPresented: $showsMap) { MarketLocationMapView(market: market, onClose: { dismiss() }) }` to the `ScrollView` (inside the `NavigationStack`), before or after `.navigationTitle("Market details")`.
   - Requirements: 1.1, 1.2, 1.3, 1.7, 1.8, 2.1, 2.2, 2.3, 3.1
@@ -59,13 +59,13 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
 - [ ] 8. Full verification and manual check
   - Files: none
   - Run the complete unit and UI test suites for the `NYCFarmerMarkets` scheme and a macOS build. Check that no `Color(` literals, hex literals or raw SF Symbol names were added outside `NYCFarmerMarkets/Theme/` (a code review of the diff, supplementing the tests).
-  - Manual (macOS and iOS): both buttons render for a market with a coordinate; "Open in Maps" pushes the map showing one pin and the market name, without opening Apple Maps; Back returns to the same market; Close on the pushed screen dismisses the whole sheet; "Directions" opens the market in external Apple Maps as before. Report any platform where the `.cancellationAction` Close item does not show on the pushed bar, without redesigning.
+  - Manual (macOS and iOS): both buttons render for a market with a coordinate; "Go to Map" pushes the map showing one pin and the market name, without opening Apple Maps; Back returns to the same market; Close on the pushed screen dismisses the whole sheet; "Directions" opens the market in external Apple Maps as before. Report any platform where the `.cancellationAction` Close item does not show on the pushed bar, without redesigning.
   - Requirements: all; acceptance criteria 1-7
   - Verify: all unit and UI tests green; macOS and iOS builds succeed.
 
 - [ ] 9. Record the spec and amend the original requirement
   - Files: create `.kiro/specs/internal-map-and-directions-button/requirements.md` (from `.agents/tasks/feature-to-pr/01-requirements.md`), `design.md` (from `02-design.md`, omitting the "Responses to design review" section and applying the "Implementation notes" overrides in place), `tasks.md` (this plan with completed items checked); modify `.kiro/specs/nyc-farmer-markets/requirements.md` line 92 (Requirement 5.4).
-  - Add a note under 5.4 that "Open in Maps" now pushes the in-app single-market map, and "Directions" opens external Apple Maps, pointing to the new spec. Do not stage anything under `.agents/`.
+  - Add a note under 5.4 that "Go to Map" now pushes the in-app single-market map, and "Directions" opens external Apple Maps, pointing to the new spec. Do not stage anything under `.agents/`.
   - Requirements: documentation convention (.kiro/specs/<feature>/{requirements,design,tasks}.md)
   - Verify: the three files exist with the content above; build and tests are unaffected (docs only).
 
@@ -75,8 +75,8 @@ Verified by reading (no build or tests were run in this step, so the passing-tod
 
 - `NYCFarmerMarkets/Views/MarketDetailView.swift`: `struct MarketDetailView`; single `Button { openInMaps() }` with id `open-in-maps` inside `if market.coordinate != nil`; inline `.toolbar` with Close (`close-detail`) and favorite (`favorite-toggle`) items; `private func openInMaps()` using `MKMapItem(location:address:)`, `item.name = market.name`, `item.openInMaps()`. Covered by tasks 4 and 6 and UI tests in task 7.
 - `NYCFarmerMarkets/Views/MarketMapView.swift`: `private struct MarketPin: View` with `name`, `isFavorite`, `isSelected`, accessibility id `market-pin`, used at line ~35. Covered by task 3 and the existing `testMapPinMoreInfoAndClose`.
-- `NYCFarmerMarkets/Theme/AppIcon.swift`: `enum AppIcon` cases up to `sectionChevron`; `source` switch has `.openInMaps: .symbol("map.fill")`; `accessibilityName` switch has `.openInMaps: "Open in Maps"`. Covered by task 1 and the `splashIconsAndLabels`/`everyIconResolves` tests in `NYCFarmerMarketsTests/NYCFarmerMarketsTests.swift` (line ~431 and the `#if canImport(UIKit)` block at ~453).
+- `NYCFarmerMarkets/Theme/AppIcon.swift`: `enum AppIcon` cases up to `sectionChevron`; `source` switch has `.openInMaps: .symbol("map.fill")`; `accessibilityName` switch has `.openInMaps: "Go to Map"`. Covered by task 1 and the `splashIconsAndLabels`/`everyIconResolves` tests in `NYCFarmerMarketsTests/NYCFarmerMarketsTests.swift` (line ~431 and the `#if canImport(UIKit)` block at ~453).
 - `NYCFarmerMarketsTests/NYCFarmerMarketsTests.swift`: `enum Fixture` with `market(_ name:, borough:, address:, lat: Double? = 40.7, lon: Double? = -74.0)`. Used by the new `SingleMarketMapTests`.
 - `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift`: helpers `waitForMarkets`, `selectTab`, `element`, `waitUntilGone`, `waitForValue`; the model test is `testMapPinMoreInfoAndClose` (~line 103), which uses `app.maps.firstMatch`, `market-pin`, `more-info`.
-- `.kiro/specs/nyc-farmer-markets/requirements.md` line 92 is the original criterion 5.4 ("Open in Maps" button). Existing spec folders (e.g. `splash-screen-collapsible-boroughs`) hold `requirements.md`, `design.md`, `tasks.md`, `tasks.meta.json`; format of `tasks.md` is `- [x] 1. ...` with `_Requirements: ..._` sub-bullets.
+- `.kiro/specs/nyc-farmer-markets/requirements.md` line 92 is the original criterion 5.4 ("Go to Map" button). Existing spec folders (e.g. `splash-screen-collapsible-boroughs`) hold `requirements.md`, `design.md`, `tasks.md`, `tasks.meta.json`; format of `tasks.md` is `- [x] 1. ...` with `_Requirements: ..._` sub-bullets.
 - Not read: `Market` model file (task 2 must read it first for the property types), `FavoritesStore`, `IconView`, `ThemedButtonStyle`.

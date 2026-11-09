@@ -1,5 +1,5 @@
 ## Summary
-- The "Open in Maps" button in the market detail view now pushes the app's internal map showing only the selected market.
+- The "Go to Map" button in the market detail view now pushes the app's internal map showing only the selected market.
 - New "Directions" button performs the previous action: opens the market in the external Apple Maps app.
 - Extracted a shared `MarketDetailToolbar`, moved `MarketPin` to a shared file, added `MarketLocationMapView` and `SingleMarketMap` logic, and a directions icon in the AppIcon registry.
 - Spec added under the issue's docs; requirement 5.4 amended.
