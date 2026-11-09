@@ -48,6 +48,8 @@ struct MarketMapView: View {
             }
         }
         .mapStyle(.standard)
+        // Scoped to the Map so it does not override identifiers inside the overlays.
+        .accessibilityIdentifier("market-map")
         .safeAreaInset(edge: .bottom) {
             if let market = selectedMarket {
                 MarketCard(market: market) { store.selectedMarket = market }
@@ -75,7 +77,6 @@ struct MarketMapView: View {
                     .tint(AppPalette.accent.color)
             }
         }
-        .accessibilityIdentifier("market-map")
     }
 }
 

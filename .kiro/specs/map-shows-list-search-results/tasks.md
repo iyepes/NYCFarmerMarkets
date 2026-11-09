@@ -39,7 +39,7 @@ Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each t
   - Requirements: 1.1, 1.3-1.7, 2.1, 2.2, 3.1, 3.2
   - Verify: build succeeds; manual check noted in step output if simulator is unavailable.
 
-- [ ] 8. UI tests for the indicator
+- [x] 8. UI tests for the indicator
   - Modify `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift` (XCTest; reuse `selectTab`, `waitForSectionHeader`, `element(_:)`, search-field pattern from `testSearchFiltersList`): (a) search on Markets, switch to Map, assert `map-filter-indicator` exists and its label contains the query; (b) clear search, switch to Map, assert indicator absent.
   - Requirements: 3.1, 3.2, 1.4
   - Verify: `-only-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITests/<new test names>` pass.
