@@ -6,12 +6,12 @@ Add `AppCopy` and move the covered text into it, then update the views, then the
 
 ## Tasks
 
-- [ ] 1. Central copy type
-  - [ ] 1.1 Create `Theme/AppCopy.swift`
+- [x] 1. Central copy type
+  - [x] 1.1 Create `Theme/AppCopy.swift`
     - Add `nonisolated enum AppCopy` with the strings and pure functions listed in the design (`mapFilterSummary`, `mapFilterAccessibility`, `noResultsHint`)
     - Trim the query the same way as `MarketSearch.normalized`
     - _Requirements: 1.1-1.4, 3.1, 3.2, 4.1-4.3, 5.1-5.5, 6.1, 6.2_
-  - [ ]* 1.2 Create `AppCopyTests.swift`
+  - [x]* 1.2 Create `AppCopyTests.swift`
     - Singular, plural and zero forms; trimming; accessibility forms
     - No technical error text; plain accessibility strings contain no spooky vocabulary
     - _Requirements: 7.4, 7.5, 8.1, 8.2_
