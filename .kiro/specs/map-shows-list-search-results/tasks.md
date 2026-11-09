@@ -34,7 +34,7 @@ Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each t
   - Requirements: 3.1, 3.3, 3.4
   - Verify: build succeeds; no `Color(`/hex/raw symbol names in the file.
 
-- [ ] 7. Filter the map and show the indicator
+- [x] 7. Filter the map and show the indicator
   - Modify `NYCFarmerMarkets/Views/MarketMapView.swift`: add `visibleMarkets = MarketSearch.filter(store.markets, query: store.searchQuery)`; `mappable` uses `visibleMarkets`; `selectedMarket` looks up in `visibleMarkets`; add `.onChange(of: store.searchQuery)` clearing `selectedID` if it is not in `visibleMarkets`; change the top `.overlay` to a `VStack(spacing: 0)` with `OfflineBanner` (when `store.isShowingCachedData`) then `MapFilterIndicator` (when `MarketSearch.isActive(store.searchQuery)`, count = `visibleMarkets.count`). Do not write to `position`.
   - Requirements: 1.1, 1.3-1.7, 2.1, 2.2, 3.1, 3.2
   - Verify: build succeeds; manual check noted in step output if simulator is unavailable.
