@@ -11,9 +11,6 @@ struct MarketDetailView: View {
     let market: Market
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(FavoritesStore.self) private var favorites
-
-    private var isFavorite: Bool { favorites.isFavorite(market) }
 
     var body: some View {
         NavigationStack {
@@ -51,29 +48,7 @@ struct MarketDetailView: View {
             #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        IconView(.close, size: 24)
-                    }
-                    .accessibilityLabel("Close")
-                    .accessibilityIdentifier("close-detail")
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        favorites.toggle(market)
-                    } label: {
-                        IconView(isFavorite ? .favoriteOn : .favoriteOff, size: 26)
-                            .scaleEffect(isFavorite ? 1.1 : 1)
-                            .animation(.spring(duration: 0.3), value: isFavorite)
-                    }
-                    .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
-                    .accessibilityIdentifier("favorite-toggle")
-                    .sensoryFeedback(.selection, trigger: isFavorite)
-                }
-            }
+            .toolbar { MarketDetailToolbar(market: market, onClose: { dismiss() }) }
         }
         .tint(AppPalette.accent.color)
         #if os(macOS)

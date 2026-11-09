@@ -27,7 +27,7 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
   - Requirements: 3.2 (pin label unchanged), keeps Map tab behavior (Out of Scope)
   - Verify: build; existing UI test `testMapPinMoreInfoAndClose` still passes (it queries `market-pin`).
 
-- [ ] 4. Extract the shared detail toolbar
+- [x] 4. Extract the shared detail toolbar
   - Files: create `NYCFarmerMarkets/Views/Shared/MarketDetailToolbar.swift`; modify `NYCFarmerMarkets/Views/MarketDetailView.swift`
   - Create `struct MarketDetailToolbar: ToolbarContent` with `market`, `onClose`, and `@Environment(FavoritesStore.self)`. Move the two `ToolbarItem`s from `MarketDetailView` verbatim (`.cancellationAction` Close with `IconView(.close, size: 24)`, label "Close", id `close-detail`; `.primaryAction` favorite toggle with scale, spring animation, labels, id `favorite-toggle`, `.sensoryFeedback`). Compute `isFavorite` inside the type. In `MarketDetailView` replace the toolbar closure with `.toolbar { MarketDetailToolbar(market: market, onClose: { dismiss() }) }`. If the `ToolbarContent` type cannot read the environment on a target, report it rather than redesigning.
   - Requirements: design decision 9 (Close and favorite stay available on the pushed screen)
