@@ -48,7 +48,7 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
   - Requirements: 1.1, 1.2, 1.3, 1.7, 1.8, 2.1, 2.2, 2.3, 3.1
   - Verify: build for iOS and macOS; existing UI tests still pass; manual check below (task 8).
 
-- [ ] 7. Add UI tests for the push, pin, toolbar, back and close
+- [x] 7. Add UI tests for the push, pin, toolbar, back and close
   - Files: modify `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift`
   - Reuse `waitForMarkets()`, `selectTab(_:)`, `element(_:)`, `waitUntilGone(_:_:)` and the `closeButton` used by `testMapPinMoreInfoAndClose`. Add, after that test:
     1. `testOpenInMapsPushesSingleMarketMap`: `waitForMarkets()`, `selectTab("Map")`, tap `market-pin` (first match), tap `more-info`, wait for `close-detail`. Assert buttons `open-in-maps` and `look-for-directions` exist. Do not tap "Look for directions" (it leaves the app). Tap `open-in-maps`. Wait on `app.descendants(matching: .any).matching(identifier: "market-location-map").firstMatch.waitForExistence(timeout: 10)`; do NOT use `app.maps.firstMatch` for this (the Map tab's map stays in the hierarchy). Only after it exists, assert `app.descendants(matching: .any).matching(identifier: "selected-market-pin").count == 1`. Assert `open-in-maps` is gone via `waitUntilGone`, and `close-detail` and `favorite-toggle` exist. No `app.sheets` assertion (or label it best-effort). Then go back: on iOS tap `app.navigationBars.buttons["Market details"]`; fallbacks `app.buttons["Market details"]`, `app.buttons["Back"]`; never `boundBy: 0`. Assert `open-in-maps` and `look-for-directions` exist again. Wrap the Back-button part in `#if os(iOS)` if no query is reliable on macOS after running; record that in the task notes.
