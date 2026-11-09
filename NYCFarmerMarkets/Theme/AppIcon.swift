@@ -25,6 +25,7 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
     case close
     case remove
     case openInMaps
+    case directions
     case offline
     case warning
     case emptySearch
@@ -54,6 +55,7 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
         case .close: .symbol("xmark.circle.fill")
         case .remove: .symbol("trash.fill")
         case .openInMaps: .symbol("map.fill")
+        case .directions: .symbol("arrow.triangle.turn.up.right.diamond.fill")
         case .offline: .symbol("cloud.fog.fill")
         case .warning: .symbol("exclamationmark.triangle.fill")
         case .emptySearch: .symbol("eyes")
@@ -89,6 +91,7 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
         case .close: "Close"
         case .remove: "Remove"
         case .openInMaps: "Open in Maps"
+        case .directions: "Look for directions"
         case .offline: "Offline"
         case .warning: "Warning"
         case .emptySearch: "No results"

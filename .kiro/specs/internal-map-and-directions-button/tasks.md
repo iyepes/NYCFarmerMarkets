@@ -7,7 +7,7 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
 
 ## Tasks
 
-- [ ] 1. Add the `directions` icon to the AppIcon registry
+- [x] 1. Add the `directions` icon to the AppIcon registry
   - Files: `NYCFarmerMarkets/Theme/AppIcon.swift`, `NYCFarmerMarketsTests/NYCFarmerMarketsTests.swift`
   - Add `case directions` after `openInMaps`; in `source` add `.directions: .symbol("arrow.triangle.turn.up.right.diamond.fill")`; in `accessibilityName` add `.directions: "Look for directions"`. `openInMaps` keeps `map.fill`.
   - In `NYCFarmerMarketsTests.swift`, add a `@Test` next to `splashIconsAndLabels` asserting `AppIcon.directions.source == .symbol("arrow.triangle.turn.up.right.diamond.fill")` and `AppIcon.directions.accessibilityName == "Look for directions"` (runs on macOS too; `everyIconResolves` is `canImport(UIKit)` only, so it covers iOS only). No new import.

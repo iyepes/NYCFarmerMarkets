@@ -435,6 +435,11 @@ struct ThemeTests {
         #expect(AppIcon.logo.accessibilityName == "NYC Farmer Markets")
     }
 
+    @Test func directionsIconAndLabel() {
+        #expect(AppIcon.directions.source == .symbol("arrow.triangle.turn.up.right.diamond.fill"))
+        #expect(AppIcon.directions.accessibilityName == "Look for directions")
+    }
+
     /// Splash content (logo, dots, message) over the app icon olive.
     /// Normal-size text would need 4.5:1, but the measured ratio is about 3.5:1.
     /// That is intentional: the splash message uses `.title3.weight(.semibold)`
