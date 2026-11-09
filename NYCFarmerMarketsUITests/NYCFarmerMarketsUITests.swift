@@ -147,7 +147,7 @@ final class NYCFarmerMarketsUITests: XCTestCase {
     func testOpenInMapsPushesSingleMarketMap() throws {
         openDetailFromMapPin()
         XCTAssertTrue(app.buttons["open-in-maps"].exists)
-        XCTAssertTrue(app.buttons["look-for-directions"].exists, "Look for directions button missing")
+        XCTAssertTrue(app.buttons["look-for-directions"].exists, "Directions button missing")
 
         pushSingleMarketMap()
         XCTAssertEqual(

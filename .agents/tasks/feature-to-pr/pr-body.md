@@ -1,6 +1,6 @@
 ## Summary
 - The "Open in Maps" button in the market detail view now pushes the app's internal map showing only the selected market.
-- New "Look for directions" button performs the previous action: opens the market in the external Apple Maps app.
+- New "Directions" button performs the previous action: opens the market in the external Apple Maps app.
 - Extracted a shared `MarketDetailToolbar`, moved `MarketPin` to a shared file, added `MarketLocationMapView` and `SingleMarketMap` logic, and a directions icon in the AppIcon registry.
 - Spec added under the issue's docs; requirement 5.4 amended.
 
@@ -35,11 +35,11 @@ Violations: none.
 ## Test report: not verified items
 
 - testLaunchPerformance and NYCFarmerMarketsUITestsLaunchTests were skipped as instructed, so launch performance and launch screenshots are unchecked.
-- Opening Apple Maps from the "Look for directions" button was not verified. The simulator cannot confirm an external app handoff; only the in-app pushed map is covered by UI test.
+- Opening Apple Maps from the "Directions" button was not verified. The simulator cannot confirm an external app handoff; only the in-app pushed map is covered by UI test.
 - The macOS build was compiled only; no tests were run on macOS.
 - The convention grep is regex-based. Colors or icons built through indirect helper code would not be detected.
 
 ## Anything not verified
-See the list above: launch performance/screenshots tests skipped, Apple Maps handoff from "Look for directions" not confirmed in the simulator, macOS only compiled (no tests), and the convention grep is regex-based.
+See the list above: launch performance/screenshots tests skipped, Apple Maps handoff from "Directions" not confirmed in the simulator, macOS only compiled (no tests), and the convention grep is regex-based.
 
 Closes #1

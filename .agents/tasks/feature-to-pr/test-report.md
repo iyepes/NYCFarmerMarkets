@@ -29,6 +29,6 @@ Violations: none.
 ## Not verified
 
 - testLaunchPerformance and NYCFarmerMarketsUITestsLaunchTests were skipped as instructed, so launch performance and launch screenshots are unchecked.
-- Opening Apple Maps from the "Look for directions" button was not verified. The simulator cannot confirm an external app handoff; only the in-app pushed map is covered by UI test.
+- Opening Apple Maps from the "Directions" button was not verified. The simulator cannot confirm an external app handoff; only the in-app pushed map is covered by UI test.
 - The macOS build was compiled only; no tests were run on macOS.
 - The convention grep is regex-based. Colors or icons built through indirect helper code would not be detected.

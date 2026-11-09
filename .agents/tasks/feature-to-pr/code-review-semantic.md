@@ -1,8 +1,8 @@
-# Open in Maps pushes an in-app single-market map; Look for directions keeps the external Apple Maps action
+# Open in Maps pushes an in-app single-market map; Directions keeps the external Apple Maps action
 
-"Open in Maps" in the market detail sheet now pushes an in-app map (inside the sheet's existing NavigationStack) with exactly one pin for the selected market. A new "Look for directions" button takes over the old behavior of opening the market in external Apple Maps. To support this, the Close/favorite toolbar and the map pin were extracted into shared files so the detail screen and the pushed map reuse them, and pin/region construction lives in a small `nonisolated` pure-logic type with unit tests. The change matches issue #1 and the spec in `.kiro/specs/internal-map-and-directions-button/`, and the 5.4 amendment in the original spec is recorded.
+"Open in Maps" in the market detail sheet now pushes an in-app map (inside the sheet's existing NavigationStack) with exactly one pin for the selected market. A new "Directions" button takes over the old behavior of opening the market in external Apple Maps. To support this, the Close/favorite toolbar and the map pin were extracted into shared files so the detail screen and the pushed map reuse them, and pin/region construction lives in a small `nonisolated` pure-logic type with unit tests. The change matches issue #1 and the spec in `.kiro/specs/internal-map-and-directions-button/`, and the 5.4 amendment in the original spec is recorded.
 
-Watch for: (1) no automated or manual coverage of the "Look for directions" action or of macOS UI behavior (possible, low impact); (2) the pushed map keeps the favorite toggle although the spec assumption said the pushed screen has none (confirmed, a spec/implementation wording mismatch, not a defect).
+Watch for: (1) no automated or manual coverage of the "Directions" action or of macOS UI behavior (possible, low impact); (2) the pushed map keeps the favorite toggle although the spec assumption said the pushed screen has none (confirmed, a spec/implementation wording mismatch, not a defect).
 
 **Verdict**: APPROVED
 
@@ -19,7 +19,7 @@ Test coverage is solid for logic and in-app navigation (5 unit tests, icon test,
 <details>
 <summary>Issues (3)</summary>
 
-1. **Look for directions untested** (possible) — no test or manual check that the button reaches `MKMapItem.openInMaps`; it leaves the app so UI tests skip it. Do a manual check before merge or note it in the PR.
+1. **Directions untested** (possible) — no test or manual check that the button reaches `MKMapItem.openInMaps`; it leaves the app so UI tests skip it. Do a manual check before merge or note it in the PR.
 2. **macOS UI behavior unverified** (possible) — only a macOS build was run. The Back button and the `.cancellationAction` Close placement on a pushed macOS view have not been seen; verify manually.
 3. **Spec wording on favorites** (confirmed) — requirements assumption says the pushed screen has no favorites toggle of its own, while the shared toolbar shows it. Either note in the PR that the sheet toolbar is intentionally retained, or reword the assumption.
 
@@ -40,7 +40,7 @@ One interaction to check on device: on iOS the pushed screen shows a leading Clo
 
 ## Test gaps
 
-Unit tests cover pin/region output including partial coordinates. UI tests cover push, back, Close-dismisses-sheet, and button presence. Not tested: tapping Look for directions, the absence of both buttons for a market without a coordinate (requirement 2.3, unchanged conditional but unasserted), and macOS UI runs. The coder's notes also mention one transient xctrunner launch error retried by xcodebuild, and the Task 6 run's final TEST SUCCEEDED line was cut off; Task 8's full run did report success.
+Unit tests cover pin/region output including partial coordinates. UI tests cover push, back, Close-dismisses-sheet, and button presence. Not tested: tapping Directions, the absence of both buttons for a market without a coordinate (requirement 2.3, unchanged conditional but unasserted), and macOS UI runs. The coder's notes also mention one transient xctrunner launch error retried by xcodebuild, and the Task 6 run's final TEST SUCCEEDED line was cut off; Task 8's full run did report success.
 
 </details>
 

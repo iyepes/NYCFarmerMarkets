@@ -91,7 +91,7 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
         case .close: "Close"
         case .remove: "Remove"
         case .openInMaps: "Open in Maps"
-        case .directions: "Look for directions"
+        case .directions: "Directions"
         case .offline: "Offline"
         case .warning: "Warning"
         case .emptySearch: "No results"

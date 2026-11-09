@@ -1,7 +1,7 @@
 # Design: Internal map and directions button (issue #1)
 
 ## Overview
-`MarketDetailView` currently has one button, "Open in Maps", which calls `MKMapItem.openInMaps()`. After this change, "Open in Maps" pushes a new in-app screen (`MarketLocationMapView`) onto the NavigationStack the sheet already owns. That screen shows a MapKit `Map` with exactly one annotation, for the selected market, and keeps the sheet's Close and favorite toolbar. A second button, "Look for directions", takes over the old `openInMaps()` code unchanged. Both buttons appear only when `market.coordinate != nil`, as today.
+`MarketDetailView` currently has one button, "Open in Maps", which calls `MKMapItem.openInMaps()`. After this change, "Open in Maps" pushes a new in-app screen (`MarketLocationMapView`) onto the NavigationStack the sheet already owns. That screen shows a MapKit `Map` with exactly one annotation, for the selected market, and keeps the sheet's Close and favorite toolbar. A second button, "Directions", takes over the old `openInMaps()` code unchanged. Both buttons appear only when `market.coordinate != nil`, as today.
 
 **Technology stack (locked):** Swift, SwiftUI, MapKit's SwiftUI `Map` (already used by `MarketMapView`), Swift Testing for unit tests, XCTest for UI tests. No new dependencies, no project file edits (synchronized groups).
 
@@ -92,11 +92,11 @@ The two `ToolbarItem`s move verbatim from `MarketDetailView` (same icons, `close
 
 **Detail view changes** (`MarketDetailView.swift`): inside `if market.coordinate != nil`, a `VStack(spacing: 10)` with two buttons.
 1. "Open in Maps": the existing `Label { Text("Open in Maps") } icon: { IconView(.openInMaps, size: 18) }`, `ThemedButtonStyle()`, identifier `open-in-maps` (kept), action `showsMap = true`.
-2. "Look for directions": the label mirrors the first one exactly, `Label { Text("Look for directions") } icon: { IconView(.directions, size: 18) }`, `ThemedButtonStyle()`, identifier `look-for-directions`, action: the existing private `openInMaps()` renamed `openInExternalMaps()` with an unchanged body (`MKMapItem(location:address:)`, `name = market.name`, `openInMaps()`). The accessibility label is the visible title (the icon is hidden by `IconView`), so Req 3.1 needs no extra modifier.
+2. "Directions": the label mirrors the first one exactly, `Label { Text("Directions") } icon: { IconView(.directions, size: 18) }`, `ThemedButtonStyle()`, identifier `look-for-directions`, action: the existing private `openInMaps()` renamed `openInExternalMaps()` with an unchanged body (`MKMapItem(location:address:)`, `name = market.name`, `openInMaps()`). The accessibility label is the visible title (the icon is hidden by `IconView`), so Req 3.1 needs no extra modifier.
 
 `.navigationDestination(isPresented: $showsMap) { MarketLocationMapView(market: market, onClose: { dismiss() }) }` is attached to the `ScrollView`; `dismiss` is the sheet-level action `MarketDetailView` already holds.
 
-**Icons.** `AppIcon` gets one new case, `directions`: source `.symbol("arrow.triangle.turn.up.right.diamond.fill")`, accessibilityName `"Look for directions"`. `openInMaps` keeps `map.fill`, so the buttons have distinct icons. The existing `everyIconResolves` test verifies the symbol exists. No colors are added.
+**Icons.** `AppIcon` gets one new case, `directions`: source `.symbol("arrow.triangle.turn.up.right.diamond.fill")`, accessibilityName `"Directions"`. `openInMaps` keeps `map.fill`, so the buttons have distinct icons. The existing `everyIconResolves` test verifies the symbol exists. No colors are added.
 
 ## Error handling and validation
 - Input: the only external input is `Market`, already validated at parse time by `Market.parseCoordinate` (rejects nil, non-numeric and zero). Latitude and longitude are optional; if either is nil there is no coordinate. No range validation is added; that is the data layer's concern and unchanged.
@@ -122,7 +122,7 @@ Unit tests (Swift Testing, using `Fixture.market(...)`):
 - `pins(for:)` returns exactly one pin with the market's id, name and coordinates when a coordinate exists.
 - `pins(for:)` returns `[]` for `lat: nil, lon: nil` and for only one of them missing.
 - `region(for:)` is centered on the coordinate with `SingleMarketMap.span`, and is nil without a coordinate.
-- `AppIcon.directions.accessibilityName == "Look for directions"` and its source is the expected symbol.
+- `AppIcon.directions.accessibilityName == "Directions"` and its source is the expected symbol.
 
 UI tests (XCTest), using the Map tab path because pins always have coordinates:
 1. `waitForMarkets()`, `selectTab("Map")`, tap `market-pin`, tap `more-info`, wait for `close-detail`.
@@ -134,7 +134,7 @@ UI tests (XCTest), using the Map tab path because pins always have coordinates:
 7. Tap Back and assert `open-in-maps` and `look-for-directions` exist again.
 8. Second test: push the map, tap `close-detail`, assert `more-info` reappears and `close-detail` is gone (Close dismisses the whole sheet).
 
-The tests do not tap "Look for directions" because it would leave the app for Maps; that call is unchanged code and is covered by manual verification. Manual check on macOS: both buttons render, the push works, and Close dismisses the sheet from the pushed screen.
+The tests do not tap "Directions" because it would leave the app for Maps; that call is unchanged code and is covered by manual verification. Manual check on macOS: both buttons render, the push works, and Close dismisses the sheet from the pushed screen.
 
 ## Edge cases
 - Favorite toggled on either screen: both read the same `FavoritesStore`, so the pin and toolbar icon stay in sync.

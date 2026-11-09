@@ -90,7 +90,7 @@ NYC Farmer Markets is a SwiftUI app (iOS, macOS and visionOS targets) that loads
 2. THE Detail_Sheet SHALL show the market name, borough, address, community district, days, hours, EBT acceptance, year-round status, Health Department cooking permission and data year, showing "Not listed" for missing values.
 3. WHEN the user taps Close, THE App SHALL dismiss the Detail_Sheet and return to the tab it was opened from.
 4. WHERE the market has a coordinate, THE Detail_Sheet SHALL offer an "Open in Maps" button.
-   > Amended by issue #1 (see `.kiro/specs/internal-map-and-directions-button/`): "Open in Maps" now pushes the in-app map showing only the selected market, and a new "Look for directions" button opens the market in the external Apple Maps app (the previous behavior of "Open in Maps").
+   > Amended by issue #1 (see `.kiro/specs/internal-map-and-directions-button/`): "Open in Maps" now pushes the in-app map showing only the selected market, and a new "Directions" button opens the market in the external Apple Maps app (the previous behavior of "Open in Maps").
 5. THE Detail_Sheet SHALL offer a toggle to add or remove the market from favorites, with an accessibility label that states the action ("Add to favorites" or "Remove from favorites") and haptic feedback on change.
 
 ### Requirement 6: Favorites

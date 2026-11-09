@@ -437,7 +437,7 @@ struct ThemeTests {
 
     @Test func directionsIconAndLabel() {
         #expect(AppIcon.directions.source == .symbol("arrow.triangle.turn.up.right.diamond.fill"))
-        #expect(AppIcon.directions.accessibilityName == "Look for directions")
+        #expect(AppIcon.directions.accessibilityName == "Directions")
     }
 
     /// Splash content (logo, dots, message) over the app icon olive.

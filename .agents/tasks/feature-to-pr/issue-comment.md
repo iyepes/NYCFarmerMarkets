@@ -4,7 +4,7 @@ Spec: `.kiro/specs/internal-map-and-directions-button/` (requirements.md, design
 
 ### Key requirements
 - "Open in Maps" pushes an in-app map screen onto the detail sheet's existing NavigationStack (no new sheet or cover). It shows exactly one annotation, the selected market, centered and zoomed, with the market name as the title. Back returns to the same market. It no longer opens Apple Maps.
-- New "Look for directions" button opens the market in external Apple Maps exactly as "Open in Maps" does today.
+- New "Directions" button opens the market in external Apple Maps exactly as "Open in Maps" does today.
 - Both buttons appear only when the market has a coordinate, have accessibility labels and identifiers (`open-in-maps` kept, `look-for-directions` new), and work on iOS and macOS.
 - Amends Requirement 5.4 of the original nyc-farmer-markets spec.
 
@@ -12,7 +12,7 @@ Spec: `.kiro/specs/internal-map-and-directions-button/` (requirements.md, design
 - `nonisolated enum SingleMarketMap` (pure, unit tested) returns the single pin and the map region.
 - New `MarketLocationMapView` using MapKit `Map`; no `MarketStore` dependency, so it cannot show other markets.
 - `MarketPin` moves to a shared file; the Close and favorite toolbar is extracted to a shared `MarketDetailToolbar` used on both screens.
-- `MarketDetailView` uses `navigationDestination(isPresented:)`; the old external-Maps code becomes `openInExternalMaps()` behind "Look for directions".
+- `MarketDetailView` uses `navigationDestination(isPresented:)`; the old external-Maps code becomes `openInExternalMaps()` behind "Directions".
 - New `AppIcon.directions` entry; colors and icons only from the theme tokens.
 
 ### Tasks

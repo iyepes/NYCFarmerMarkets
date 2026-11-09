@@ -46,7 +46,7 @@ struct MarketDetailView: View {
                                 openInExternalMaps()
                             } label: {
                                 Label {
-                                    Text("Look for directions")
+                                    Text("Directions")
                                 } icon: {
                                     IconView(.directions, size: 18)
                                 }
