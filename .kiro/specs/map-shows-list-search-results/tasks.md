@@ -19,7 +19,7 @@ Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. Each t
   - Requirements: 1.2, 4.2
   - Verify: full `NYCFarmerMarketsTests` run passes, including existing `SectionExpansionTests` and grouping tests in `NYCFarmerMarketsTests.swift`, plus the parity test from task 2.
 
-- [ ] 4. Move the query into `MarketStore` and bind the list to it
+- [x] 4. Move the query into `MarketStore` and bind the list to it
   - Modify `NYCFarmerMarkets/Stores/MarketStore.swift`: add `var searchQuery = ""` next to `selectedMarket`. Modify `NYCFarmerMarkets/Views/MarketListView.swift`: remove `@State private var query`; add `private var query: String { store.searchQuery }`; in `body` use `@Bindable var store = store` and `.searchable(text: $store.searchQuery, prompt: ...)`. Leave all other uses of `query` as is.
   - Requirements: 1.3, 4.2, Assumptions (query survives tab switches)
   - Verify: build succeeds; existing UI test `testSearchFiltersList` and `testSearchAutoExpandsMatchingBoroughs` still pass.

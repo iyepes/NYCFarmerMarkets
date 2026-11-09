@@ -24,6 +24,8 @@ final class MarketStore {
     private(set) var failure: LoadFailureMessage?
     /// The market shown in the shared detail sheet (nil = sheet closed).
     var selectedMarket: Market?
+    /// The Markets list search text, shared so the map can show the same results.
+    var searchQuery = ""
 
     private static let logger = Logger(subsystem: "com.hacemoscontactos.NYCFarmerMarkets", category: "MarketStore")
 
