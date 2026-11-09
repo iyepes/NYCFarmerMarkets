@@ -2,6 +2,8 @@ Do you want to eat find fresh from farmers available in your community while wal
 
 Locate the markets by name or just tap the Map View. Easy and simple for your convenience.
 
+![Demo animation](/images/demo-v1.gif "Demo animation")
+
 - Navigate through the city and find Farmer Markets near you using the Map View.
 - Use the List view to see all markets per boruogh, search according with your preferences. Map View is updated with your search results.
 - Click the desired Farmer Market in the list or pin map to see its details.
