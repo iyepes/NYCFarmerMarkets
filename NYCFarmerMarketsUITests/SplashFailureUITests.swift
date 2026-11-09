@@ -35,6 +35,12 @@ final class SplashFailureUITests: XCTestCase {
                       "Splash error message should be shown when the download fails")
         XCTAssertTrue(retry.waitForExistence(timeout: 10),
                       "Retry button should be shown when the download fails")
+        XCTAssertEqual(error.label, "You're off the grid", "Offline failure should show the friendly title")
+        let hint = element("splash-error-hint")
+        XCTAssertTrue(hint.waitForExistence(timeout: 5), "A plain-language hint should be shown")
+        XCTAssertEqual(hint.label, "Check your connection, then try again.")
+        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS[c] 'NSURLErrorDomain'")).firstMatch.exists,
+                       "Technical error text must not be shown")
         XCTAssertEqual(retry.label, "Retry loading markets",
                        "Retry button should have the accessibility label 'Retry loading markets'")
 

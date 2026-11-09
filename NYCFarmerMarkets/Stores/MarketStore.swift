@@ -5,6 +5,7 @@
 
 import Foundation
 import Observation
+import OSLog
 
 @Observable
 final class MarketStore {
@@ -19,8 +20,12 @@ final class MarketStore {
     private(set) var state: LoadState = .idle
     /// True when the network refresh failed and the list shown is saved data.
     private(set) var isShowingCachedData = false
+    /// Friendly description of the last failure while there is no data to show (nil otherwise).
+    private(set) var failure: LoadFailureMessage?
     /// The market shown in the shared detail sheet (nil = sheet closed).
     var selectedMarket: Market?
+
+    private static let logger = Logger(subsystem: "com.hacemoscontactos.NYCFarmerMarkets", category: "MarketStore")
 
     @ObservationIgnored private let fetch: @Sendable () async throws -> [Market]
     @ObservationIgnored private let cache: MarketCache
@@ -44,11 +49,15 @@ final class MarketStore {
     }
 
     func refresh() async {
-        if markets.isEmpty { state = .loading }
+        if markets.isEmpty {
+            state = .loading
+            failure = nil
+        }
         do {
             let fresh = try await fetch()
             markets = fresh
             state = .loaded
+            failure = nil
             isShowingCachedData = false
             try? cache.save(fresh)
         } catch is CancellationError {
@@ -56,8 +65,12 @@ final class MarketStore {
         } catch let error as URLError where error.code == .cancelled {
             restoreStateAfterCancel()
         } catch {
+            // The technical error is logged, never shown to users.
+            Self.logger.warning("Loading markets failed: \(error.localizedDescription, privacy: .public)")
             if markets.isEmpty {
-                state = .error(error.localizedDescription)
+                let message = LoadFailureMessage.make(for: error)
+                failure = message
+                state = .error(message.title)
             } else {
                 state = .loaded
                 isShowingCachedData = true

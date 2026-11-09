@@ -22,7 +22,17 @@ struct AppRootView: View {
         guard store.markets.isEmpty else { return nil }
         switch store.state {
         case .error(let message): return message
-        case .loaded: return "No markets are available right now."
+        case .loaded: return LoadFailureMessage.noMarkets.title
+        case .idle, .loading: return nil
+        }
+    }
+
+    /// Plain-language hint shown under the failure title.
+    private var errorHint: String? {
+        guard store.markets.isEmpty else { return nil }
+        switch store.state {
+        case .error: return store.failure?.hint
+        case .loaded: return LoadFailureMessage.noMarkets.hint
         case .idle, .loading: return nil
         }
     }
@@ -40,7 +50,7 @@ struct AppRootView: View {
             if hasDismissed {
                 RootTabView()
             } else {
-                SplashView(phase: phase) { Task { await store.refresh() } }
+                SplashView(phase: phase, hint: errorHint) { Task { await store.refresh() } }
                     .transition(reduceMotion ? .identity : .opacity)
             }
         }

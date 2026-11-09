@@ -10,6 +10,8 @@ import SwiftUI
 
 struct SplashView: View {
     let phase: SplashPhase
+    /// Plain-language hint shown under a failure message.
+    var hint: String? = nil
     let onRetry: () -> Void
 
     var body: some View {
@@ -33,10 +35,17 @@ struct SplashView: View {
         case .failed(let message):
             VStack(spacing: 16) {
                 Text(message)
-                    .font(.title3.weight(.semibold))
+                    .font(.title2.weight(.bold))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("splash-error")
+                if let hint {
+                    Text(hint)
+                        .font(.title3.weight(.semibold))
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("splash-error-hint")
+                }
                 Button("Retry", action: onRetry)
                     .buttonStyle(ThemedButtonStyle())
                     .accessibilityLabel("Retry loading markets")
@@ -63,5 +72,5 @@ private struct LogoView: View {
 }
 
 #Preview("Failed") {
-    SplashView(phase: .failed(message: "Couldn't load markets. Check your connection and try again."), onRetry: {})
+    SplashView(phase: .failed(message: LoadFailureMessage.offline.title), hint: LoadFailureMessage.offline.hint, onRetry: {})
 }
