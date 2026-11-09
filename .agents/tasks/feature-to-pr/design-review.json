@@ -1,0 +1,13 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {"id": 1, "severity": "MEDIUM", "title": "UI test step 3 uses app.maps.firstMatch, which passes vacuously because the Map tab's map is still in the hierarchy; use the market-location-map identifier deterministically and count pins within it"},
+    {"id": 2, "severity": "MEDIUM", "title": "UI test step 5 Back button query (navigationBars.buttons.element(boundBy: 0)) is ambiguous and fails on macOS; query by label or make the test iOS-only"},
+    {"id": 3, "severity": "NIT", "title": "MarketLocationMapView init for @State position is not specified"},
+    {"id": 4, "severity": "NIT", "title": "Mark SingleMarketMap.Pin nonisolated explicitly (default actor isolation is MainActor)"},
+    {"id": 5, "severity": "NIT", "title": "everyIconResolves is UIKit-only and does not run on macOS"},
+    {"id": 6, "severity": "NIT", "title": "Remove the 'Responses to design review' process section from the design"},
+    {"id": 7, "severity": "NIT", "title": "External map item behavior (Req 2.2) is covered only manually; state this explicitly"}
+  ],
+  "reviewDoc": "/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/.agents/tasks/feature-to-pr/03-design-review.md"
+}

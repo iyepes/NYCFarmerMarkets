@@ -4,12 +4,13 @@
     {
       "name": "Security review before commit",
       "trigger": "PreToolUse",
-      "description": "Before a git commit, review the staged Swift files for security issues.",
-      "matcher": "execute_bash",
       "action": {
         "type": "agent",
         "prompt": "Only act if the shell command about to run is a `git commit` (including variants like `git commit -m ...`). For any other command, ignore this instruction and run the command unchanged.\n\nIf it is a git commit: before committing, run `git diff --cached --name-only -- '*.swift'` to list the staged Swift files. If there are none, proceed with the commit. Otherwise review the staged changes (`git diff --cached -- '*.swift'`) for security issues, and read the full file where the diff lacks context. Check for: hard-coded secrets, API keys, tokens or credentials; insecure network use (plain http URLs, disabled App Transport Security, disabled certificate validation); sensitive data written to logs (OSLog/print without privacy controls) or stored unprotected (UserDefaults, plain files); force-unwraps, unchecked casts or unsafe pointer use on external or user-controlled input; unvalidated data from the network or launch arguments; and test-only hooks (such as launch-argument overrides) that could affect release builds. Report findings briefly with file and line, grouped by severity. If you find a high-severity issue, do not commit: tell the user and wait for their decision. Otherwise, mention that the review found nothing blocking and proceed with the commit using exactly the same parameters."
-      }
+      },
+      "description": "Before a git commit, review the staged Swift files for security issues.",
+      "matcher": "execute_bash",
+      "enabled": true
     }
   ]
 }
