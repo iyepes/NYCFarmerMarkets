@@ -121,6 +121,62 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         XCTAssertTrue(app.buttons["more-info"].waitForExistence(timeout: 5), "Did not return to the map")
     }
 
+    /// Opens the detail sheet from a map pin and returns once its buttons are visible.
+    private func openDetailFromMapPin() {
+        waitForMarkets()
+        selectTab("Map")
+        let pin = element("market-pin")
+        XCTAssertTrue(pin.waitForExistence(timeout: 15), "No pins on the map")
+        pin.tap()
+        let moreInfo = app.buttons["more-info"]
+        XCTAssertTrue(moreInfo.waitForExistence(timeout: 5), "Card did not appear after selecting a pin")
+        moreInfo.tap()
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 5), "Detail sheet did not open")
+    }
+
+    /// Taps "Open in Maps" and waits for the pushed single-market map.
+    private func pushSingleMarketMap() {
+        let openInMaps = app.buttons["open-in-maps"]
+        XCTAssertTrue(openInMaps.waitForExistence(timeout: 5), "Open in Maps button missing")
+        openInMaps.tap()
+        XCTAssertTrue(element("market-location-map").waitForExistence(timeout: 10), "Single-market map did not appear")
+    }
+
+    /// Detail -> Open in Maps pushes the in-app map with one pin -> Back returns to the same detail.
+    @MainActor
+    func testOpenInMapsPushesSingleMarketMap() throws {
+        openDetailFromMapPin()
+        XCTAssertTrue(app.buttons["open-in-maps"].exists)
+        XCTAssertTrue(app.buttons["look-for-directions"].exists, "Look for directions button missing")
+
+        pushSingleMarketMap()
+        XCTAssertEqual(
+            app.descendants(matching: .any).matching(identifier: "selected-market-pin").count, 1,
+            "The pushed map should show exactly one pin"
+        )
+        waitUntilGone(app.buttons["open-in-maps"], "Detail content should be covered by the pushed map")
+        XCTAssertTrue(closeButton.exists, "Close should stay available on the pushed map")
+        XCTAssertTrue(app.buttons["favorite-toggle"].exists, "Favorite toggle should stay available on the pushed map")
+
+        let back = [app.navigationBars.buttons["Market details"], app.buttons["Market details"], app.buttons["Back"]]
+            .first { $0.exists }
+        XCTAssertNotNil(back, "No Back button on the pushed map")
+        back?.tap()
+        XCTAssertTrue(app.buttons["open-in-maps"].waitForExistence(timeout: 5), "Did not return to the detail screen")
+        XCTAssertTrue(app.buttons["look-for-directions"].exists)
+    }
+
+    /// Close on the pushed map dismisses the whole detail sheet.
+    @MainActor
+    func testCloseFromPushedMapDismissesSheet() throws {
+        openDetailFromMapPin()
+        pushSingleMarketMap()
+
+        closeButton.tap()
+        XCTAssertTrue(app.buttons["more-info"].waitForExistence(timeout: 5), "Did not return to the map tab")
+        waitUntilGone(closeButton, "Detail sheet should be dismissed")
+    }
+
     // MARK: Splash and collapsible sections
 
     private func element(_ identifier: String) -> XCUIElement {
