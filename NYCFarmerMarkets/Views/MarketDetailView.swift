@@ -29,7 +29,7 @@ struct MarketDetailView: View {
                         detailRow(.year, "Data year", market.year)
                     }
                     if market.coordinate != nil {
-                        VStack(spacing: 10) {
+                        HStack(alignment: .top, spacing: 10) {
                             Button {
                                 showsMap = true
                             } label: {
