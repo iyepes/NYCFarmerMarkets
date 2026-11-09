@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0.0",
+  "dataModelVersion": 1,
+  "id": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+  "title": "Build NYC Farmer Markets app",
+  "agentMode": "vibe",
+  "workspacePaths": [
+    "/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets"
+  ],
+  "rootPaths": [
+    "/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets"
+  ],
+  "createdAt": "2026-11-08T22:20:17.701Z",
+  "lastModifiedAt": "2026-11-09T01:11:00.768Z",
+  "modelId": "auto",
+  "autopilot": false,
+  "workflowLaunch": "when-asked",
+  "contextSnapshotModelDisplay": {
+    "modelId": "auto",
+    "display": "Auto (model selected dynamically on the server)"
+  },
+  "semanticReviewEnabled": true,
+  "disableAutoCompaction": false,
+  "ftaEnabled": false,
+  "workflowsEnabled": false,
+  "specPlanEnabled": false,
+  "specWorkflow": "quick",
+  "specSkipClarificationEnabled": true,
+  "memoryConfig": {
+    "mode": "disabled",
+    "reflection": false
+  },
+  "memoryConfigSource": "explicit",
+  "description": "Starting implementation: theme, data layer, tabs, detail, favorites, map, app icon.",
+  "status": "idle",
+  "_meta": {
+    "kiro": {
+      "policyPreset": [
+        "edit-workspace"
+      ],
+      "shellType": "zsh",
+      "settings": {
+        "workflows": {
+          "enabled": false
+        },
+        "goal": {
+          "enabled": false
+        },
+        "memory": {
+          "mode": "disabled",
+          "reflection": false
+        }
+      }
+    }
+  }
+}

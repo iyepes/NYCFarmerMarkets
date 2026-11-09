@@ -1,0 +1,13 @@
+rules:
+  - capability: fs_read
+    effect: allow
+    match:
+      - /private/tmp/render/AppIcon.svg.png
+      - /private/tmp/render
+      - /private/tmp/shot-list.png
+      - /private/tmp/shot-list2.png
+      - /private/tmp/shot3.png
+      - /private/tmp/shot4.png
+      - /private/tmp/shot-detail-fav.png
+      - /private/tmp/shot-map-selected.png
+      - /private/tmp/shot-favorites.png

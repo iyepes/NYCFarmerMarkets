@@ -1,0 +1,6 @@
+{"timestamp":"2026-11-08T22:20:47.789Z","level":"info","message":"Connected with transport","transportType":"stdio","era":"legacy","protocolVersion":"2025-06-18","versionNegotiation":"auto","eraProbeBudgetMs":30000,"connectDurationMs":30100,"serverName":"xcode-tools"}
+{"timestamp":"2026-11-08T22:20:47.789Z","level":"info","message":"mcp.connect.ok","serverName":"xcode-tools"}
+{"timestamp":"2026-11-08T22:21:17.695Z","level":"error","message":"Failed to connect","instanceId":"mcp-inst-1","serverName":"xcode-tools","error":"MCP server 'xcode-tools' connection timed out after 60000ms"}
+{"timestamp":"2026-11-08T22:21:17.703Z","level":"warn","message":"mcp.listTools.error","serverName":"xcode-tools"}
+{"timestamp":"2026-11-08T22:21:17.704Z","level":"error","message":"Error listing tools","serverName":"xcode-tools","error":"AbortError: This operation was aborted"}
+{"timestamp":"2026-11-08T22:21:17.709Z","level":"info","message":"mcp.closeConnection.ok","serverName":"xcode-tools"}

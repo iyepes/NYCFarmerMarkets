@@ -1,0 +1,33 @@
+{"timestamp":"2026-11-08T21:58:35.183Z","level":"info","message":"File logging initialized at /Users/isabelyepes/.kiro/logs/20261108T215835102-76304"}
+{"timestamp":"2026-11-08T21:58:35.183Z","level":"info","message":"Initializing persistence at /Users/isabelyepes/.kiro/sessions"}
+{"timestamp":"2026-11-08T21:58:35.184Z","level":"info","message":"[SessionPersistence] Initialized persistence at /Users/isabelyepes/.kiro/sessions"}
+{"timestamp":"2026-11-08T21:58:35.184Z","level":"info","message":"Persistence initialized"}
+{"timestamp":"2026-11-08T21:58:35.184Z","level":"info","message":"[AgentTelemetry] Initialized without a pipeline; the host owns telemetry {\"mode\":\"host-owned\"}"}
+{"timestamp":"2026-11-08T21:58:35.184Z","level":"info","message":"[KiroAgent] Remote MCP client initialized"}
+{"timestamp":"2026-11-08T21:58:35.184Z","level":"info","message":"[KiroAgent] remote-tools-discovery.create {\"client\":\"kiro-ide\"}"}
+{"timestamp":"2026-11-08T21:58:35.185Z","level":"info","message":"[KiroAgent] Cleared stale task execution statuses"}
+{"timestamp":"2026-11-08T21:58:35.186Z","level":"info","message":"[KiroAgent] Platform initialized"}
+{"timestamp":"2026-11-08T21:58:35.187Z","level":"info","message":"[KiroAgent] Resolved capabilities: {\"fsReadTextFile\":true,\"fsWriteTextFile\":true,\"kiroFsReadFile\":true,\"kiroFsWriteFile\":true,\"kiroFsStat\":true,\"kiroFsReadDirectory\":true,\"kiroFsDelete\":true,\"terminal\":true,\"secretStorage\":true,\"openExternalUrl\":true,\"knowledge\":false,\"infrastructureSafety\":true,\"c2sViews\":true,\"textSearch\":true,\"findFiles\":true,\"streamingShellContent\":false,\"diagrams\":false}"}
+{"timestamp":"2026-11-08T21:58:35.187Z","level":"info","message":"[RemoteToolsDiscovery] Fetching available Remote tools"}
+{"timestamp":"2026-11-08T21:58:35.187Z","level":"info","message":"[KiroAgent] Client supports ACP secret storage"}
+{"timestamp":"2026-11-08T21:58:35.187Z","level":"info","message":"[KiroAgent] Client supports ACP openExternalUrl"}
+{"timestamp":"2026-11-08T21:58:35.189Z","level":"info","message":"[KiroAgent] Stored clientInfo.name {\"reportedClientName\":\"kiro-ide\",\"clientAttribution\":\"kiro-ide\",\"client\":\"kiro-ide\"}"}
+{"timestamp":"2026-11-08T21:58:35.192Z","level":"info","message":"[KiroAgent] Active experiments changed {\"activeExperiments\":\"\"}"}
+{"timestamp":"2026-11-08T21:58:35.193Z","level":"info","message":"[KiroAgent] v2 hooks cache initialized (hooks load at session start)"}
+{"timestamp":"2026-11-08T21:58:35.193Z","level":"info","message":"Handshake: returning logging config with 3 channels at /Users/isabelyepes/.kiro/logs/20261108T215835102-76304"}
+{"timestamp":"2026-11-08T21:58:35.204Z","level":"info","message":"client.initialize.activated {\"clientId\":\"client_1\"}"}
+{"timestamp":"2026-11-08T21:58:35.275Z","level":"info","message":"fs.powers.scan.ok {\"system\":\"fs\",\"baseCount\":2,\"trigger\":\"read\",\"durationMs\":11}"}
+{"timestamp":"2026-11-08T21:58:35.282Z","level":"info","message":"fs.ownerOnlySweep.ok {\"system\":\"fs\",\"durationMs\":98}"}
+{"timestamp":"2026-11-08T21:58:35.282Z","level":"info","message":"ownerOnlySweep.completed {\"kiroHomeTightened\":true,\"kiroHomeFailed\":false,\"roots\":0,\"tightened\":0,\"failures\":0}"}
+{"timestamp":"2026-11-08T21:58:35.877Z","level":"info","message":"network.getProfile.ok {\"system\":\"network\",\"durationMs\":661}"}
+{"timestamp":"2026-11-08T21:58:35.883Z","level":"info","message":"[ProfileSource] Enterprise Management resolved {\"status\":\"disabled\",\"surface\":\"IDE\"}"}
+{"timestamp":"2026-11-08T21:58:35.885Z","level":"info","message":"[ProfileSource] Resolved {\"enterprise\":true,\"provider\":\"Enterprise\",\"profileArn\":\"arn:aws:codewhisperer:us-east-1:788327019889:profile/VMNAEVPPDPN4\",\"mcp\":{\"value\":\"on\",\"compose\":\"ceiling\"},\"webTools\":{\"value\":\"on\",\"compose\":\"ceiling\"},\"autonomousAgents\":{\"value\":\"off\",\"compose\":\"locked\"},\"usageAnalytics\":{\"value\":\"off\",\"compose\":\"ceiling\"},\"promptLogging\":{\"value\":\"off\",\"compose\":\"locked\"},\"codeReferenceTracker\":{\"value\":\"on\",\"compose\":\"locked\"},\"mcpRegistryUrl\":{\"value\":\"\",\"compose\":\"locked\"},\"memorySync\":{\"value\":\"off\",\"compose\":\"ceiling\"},\"catalogSize\":0}"}
+{"timestamp":"2026-11-08T21:58:35.885Z","level":"info","message":"[AgentTelemetry] Telemetry disabled by user preference"}
+{"timestamp":"2026-11-08T21:58:35.892Z","level":"info","message":"[KiroAgent] _kiro/mcp/toggle: enabled=true"}
+{"timestamp":"2026-11-08T21:58:35.893Z","level":"info","message":"[KiroAgent] MCP subsystem initialized"}
+{"timestamp":"2026-11-08T21:58:35.926Z","level":"info","message":"[KiroAgent] _kiro/mcp/toggle: enabled=true"}
+{"timestamp":"2026-11-08T21:58:35.958Z","level":"info","message":"[RemoteToolsDiscovery] Discovered 5 Remote tools"}
+{"timestamp":"2026-11-08T21:58:35.966Z","level":"info","message":"network.getFeatureConfiguration.ok {\"system\":\"network\",\"durationMs\":700}"}
+{"timestamp":"2026-11-08T21:58:35.966Z","level":"info","message":"[ExperimentConfigService] Resolved {\"origin\":\"AI_EDITOR\",\"version\":\"1.4.121\",\"keyCount\":11}"}
+{"timestamp":"2026-11-08T21:58:35.966Z","level":"info","message":"[KiroAgent] Active experiments changed {\"activeExperiments\":\"create_response_api=create_response\",\"previous\":\"\"}"}
+{"timestamp":"2026-11-08T21:58:36.304Z","level":"info","message":"network.listAvailableModels.ok {\"system\":\"network\",\"durationMs\":1115}"}

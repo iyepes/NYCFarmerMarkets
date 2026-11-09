@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Background: olive (matches AppPalette.Base.appIconOlive). Full-bleed square; the system applies the corner mask. -->
+  <rect width="1024" height="1024" fill="#78872B"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Cut face of the carrot -->
+    <ellipse cx="570" cy="500" rx="88" ry="172" transform="rotate(-40 570 500)"/>
+    <!-- Body -->
+    <path d="M452 366 C400 384 360 470 295 540 C190 640 120 760 135 810 C150 850 230 850 300 820 C380 790 430 750 462 728 C500 700 560 695 620 675 C665 660 695 645 688 615"/>
+    <!-- Creases -->
+    <path d="M272 565 C295 610 310 635 348 648"/>
+    <path d="M458 645 C485 680 505 695 540 690"/>
+    <!-- Leaf 1 (top) -->
+    <path d="M470 148 C445 160 440 190 465 215 C500 250 552 280 552 322 C552 380 555 440 565 470 C575 490 590 480 600 440 C612 380 612 320 590 260 C565 205 510 160 478 146 Z"/>
+    <!-- Leaf 2 (upper right) -->
+    <path d="M610 440 C660 395 720 335 760 325 C820 308 920 330 938 350 C940 380 920 395 895 395 C840 395 790 360 745 372 C700 395 640 440 610 450"/>
+    <!-- Leaf 3 (lower right) -->
+    <path d="M600 485 C650 465 700 445 745 435 C810 425 910 465 942 495 C935 525 915 540 893 535 C850 520 800 470 755 468 C700 480 640 505 600 500 C585 495 590 488 600 485 Z"/>
+  </g>
+</svg>
