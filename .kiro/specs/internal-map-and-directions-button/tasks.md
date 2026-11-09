@@ -56,14 +56,14 @@ Decision on the pin identifier (the design leaves it conditional): `MarketPin` g
   - Requirements: 1.2, 1.3, 1.4, 1.7, 3.1, acceptance criteria 1-4, 6, 7, design decision 9
   - Verify: `xcodebuild ... test -only-testing:NYCFarmerMarketsUITests` passes on an iOS simulator, including the two new tests and all existing ones. If the Back query fails, fix it empirically and rerun before moving on.
 
-- [ ] 8. Full verification and manual check
+- [x] 8. Full verification and manual check
   - Files: none
   - Run the complete unit and UI test suites for the `NYCFarmerMarkets` scheme and a macOS build. Check that no `Color(` literals, hex literals or raw SF Symbol names were added outside `NYCFarmerMarkets/Theme/` (a code review of the diff, supplementing the tests).
   - Manual (macOS and iOS): both buttons render for a market with a coordinate; "Open in Maps" pushes the map showing one pin and the market name, without opening Apple Maps; Back returns to the same market; Close on the pushed screen dismisses the whole sheet; "Look for directions" opens the market in external Apple Maps as before. Report any platform where the `.cancellationAction` Close item does not show on the pushed bar, without redesigning.
   - Requirements: all; acceptance criteria 1-7
   - Verify: all unit and UI tests green; macOS and iOS builds succeed.
 
-- [ ] 9. Record the spec and amend the original requirement
+- [x] 9. Record the spec and amend the original requirement
   - Files: create `.kiro/specs/internal-map-and-directions-button/requirements.md` (from `.agents/tasks/feature-to-pr/01-requirements.md`), `design.md` (from `02-design.md`, omitting the "Responses to design review" section and applying the "Implementation notes" overrides in place), `tasks.md` (this plan with completed items checked); modify `.kiro/specs/nyc-farmer-markets/requirements.md` line 92 (Requirement 5.4).
   - Add a note under 5.4 that "Open in Maps" now pushes the in-app single-market map, and "Look for directions" opens external Apple Maps, pointing to the new spec. Do not stage anything under `.agents/`.
   - Requirements: documentation convention (.kiro/specs/<feature>/{requirements,design,tasks}.md)
