@@ -58,7 +58,7 @@ Commands used below (discover the simulator name once with `xcrun simctl list de
     - Requirements: 4.2, 4.5
   - Verify: iOS and macOS builds succeed (macOS must compile without the UIKit file); full tests pass; screenshots in task 8.
 
-- [ ] 6. Extend the convention gate
+- [x] 6. Extend the convention gate
   - Edit the "Project conventions" paragraph of the step 6 prompt (line ~157) in `.kiro/workflows/feature-to-pr.workflow.json` to add the three patterns from the design (`\.custom\(|\bFont\.(system|custom)\(`, `Grim|N8ghtmare|Caligari|\.ttf`, `\.font\(\s*(\.|Font\.)`), each as `grep -rnE '<pattern>' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'`. Keep the JSON valid.
   - Files: `.kiro/workflows/feature-to-pr.workflow.json`
   - Requirements: 3.5, 3.6, 8.6
