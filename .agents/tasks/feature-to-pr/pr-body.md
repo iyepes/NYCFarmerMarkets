@@ -1,45 +1,33 @@
+**License warning (read first):** Dr. Caligari now covers most UI text, but its file has a placeholder copyright "(your company)" and no license text, so its author and terms are unknown. N8ghtmare (copyright "LionelPailloncy", no license text) is no longer used but is still in the repository. Grim Creeper states "Free to use for personal & commercial purposes" (sinisterfonts.com), which the metadata does not tie to embedding in an app. Confirm terms before distributing.
+
 ## Summary
-- The "Go to Map" button in the market detail view now pushes the app's internal map showing only the selected market.
-- New "Directions" button performs the previous action: opens the market in the external Apple Maps app.
-- Extracted a shared `MarketDetailToolbar`, moved `MarketPin` to a shared file, added `MarketLocationMapView` and `SingleMarketMap` logic, and a directions icon in the AppIcon registry.
-- Spec added under the issue's docs; requirement 5.4 amended.
+Integrates the custom fonts in `NYCFarmerMarkets/fonts`:
+- Fonts are registered at launch, with an `AppTypography` role layer and a root font.
+- Grim Creeper is used for the splash screen, tab titles, detail title and Favorites item titles.
+- Body text started as N8ghtmare. After owner review on the simulator (N8ghtmare digits were hard to read, "5" looked like "s") it was changed to Dr. Caligari. This supersedes the issue #7 note that Dr. Caligari would stay unused in the UI.
+- Also: body size scale 1.15 with a 14 pt floor, tab label cap at 15 pt, Markets screen rebuilt on text-size change, comma separator in row subtitles, and tab bar, navigation bar and search field fonts on iOS.
+- Font rules were added to the convention gate. A spec is included.
 
 ## Test report
+Run from the repo root, scheme NYCFarmerMarkets:
+1. iOS build (iPhone 17 simulator): BUILD SUCCEEDED.
+2. macOS build (`platform=macOS`): BUILD SUCCEEDED.
+3. Unit tests (`-only-testing:NYCFarmerMarketsTests`): 87 passed, 0 failed.
+4. Full run (unit and UI, launch tests and testLaunchPerformance skipped): 101 passed, 0 failed.
+5. Convention grep outside `Theme/` (color literals, hex, raw symbol names): no matches.
 
-All commands were run from /Users/isabelyepes/Documents/XCode/NYCFarmerMarkets (project NYCFarmerMarkets.xcodeproj, scheme NYCFarmerMarkets). No code was changed in this step.
-
-| # | Command | Result |
-|---|---------|--------|
-| 1 | `xcodebuild ... -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath /tmp/dd build` | BUILD SUCCEEDED (exit 0) |
-| 2 | `xcodebuild ... -destination 'platform=macOS' -derivedDataPath /tmp/ddmac build` | BUILD SUCCEEDED (exit 0) |
-| 3 | iOS `test -only-testing:NYCFarmerMarketsTests` | TEST SUCCEEDED (exit 0): 68 passed, 0 failed |
-| 4 | iOS `test -skip-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITestsLaunchTests -skip-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITests/testLaunchPerformance` | TEST SUCCEEDED (exit 0): 79 test cases passed, 0 failed (68 unit + 11 UI). No xctrunner launch error occurred, so no re-run was needed. |
-
-UI tests that passed (live NYC Open Data API): testRetryAndErrorShownWhenDownloadFailsWithoutCache, testCloseFromPushedMapDismissesSheet, testFavoriteAppearsInFavoritesTabAndSwipeRemoves, testMapPinMoreInfoAndClose, testOpenDetailFromListAndClose, testOpenInMapsPushesSingleMarketMap (covers the new feature), testSearchAutoExpandsMatchingBoroughs, testSearchFiltersList, testSectionsStartCollapsed, testSplashAppearsAtLaunch, testTappingHeaderExpandsAndCollapses.
-
-## Convention grep (outside NYCFarmerMarkets/Theme/)
-
-Pattern: `grep -rnE '<pattern>' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'`
-
-Patterns, each with 0 matches:
-- `Color\((red|white|hue|"|[a-z]+:)`
-- `(UIColor|NSColor)\(`
-- `Color\.(red|blue|green|orange|yellow|purple|pink|gray|black|white|brown|cyan|mint|teal|indigo)\b`
-- `0x[0-9A-Fa-f]{6}`
-- `"#[0-9A-Fa-f]{6}"`
-- `systemName:|systemImage:`
-- `Image\(systemName`
-
-Violations: none.
-
-## Test report: not verified items
-
-- testLaunchPerformance and NYCFarmerMarketsUITestsLaunchTests were skipped as instructed, so launch performance and launch screenshots are unchecked.
-- Opening Apple Maps from the "Directions" button was not verified. The simulator cannot confirm an external app handoff; only the in-app pushed map is covered by UI test.
-- The macOS build was compiled only; no tests were run on macOS.
-- The convention grep is regex-based. Colors or icons built through indirect helper code would not be detected.
+Re-run after the Dr. Caligari change (`5f4f649`):
+- iOS unit and UI tests: 0 failed. The result summary shows two pass counts (104 and 98) that I could not reconcile. The total test count is 98.
+- macOS build: succeeded.
+- Convention grep (now also font names, `.custom(`, direct `.font(...)`): no matches.
+- Screenshots reviewed on the iPhone 17 simulator: Markets (collapsed and expanded), empty search, detail, Favorites, Map tab, and Markets at default and accessibility-extra-large sizes, live and after relaunch.
 
 ## Anything not verified
-See the list above: launch performance/screenshots tests skipped, Apple Maps handoff from "Directions" not confirmed in the simulator, macOS only compiled (no tests), and the convention grep is regex-based.
+- Known bug: on the Map tab the three tab-bar labels render in the system font, not Grim Creeper. Two fix attempts had no effect and were removed. Cause unconfirmed.
+- macOS tab and navigation titles stay in the system font (owner's decision), departing from requirements 4.2, 4.3 and 4.5. macOS was compile-checked only, and macOS tests were not run.
+- visionOS not checked. The live text-size change was verified on the Markets screen only.
+- Font registration in the built bundle (Info.plist, resource copy) was not inspected in the test step.
+- Dr. Caligari is a calligraphic face: "t" can look like "r" or a cross and "h" has a flourish, so some words need a second look. Digits are clear.
+- Grep covers only the listed patterns.
 
-Closes #1
+Closes #7
