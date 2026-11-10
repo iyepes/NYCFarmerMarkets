@@ -38,6 +38,7 @@ struct MarketListView: View {
             ContentUnavailableView {
                 Label {
                     Text(AppCopy.noResultsTitle)
+                        .appFont(.bodyEmphasis)
                         .accessibilityLabel(AppCopy.noResultsTitleAccessibility)
                         .accessibilityIdentifier("search-no-results-title")
                 } icon: {
@@ -46,6 +47,7 @@ struct MarketListView: View {
                 .foregroundStyle(AppPalette.textPrimary.color)
             } description: {
                 Text(AppCopy.noResultsHint(query: query))
+                    .appFont(.body)
                     .foregroundStyle(AppPalette.textSecondary.color)
             }
         } else {

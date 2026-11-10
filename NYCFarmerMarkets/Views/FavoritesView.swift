@@ -26,12 +26,14 @@ struct FavoritesView: View {
             ContentUnavailableView {
                 Label {
                     Text("No haunts yet")
+                        .appFont(.bodyEmphasis)
                 } icon: {
                     IconView(.favoriteOff, size: 48)
                 }
                 .foregroundStyle(AppPalette.textPrimary.color)
             } description: {
                 Text("Favorite a market to summon it here.")
+                    .appFont(.body)
                     .foregroundStyle(AppPalette.textSecondary.color)
             }
             .accessibilityIdentifier("favorites-empty")
