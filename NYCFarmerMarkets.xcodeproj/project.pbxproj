@@ -29,9 +29,22 @@
 		7D69EDA730A12500008A731A /* NYCFarmerMarketsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NYCFarmerMarketsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7D4450F730A35D3D00308EDF /* Exceptions for "NYCFarmerMarkets" folder in "NYCFarmerMarkets" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7D69ED8F30A124FF008A731A /* NYCFarmerMarkets */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7D69ED9230A124FF008A731A /* NYCFarmerMarkets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7D4450F730A35D3D00308EDF /* Exceptions for "NYCFarmerMarkets" folder in "NYCFarmerMarkets" target */,
+			);
 			path = NYCFarmerMarkets;
 			sourceTree = "<group>";
 		};
@@ -399,6 +412,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NYCFarmerMarkets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "NY Farmer Mkt";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -446,6 +460,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NYCFarmerMarkets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "NY Farmer Mkt";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
