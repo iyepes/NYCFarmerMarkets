@@ -26,12 +26,14 @@ struct FavoritesView: View {
             ContentUnavailableView {
                 Label {
                     Text("No haunts yet")
+                        .appFont(.bodyEmphasis)
                 } icon: {
                     IconView(.favoriteOff, size: 48)
                 }
                 .foregroundStyle(AppPalette.textPrimary.color)
             } description: {
                 Text("Favorite a market to summon it here.")
+                    .appFont(.body)
                     .foregroundStyle(AppPalette.textSecondary.color)
             }
             .accessibilityIdentifier("favorites-empty")
@@ -41,7 +43,7 @@ struct FavoritesView: View {
                     Button {
                         store.selectedMarket = market
                     } label: {
-                        MarketRow(market: market, showsBorough: true)
+                        MarketRow(market: market, showsBorough: true, titleRole: .favoriteItemTitle)
                     }
                     .buttonStyle(.plain)
                     .listRowBackground(AppPalette.card.color)
@@ -51,7 +53,7 @@ struct FavoritesView: View {
                             favorites.remove(market)
                         } label: {
                             Label {
-                                Text("Remove")
+                                Text("Remove").appFont(.bodyEmphasis)
                             } icon: {
                                 AppIcon.remove.image
                             }

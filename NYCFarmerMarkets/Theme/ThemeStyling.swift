@@ -35,7 +35,7 @@ extension View {
 struct ThemedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.headline)
+            .appFont(.bodyEmphasis)
             .foregroundStyle(AppPalette.onAccentFill.color)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
@@ -56,17 +56,47 @@ enum ThemeAppearance {
         // only the tint comes from the palette.
         UINavigationBar.appearance().tintColor = accent
 
+        let tabBarFont = AppTypography.uiFont(.tabBarLabel)
         let tab = UITabBarAppearance()
         tab.configureWithOpaqueBackground()
         tab.backgroundColor = background
         for item in [tab.stackedLayoutAppearance, tab.inlineLayoutAppearance, tab.compactInlineLayoutAppearance] {
             item.selected.iconColor = accent
-            item.selected.titleTextAttributes = [.foregroundColor: accent]
+            item.selected.titleTextAttributes = [.foregroundColor: accent, .font: tabBarFont]
             item.normal.iconColor = muted
-            item.normal.titleTextAttributes = [.foregroundColor: muted]
+            item.normal.titleTextAttributes = [.foregroundColor: muted, .font: tabBarFont]
         }
         UITabBar.appearance().standardAppearance = tab
         UITabBar.appearance().scrollEdgeAppearance = tab
+
+        applyFonts()
+        observeContentSizeChanges()
         #endif
     }
+
+    #if canImport(UIKit) && !os(visionOS)
+    /// Fonts of the navigation bar and search field. Re-run when the text size changes.
+    private static func applyFonts() {
+        // No configureWith...: only the fonts are set, so the system bar look is unchanged.
+        let nav = UINavigationBarAppearance()
+        nav.largeTitleTextAttributes = [.font: AppTypography.uiFont(.tabTitle)]
+        nav.titleTextAttributes = [.font: AppTypography.uiFont(.navigationTitle)]
+        UINavigationBar.appearance().standardAppearance = nav
+        UINavigationBar.appearance().compactAppearance = nav
+        UINavigationBar.appearance().scrollEdgeAppearance = nav
+
+        UISearchTextField.appearance().font = AppTypography.uiFont(.body)
+    }
+
+    private static var contentSizeObserver: NSObjectProtocol?
+
+    private static func observeContentSizeChanges() {
+        guard contentSizeObserver == nil else { return }
+        contentSizeObserver = NotificationCenter.default.addObserver(
+            forName: UIContentSizeCategory.didChangeNotification, object: nil, queue: .main
+        ) { _ in
+            MainActor.assumeIsolated { applyFonts() }
+        }
+    }
+    #endif
 }

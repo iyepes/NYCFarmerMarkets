@@ -78,11 +78,11 @@ struct MarketDetailView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(market.name)
-                .font(.title.bold())
+                .appFont(.detailTitle)
                 .foregroundStyle(AppPalette.textPrimary.color)
                 .accessibilityAddTraits(.isHeader)
             Text(market.borough)
-                .font(.title3)
+                .appFont(.body)
                 .foregroundStyle(AppPalette.textSecondary.color)
         }
     }
@@ -94,10 +94,10 @@ struct MarketDetailView: View {
                 .frame(width: 24)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.caption)
+                    .appFont(.caption)
                     .foregroundStyle(AppPalette.textSecondary.color)
                 Text(value ?? AppCopy.missingValue)
-                    .font(.body)
+                    .appFont(.body)
                     .accessibilityLabel(value ?? AppCopy.missingValueAccessibility)
                     .foregroundStyle(AppPalette.textPrimary.color)
             }

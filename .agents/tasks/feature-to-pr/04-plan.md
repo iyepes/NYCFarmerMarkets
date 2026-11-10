@@ -1,82 +1,107 @@
-# Implementation Plan: Internal map and directions button (issue #1)
+# Implementation Plan: Custom Fonts Integration (issue #7)
 
 ## Overview
-Swift, SwiftUI, MapKit `Map`, Swift Testing (unit), XCTest (UI). Work happens on branch `feature/1-internal-map-and-directions-button`. New files under `NYCFarmerMarkets/` are auto-included (synchronized groups), so `project.pbxproj` is not edited. Colors only from `AppPalette`, icons only from `AppIcon`. Pure logic is `nonisolated`. Build: `xcodebuild -project NYCFarmerMarkets.xcodeproj -scheme NYCFarmerMarkets -destination 'platform=iOS Simulator,name=<an installed iPhone>' build`. Unit tests: same command with `test -only-testing:NYCFarmerMarketsTests`. UI tests: `-only-testing:NYCFarmerMarketsUITests`. Every task leaves the app building. Do not stage or commit anything under `.agents/`.
 
-Decision on the pin identifier (the design leaves it conditional): `MarketPin` gets an `identifier` parameter defaulting to `"market-pin"`. The pushed screen passes `"selected-market-pin"`. This keeps the Map tab untouched and means the UI test never counts the Map tab's pins, whatever MapKit does with the hierarchy.
+Add `AppTypography` (Grim Creeper for title roles, N8ghtmare for the rest) in `Theme/`, register the fonts at runtime with CoreText, switch every view to `.appFont(role)`, style the UIKit bars in `ThemeAppearance`, extend the convention gate, then verify with builds, tests, screenshots and a license report. New files under `NYCFarmerMarkets/` and `NYCFarmerMarketsTests/` are picked up automatically (synchronized groups); do not edit `project.pbxproj`. All paths are under `/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/`. Run git as `git -C <repo> ...`; never stage anything under `.agents/`.
+
+Commands used below (discover the simulator name once with `xcrun simctl list devices available`; call it `$SIM`):
+- iOS build: `xcodebuild -project NYCFarmerMarkets.xcodeproj -scheme NYCFarmerMarkets -destination "platform=iOS Simulator,name=$SIM" build`
+- macOS build: `xcodebuild -project NYCFarmerMarkets.xcodeproj -scheme NYCFarmerMarkets -destination "platform=macOS" build`
+- Unit tests: same as the iOS build with `-only-testing:NYCFarmerMarketsTests test`
+- Full tests: same with `test`
 
 ## Tasks
 
-- [ ] 1. Add the `directions` icon to the AppIcon registry
-  - Files: `NYCFarmerMarkets/Theme/AppIcon.swift`, `NYCFarmerMarketsTests/NYCFarmerMarketsTests.swift`
-  - Add `case directions` after `openInMaps`; in `source` add `.directions: .symbol("arrow.triangle.turn.up.right.diamond.fill")`; in `accessibilityName` add `.directions: "Directions"`. `openInMaps` keeps `map.fill`.
-  - In `NYCFarmerMarketsTests.swift`, add a `@Test` next to `splashIconsAndLabels` asserting `AppIcon.directions.source == .symbol("arrow.triangle.turn.up.right.diamond.fill")` and `AppIcon.directions.accessibilityName == "Directions"` (runs on macOS too; `everyIconResolves` is `canImport(UIKit)` only, so it covers iOS only). No new import.
-  - Requirements: 2.1, 3.1
-  - Verify: build; unit tests pass, including the new test and `everyIconResolves` (checks the symbol exists on iOS).
-
-- [ ] 2. Add the pure `SingleMarketMap` logic with unit tests
-  - Files: create `NYCFarmerMarkets/Models/SingleMarketMap.swift`; create `NYCFarmerMarketsTests/SingleMarketMapTests.swift`
-  - Implement `nonisolated enum SingleMarketMap` as in the design: nested `nonisolated struct Pin: Identifiable, Equatable, Sendable` (explicit `nonisolated`, project default isolation is MainActor) with `id`, `name`, `latitude`, `longitude` and computed `coordinate`; `static let span = MKCoordinateSpan(0.01, 0.01)`; `static func pins(for: Market) -> [Pin]` (empty unless both latitude and longitude exist); `static func region(for: Market) -> MKCoordinateRegion?`. Read `Market`'s `latitude`/`longitude`/`coordinate` in `NYCFarmerMarkets/Models/` first and use the actual property types.
-  - Tests (`import MapKit`, `import Testing`, `@testable import NYCFarmerMarkets`, using `Fixture.market(...)` from `NYCFarmerMarketsTests.swift`): one pin with the market's id, name and coordinates; `[]` when `lat: nil, lon: nil`; `[]` when only one is nil; `region(for:)` centered on the coordinate with `SingleMarketMap.span`; `region(for:)` nil without a coordinate.
-  - Requirements: 1.4, 1.5, 2.3
-  - Verify: unit tests pass, including the new suite.
-
-- [ ] 3. Move `MarketPin` to a shared file
-  - Files: create `NYCFarmerMarkets/Views/Shared/MarketPin.swift`; modify `NYCFarmerMarkets/Views/MarketMapView.swift`
-  - Cut `private struct MarketPin` from `MarketMapView.swift` (line ~67) into the new file as an internal struct, body unchanged. Add `var identifier: String = "market-pin"` after `isSelected` and use it in `.accessibilityIdentifier(identifier)`. Existing `MarketPin(name:isFavorite:isSelected:)` call in `MarketMapView` keeps compiling (memberwise init default).
-  - Requirements: 3.2 (pin label unchanged), keeps Map tab behavior (Out of Scope)
-  - Verify: build; existing UI test `testMapPinMoreInfoAndClose` still passes (it queries `market-pin`).
-
-- [ ] 4. Extract the shared detail toolbar
-  - Files: create `NYCFarmerMarkets/Views/Shared/MarketDetailToolbar.swift`; modify `NYCFarmerMarkets/Views/MarketDetailView.swift`
-  - Create `struct MarketDetailToolbar: ToolbarContent` with `market`, `onClose`, and `@Environment(FavoritesStore.self)`. Move the two `ToolbarItem`s from `MarketDetailView` verbatim (`.cancellationAction` Close with `IconView(.close, size: 24)`, label "Close", id `close-detail`; `.primaryAction` favorite toggle with scale, spring animation, labels, id `favorite-toggle`, `.sensoryFeedback`). Compute `isFavorite` inside the type. In `MarketDetailView` replace the toolbar closure with `.toolbar { MarketDetailToolbar(market: market, onClose: { dismiss() }) }`. If the `ToolbarContent` type cannot read the environment on a target, report it rather than redesigning.
-  - Requirements: design decision 9 (Close and favorite stay available on the pushed screen)
-  - Verify: build; existing UI tests `testOpenDetailFromListAndClose` and `testFavoriteAppearsInFavoritesTabAndSwipeRemoves` still pass.
-
-- [ ] 5. Create the pushed screen `MarketLocationMapView`
-  - Files: create `NYCFarmerMarkets/Views/MarketLocationMapView.swift`
-  - `struct MarketLocationMapView: View` with `let market: Market`, `let onClose: () -> Void`, `@Environment(FavoritesStore.self)`, `@State private var position: MapCameraPosition`. Write the init explicitly: set `self.market`, `self.onClose`, and `_position = State(initialValue: SingleMarketMap.region(for: market).map { MapCameraPosition.region($0) } ?? .automatic)`.
-  - Body: `Map(position: $position) { ForEach(SingleMarketMap.pins(for: market)) { pin in Annotation(pin.name, coordinate: pin.coordinate, anchor: .center) { MarketPin(name: pin.name, isFavorite: favorites.isFavorite(market), isSelected: false, identifier: "selected-market-pin") } } }`, `.mapStyle(.standard)`, `.navigationTitle(market.name)`, `#if !os(macOS) .navigationBarTitleDisplayMode(.inline) #endif`, `.toolbar { MarketDetailToolbar(market: market, onClose: onClose) }`. Put `.accessibilityIdentifier("market-location-map")` on a wrapping `ZStack` around the `Map` (not on the `Map`) so child pins stay queryable. No `MarketStore`, no `@Environment(\.dismiss)`, no raw colors or symbol names.
-  - Requirements: 1.4, 1.5, 1.6, 3.2, 3.3
-  - Verify: build succeeds for iOS; also build for macOS (`-destination 'platform=macOS'`) to confirm the view and toolbar compile there.
-
-- [ ] 6. Wire the two buttons and the push in `MarketDetailView`
-  - Files: modify `NYCFarmerMarkets/Views/MarketDetailView.swift`
-  - Add `@State private var showsMap = false`. Replace the single button inside `if market.coordinate != nil` with `VStack(spacing: 10)` holding: (a) "Go to Map" (existing label, `IconView(.openInMaps, size: 18)`, `ThemedButtonStyle()`, id `open-in-maps`, action `showsMap = true`); (b) "Directions" (`Label { Text("Directions") } icon: { IconView(.directions, size: 18) }`, `ThemedButtonStyle()`, id `look-for-directions`, action `openInExternalMaps()`).
-  - Rename private `openInMaps()` to `openInExternalMaps()` with the body unchanged (not unit tested, per the design).
-  - Attach `.navigationDestination(isPresented: $showsMap) { MarketLocationMapView(market: market, onClose: { dismiss() }) }` to the `ScrollView` (inside the `NavigationStack`), before or after `.navigationTitle("Market details")`.
-  - Requirements: 1.1, 1.2, 1.3, 1.7, 1.8, 2.1, 2.2, 2.3, 3.1
-  - Verify: build for iOS and macOS; existing UI tests still pass; manual check below (task 8).
-
-- [ ] 7. Add UI tests for the push, pin, toolbar, back and close
-  - Files: modify `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift`
-  - Reuse `waitForMarkets()`, `selectTab(_:)`, `element(_:)`, `waitUntilGone(_:_:)` and the `closeButton` used by `testMapPinMoreInfoAndClose`. Add, after that test:
-    1. `testOpenInMapsPushesSingleMarketMap`: `waitForMarkets()`, `selectTab("Map")`, tap `market-pin` (first match), tap `more-info`, wait for `close-detail`. Assert buttons `open-in-maps` and `look-for-directions` exist. Do not tap "Directions" (it leaves the app). Tap `open-in-maps`. Wait on `app.descendants(matching: .any).matching(identifier: "market-location-map").firstMatch.waitForExistence(timeout: 10)`; do NOT use `app.maps.firstMatch` for this (the Map tab's map stays in the hierarchy). Only after it exists, assert `app.descendants(matching: .any).matching(identifier: "selected-market-pin").count == 1`. Assert `open-in-maps` is gone via `waitUntilGone`, and `close-detail` and `favorite-toggle` exist. No `app.sheets` assertion (or label it best-effort). Then go back: on iOS tap `app.navigationBars.buttons["Market details"]`; fallbacks `app.buttons["Market details"]`, `app.buttons["Back"]`; never `boundBy: 0`. Assert `open-in-maps` and `look-for-directions` exist again. Wrap the Back-button part in `#if os(iOS)` if no query is reliable on macOS after running; record that in the task notes.
-    2. `testCloseFromPushedMapDismissesSheet`: same path to the pushed map, tap `close-detail`, assert `more-info` reappears and `close-detail` is gone.
-  - Requirements: 1.2, 1.3, 1.4, 1.7, 3.1, acceptance criteria 1-4, 6, 7, design decision 9
-  - Verify: `xcodebuild ... test -only-testing:NYCFarmerMarketsUITests` passes on an iOS simulator, including the two new tests and all existing ones. If the Back query fails, fix it empirically and rerun before moving on.
-
-- [ ] 8. Full verification and manual check
+- [ ] 1. Baseline and bundle layout check (no code changes)
+  - Build iOS and macOS on the branch as is; record warnings. List the built `.app` (`find <DerivedData>/.../NYCFarmerMarkets.app -name '*.ttf'`) for both platforms to learn if the fonts are at the bundle root or in `fonts/`.
+  - Take base-commit (`373af50`) simulator screenshots of the Markets list (large title unscrolled and scrolled) for the later nav bar comparison.
   - Files: none
-  - Run the complete unit and UI test suites for the `NYCFarmerMarkets` scheme and a macOS build. Check that no `Color(` literals, hex literals or raw SF Symbol names were added outside `NYCFarmerMarkets/Theme/` (a code review of the diff, supplementing the tests).
-  - Manual (macOS and iOS): both buttons render for a market with a coordinate; "Go to Map" pushes the map showing one pin and the market name, without opening Apple Maps; Back returns to the same market; Close on the pushed screen dismisses the whole sheet; "Directions" opens the market in external Apple Maps as before. Report any platform where the `.cancellationAction` Close item does not show on the pushed bar, without redesigning.
-  - Requirements: all; acceptance criteria 1-7
-  - Verify: all unit and UI tests green; macOS and iOS builds succeed.
+  - Requirements: 1.1, 1.2, 1.6
+  - Verify: both builds succeed; layout notes recorded in the task findings.
 
-- [ ] 9. Record the spec and amend the original requirement
-  - Files: create `.kiro/specs/internal-map-and-directions-button/requirements.md` (from `.agents/tasks/feature-to-pr/01-requirements.md`), `design.md` (from `02-design.md`, omitting the "Responses to design review" section and applying the "Implementation notes" overrides in place), `tasks.md` (this plan with completed items checked); modify `.kiro/specs/nyc-farmer-markets/requirements.md` line 92 (Requirement 5.4).
-  - Add a note under 5.4 that "Go to Map" now pushes the in-app single-market map, and "Directions" opens external Apple Maps, pointing to the new spec. Do not stage anything under `.agents/`.
-  - Requirements: documentation convention (.kiro/specs/<feature>/{requirements,design,tasks}.md)
-  - Verify: the three files exist with the content above; build and tests are unaffected (docs only).
+- [ ] 2. Create `AppTypography` with pure logic
+  - [ ] 2.1 Create `NYCFarmerMarkets/Theme/AppTypography.swift`
+    - `nonisolated enum AppTypography` with nested `nonisolated` `Family` (postScriptName `Grim-Creeper-Regular` / `N8ghtmare`, fileName `Grim Creeper.ttf` / `N8ghtmare.ttf`), `Role` (13 cases per the design table: family, size, textStyle, fallbackWeight, `font`), `Resolved: Equatable, Sendable`, `Registration: Sendable { availableFamilies: Set<Family> }`.
+    - `resolvedFont(for:isAvailable:)` pure function; `isAvailable(postScriptName:)` via `CTFontCreateWithName` + `CTFontCopyPostScriptName`.
+    - `@discardableResult static func registerFonts() -> Registration` backed by a `static let registration`: URLs from `(Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: nil) ?? []) + (... subdirectory: "fonts" ?? [])`, de-duplicated, only the two `Family.fileName` files, `CTFontManagerRegisterFontsForURL(url, .process, &error)`, already-registered treated as success, `Logger` category `typography` on other errors, family available only if the PostScript name resolves. No force unwraps.
+    - `extension View { func appFont(_ role: AppTypography.Role) -> some View }`. Detail borough line uses `bodyEmphasis` at `.title3` size: add a dedicated role only if needed; otherwise pick the closest body role and keep its previous visual size (design note 5). Splash caption keeps a size comparable to the old `.title3.weight(.semibold)` (use `splashHint`).
+    - Requirements: 1.3, 1.4, 1.5, 3.1-3.4, 4.1, 5.1, 6.1
+  - [ ] 2.2 Create `NYCFarmerMarketsTests/AppTypographyTests.swift` (Swift Testing, `import Testing`, `@testable import NYCFarmerMarkets`)
+    - PostScript name constants; after `registerFonts()` both families resolve (`UIFont`/`NSFont` non-nil under `#if canImport(UIKit)` / `#elseif canImport(AppKit)`); exhaustive `switch` over `Role.allCases` for family mapping; `resolvedFont` with `{ _ in true }` returns `.custom` with the right name/size/style and with `{ _ in false }` returns `.system` with the role's style and `fallbackWeight` for every role; font file names exist in the test host bundle.
+    - Requirements: 8.1, 8.2, 8.3, 1.1
+  - Verify: unit tests command passes; iOS and macOS builds succeed.
+
+- [ ] 3. Register fonts at launch and set the root font
+  - In `NYCFarmerMarkets/NYCFarmerMarketsApp.swift`: call `AppTypography.registerFonts()` first in `init()`, before `ThemeAppearance.apply()`; add `.environment(\.font, AppTypography.Role.body.font)` on the `WindowGroup` content.
+  - If task 1 showed the fonts in a `fonts/` subfolder, change the three `UIAppFonts` strings in `NYCFarmerMarkets/Info.plist` to `fonts/<file name>`; otherwise leave it.
+  - Files: `NYCFarmerMarkets/NYCFarmerMarketsApp.swift`, `NYCFarmerMarkets/Info.plist` (conditional)
+  - Requirements: 1.2-1.4, 3.4, 5.3
+  - Verify: iOS and macOS builds succeed with no new font/resource warnings; unit tests pass.
+
+- [ ] 4. Apply roles in the views
+  - [ ] 4.1 Splash: `SplashView.swift` (message `.splash`, hint `.splashHint`), `SplashLoadingIndicator.swift` (caption `.splashHint`).
+    - Requirements: 4.1, 5.1
+  - [ ] 4.2 Shared: `Views/Shared/MarketRow.swift` (new `titleRole: AppTypography.Role = .bodyEmphasis` parameter; subtitle `.subheadline`; days `.caption`), `OfflineBanner.swift` and `MapFilterIndicator.swift` (`.footnote`); `Theme/ThemeStyling.swift` `ThemedButtonStyle` (`.bodyEmphasis`). Accessibility code and identifiers unchanged.
+    - Requirements: 4.4, 5.1, 5.2, 7.3
+  - [ ] 4.3 Tabs: `FavoritesView.swift` passes `titleRole: .favoriteItemTitle`; `RootTabView.swift` tab-item `Text`s get `.appFont(.tabBarLabel)`; `MarketListView.swift` section header `.sectionHeader`, count `.caption`; `MarketMapView.swift` callout title `.bodyEmphasis`, subtitle `.subheadline`; `MarketDetailView.swift` name `.detailTitle`, borough per task 2.1, field label `.caption`, value `.body`; "Remove" swipe label as `Text("Remove").appFont(.bodyEmphasis)` inside its `Label`.
+    - Requirements: 4.2-4.4, 5.1, 5.2, 6.2
+  - Verify: iOS and macOS builds succeed; full tests (unit and UI) pass.
+
+- [ ] 5. Style system-rendered bars (iOS only)
+  - [ ] 5.1 Create `NYCFarmerMarkets/Theme/AppTypography+UIKit.swift` under `#if canImport(UIKit) && !os(visionOS)`: `static func uiFont(_ role: Role) -> UIFont` (`UIFontMetrics` scaled, system font fallback) and a `Role` to `UIFont.TextStyle` mapping.
+    - Requirements: 3.4, 4.5, 6.1
+  - [ ] 5.2 In `Theme/ThemeStyling.swift` `ThemeAppearance.apply()`: add `.font: tabBarFont` (`let tabBarFont = AppTypography.uiFont(.tabBarLabel)`) to both tab item `titleTextAttributes`; create a `UINavigationBarAppearance()` with no `configureWith...`, set `largeTitleTextAttributes` (`.tabTitle`) and `titleTextAttributes` (`.navigationTitle`), assign to standard, compact and scroll-edge appearance, keep the tint; set `UISearchTextField.appearance().font` to `.body`. Split the font part into a function that can be re-run.
+    - Requirements: 4.2, 4.3, 4.5, 5.2
+  - [ ] 5.3 Dynamic Type for the bars (owner choice a): observe `UIContentSizeCategory.didChangeNotification` (from `NYCFarmerMarketsApp.init()` or `ThemeAppearance`) and re-run the font part of `apply()`. If a bar does not rescale in a running app, record it as a limitation for the PR.
+    - Requirements: 6.1
+  - [ ] 5.4 Nav bar fallback: if the Markets list screenshots differ from the task 1 baseline in bar background or scroll-edge look, remove the navigation bar appearance and use `.toolbar { ToolbarItem(placement: .principal) { Text(...).appFont(.navigationTitle) } }` for inline titles (keep `navigationTitle` for accessibility); report that large titles stay in the system font. Do not add `.principal` items for macOS (owner decision).
+    - Requirements: 4.2, 4.5
+  - Verify: iOS and macOS builds succeed (macOS must compile without the UIKit file); full tests pass; screenshots in task 8.
+
+- [ ] 6. Extend the convention gate
+  - Edit the "Project conventions" paragraph of the step 6 prompt (line ~157) in `.kiro/workflows/feature-to-pr.workflow.json` to add the three patterns from the design (`\.custom\(|\bFont\.(system|custom)\(`, `Grim|N8ghtmare|Caligari|\.ttf`, `\.font\(\s*(\.|Font\.)`), each as `grep -rnE '<pattern>' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'`. Keep the JSON valid.
+  - Files: `.kiro/workflows/feature-to-pr.workflow.json`
+  - Requirements: 3.5, 3.6, 8.6
+  - Verify: `python3 -m json.tool .kiro/workflows/feature-to-pr.workflow.json > /dev/null` succeeds; run the existing color/hex/SF Symbol checks plus the three new commands by hand from the repo root, each printing zero lines. Keep the commands and output for the PR.
+
+- [ ] 7. Licensing report
+  - Read name IDs 0, 7, 8, 9, 13, 14 of the three fonts with `fc-scan` or a throwaway script in `/tmp` (install `fontTools` only in a temporary virtual environment); delete the script. Quote the metadata verbatim; do not guess terms. The owner already saw: Grim Creeper "Free to use for personal & commercial purposes" (sinisterfonts.com); N8ghtmare copyright "LionelPailloncy", no license text; DrCaligari placeholder copyright, no license text. Confirm these.
+  - Save the report to `.agents/tasks/feature-to-pr/` (not staged), for the top of the push approval request and the PR.
+  - Requirements: 2.1-2.3, 1.7
+  - Verify: the report lists all three fonts and flags missing license text.
+
+- [ ] 8. Full verification and visual evidence
+  - Run the iOS and macOS builds, the full unit and UI suites, and the three convention greps. Check the build log for font/resource warnings. Confirm `.ttf` files are present in both built `.app` bundles.
+  - Simulator screenshots (`xcrun simctl io booted screenshot`): splash loading and failed (`failDownload` launch option), each tab with large title, the nav bar before/after comparison, detail sheet, Favorites with at least one favorite, a long market name at `xcrun simctl ui booted content_size extra-extra-extra-large`, and a size change in a running app for task 5.3.
+  - Review readability (splash hint in the display font; small tab labels), glyph coverage for market-data characters, search prompt and "Remove" rendering. Tune sizes only in `AppTypography.swift`. If the splash hint is unreadable, raise it with the owner rather than switching to the body font.
+  - Requirements: 1.1, 1.2, 1.6, 4.6, 5.3, 6.3, 6.4, 7.1, 7.2, 8.4, 8.5, 8.7
+  - Verify: all commands pass; screenshots saved outside the repo or under `.agents/`.
+
+- [ ] 9. Specs and PR notes
+  - Copy requirements, design and this plan (as `tasks.md`) to `.kiro/specs/custom-fonts-integration/`; tick completed tasks.
+  - Prepare the PR text: license findings at the top, observed bundle layout per platform, a "Deviations" section (macOS tab and navigation titles stay in the system font, deviating from 4.2, 4.3 and 4.5 by the owner's decision, confirmed), Map tab has no navigation title, assumptions to confirm (Markets rows and Retry use the body font), system-owned elements that stay in SF, not verified (macOS visual check, visionOS), convention command output, no full accessibility compliance claim.
+  - Files: `.kiro/specs/custom-fonts-integration/{requirements,design,tasks}.md`
+  - Requirements: NFR 3, 2.3, 4.6, 8.8
+  - Verify: three files exist and the headings match the other specs in `.kiro/specs/`.
 
 ## Digest
 
-Verified by reading (no build or tests were run in this step, so the passing-today status is not verified here):
+Verified by reading: nothing has been built or tested in this planning step. Today's baseline pass state of the unit and UI tests is unknown and is task 1's job.
 
-- `NYCFarmerMarkets/Views/MarketDetailView.swift`: `struct MarketDetailView`; single `Button { openInMaps() }` with id `open-in-maps` inside `if market.coordinate != nil`; inline `.toolbar` with Close (`close-detail`) and favorite (`favorite-toggle`) items; `private func openInMaps()` using `MKMapItem(location:address:)`, `item.name = market.name`, `item.openInMaps()`. Covered by tasks 4 and 6 and UI tests in task 7.
-- `NYCFarmerMarkets/Views/MarketMapView.swift`: `private struct MarketPin: View` with `name`, `isFavorite`, `isSelected`, accessibility id `market-pin`, used at line ~35. Covered by task 3 and the existing `testMapPinMoreInfoAndClose`.
-- `NYCFarmerMarkets/Theme/AppIcon.swift`: `enum AppIcon` cases up to `sectionChevron`; `source` switch has `.openInMaps: .symbol("map.fill")`; `accessibilityName` switch has `.openInMaps: "Go to Map"`. Covered by task 1 and the `splashIconsAndLabels`/`everyIconResolves` tests in `NYCFarmerMarketsTests/NYCFarmerMarketsTests.swift` (line ~431 and the `#if canImport(UIKit)` block at ~453).
-- `NYCFarmerMarketsTests/NYCFarmerMarketsTests.swift`: `enum Fixture` with `market(_ name:, borough:, address:, lat: Double? = 40.7, lon: Double? = -74.0)`. Used by the new `SingleMarketMapTests`.
-- `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift`: helpers `waitForMarkets`, `selectTab`, `element`, `waitUntilGone`, `waitForValue`; the model test is `testMapPinMoreInfoAndClose` (~line 103), which uses `app.maps.firstMatch`, `market-pin`, `more-info`.
-- `.kiro/specs/nyc-farmer-markets/requirements.md` line 92 is the original criterion 5.4 ("Go to Map" button). Existing spec folders (e.g. `splash-screen-collapsible-boroughs`) hold `requirements.md`, `design.md`, `tasks.md`, `tasks.meta.json`; format of `tasks.md` is `- [x] 1. ...` with `_Requirements: ..._` sub-bullets.
-- Not read: `Market` model file (task 2 must read it first for the property types), `FavoritesStore`, `IconView`, `ThemedButtonStyle`.
+- `NYCFarmerMarkets/Theme/AppTypography.swift` (new). Covered by `NYCFarmerMarketsTests/AppTypographyTests.swift` (new).
+- `NYCFarmerMarkets/Theme/AppTypography+UIKit.swift` (new, iOS guard). Covered by screenshots only.
+- `NYCFarmerMarkets/NYCFarmerMarketsApp.swift`: `init()` and the `WindowGroup` content. Existing tests plus build.
+- `NYCFarmerMarkets/Theme/ThemeStyling.swift`: `ThemedButtonStyle.makeBody` line 38 `.font(.headline)`; `ThemeAppearance.apply()` (tab bar loop, nav tint). Screenshots.
+- `NYCFarmerMarkets/Views/SplashView.swift` lines 38, 44: `.title2.weight(.bold)`, `.title3.weight(.semibold)`.
+- `NYCFarmerMarkets/Views/SplashLoadingIndicator.swift` line 27: `.title3.weight(.semibold)`.
+- `NYCFarmerMarkets/Views/Shared/MarketRow.swift` lines 30, 34, 39: `.headline`, `.subheadline`, `.caption`; shared by `MarketListView` and `FavoritesView`.
+- `NYCFarmerMarkets/Views/Shared/OfflineBanner.swift` line 13 and `MapFilterIndicator.swift` line 17: `.footnote.weight(.medium)`.
+- `NYCFarmerMarkets/Views/MarketListView.swift` lines 90, 93: section header and count; `navigationTitle("Markets")` line 26.
+- `NYCFarmerMarkets/Views/MarketMapView.swift` lines 91, 94: callout `.headline`, `.subheadline`.
+- `NYCFarmerMarkets/Views/MarketDetailView.swift` lines 81, 85, 97, 100: `.title.bold()`, `.title3`, `.caption`, `.body`; `navigationTitle("Market details")` line 65.
+- `NYCFarmerMarkets/Views/FavoritesView.swift`: `navigationTitle("Favorites")` line 18; passes `titleRole` to `MarketRow`.
+- `NYCFarmerMarkets/Views/RootTabView.swift`, `MarketLocationMapView.swift` (`navigationTitle(market.name)` line 42): `RootTabView` was not read in this step; open it before editing.
+- `NYCFarmerMarkets/Info.plist`: only if the bundle layout needs `fonts/` prefixes.
+- `.kiro/workflows/feature-to-pr.workflow.json`: step 6 prompt conventions paragraph.
+- Not touched: `project.pbxproj`, font files, `Theme/AppIcon.swift` (its `.font(.system(size:))` is inside `Theme/` and allowed).
+- Existing tests in `NYCFarmerMarketsTests/` and UI tests in `NYCFarmerMarketsUITests/` must keep passing; they are not run yet.

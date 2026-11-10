@@ -1,1 +1,15 @@
-{"verdict": "APPROVED", "findings": [{"severity": "non-blocking", "title": "Directions untested (leaves the app; body unchanged). Note in PR."}, {"severity": "non-blocking", "title": "macOS UI behavior of pushed map (Back/Close) unverified; build only."}, {"severity": "non-blocking", "title": "Spec wording says no favorites toggle on pushed screen, but shared toolbar keeps it (intentional). Note in PR."}], "reviewDoc": "/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/.agents/tasks/feature-to-pr/code-review-summary.md"}
+{
+  "verdict": "APPROVED",
+  "findings": [
+    {"severity": "non-blocking", "confidence": "high", "reviewers": ["agent", "semantic"], "summary": "N8ghtmare and DrCaligari have no license text; DrCaligari has placeholder copyright; fonts tracked in public repo. Flag in PR."},
+    {"severity": "non-blocking", "confidence": "high", "reviewers": ["agent", "semantic"], "summary": "Tab bar fonts do not rescale on live text size change; note as known limitation in PR."},
+    {"severity": "non-blocking", "confidence": "high", "reviewers": ["agent", "semantic"], "summary": "Not verified: macOS visual check, visionOS, screenshots of detail sheet, Favorites with items, Map tab, long names."},
+    {"severity": "non-blocking", "confidence": "medium", "reviewers": ["semantic"], "summary": "macOS navigation and tab titles keep the system font (owner-approved deviation); list in PR Deviations."},
+    {"severity": "low", "confidence": "medium", "reviewers": ["semantic"], "summary": "appFont(.tabBarLabel) in SwiftUI tabItem likely ignored by system tab bar; harmless."},
+    {"severity": "low", "confidence": "high", "reviewers": ["semantic"], "summary": "Section count and footnote lose semibold/medium weights because N8ghtmare is single-weight."},
+    {"severity": "info", "confidence": "high", "reviewers": ["semantic"], "summary": "feature-to-pr.workflow.json gained three font greps; affects future runs, in spec scope."},
+    {"severity": "low", "confidence": "high", "reviewers": ["semantic"], "summary": "No tests for ThemeAppearance configuration or MarketRow titleRole selection."}
+  ],
+  "uncheckedTasks": [],
+  "reviewDoc": "/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/.agents/tasks/feature-to-pr/code-review-summary.md"
+}

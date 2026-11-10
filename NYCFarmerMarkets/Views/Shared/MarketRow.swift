@@ -9,6 +9,7 @@ import SwiftUI
 struct MarketRow: View {
     let market: Market
     var showsBorough = false
+    var titleRole: AppTypography.Role = .bodyEmphasis
 
     @Environment(FavoritesStore.self) private var favorites
 
@@ -17,7 +18,7 @@ struct MarketRow: View {
     private var subtitle: String {
         [showsBorough ? market.borough : nil, market.address.isEmpty ? nil : market.address]
             .compactMap { $0 }
-            .joined(separator: " · ")
+            .joined(separator: ", ")
     }
 
     var body: some View {
@@ -27,16 +28,16 @@ struct MarketRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(market.name)
-                    .font(.headline)
+                    .appFont(titleRole)
                     .foregroundStyle(AppPalette.textPrimary.color)
                 if !subtitle.isEmpty {
                     Text(subtitle)
-                        .font(.subheadline)
+                        .appFont(.subheadline)
                         .foregroundStyle(AppPalette.textSecondary.color)
                 }
                 if let days = market.daysOfOperation {
                     Text(days)
-                        .font(.caption)
+                        .appFont(.caption)
                         .foregroundStyle(AppPalette.textSecondary.color)
                 }
             }

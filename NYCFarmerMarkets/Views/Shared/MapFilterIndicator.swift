@@ -14,7 +14,7 @@ struct MapFilterIndicator: View {
         HStack(spacing: 8) {
             IconView(.searchFilter, size: 16)
             Text(AppCopy.mapFilterSummary(query: query, count: count))
-                .font(.footnote.weight(.medium))
+                .appFont(.footnote)
         }
         .foregroundStyle(AppPalette.textPrimary.color)
         .frame(maxWidth: .infinity)
