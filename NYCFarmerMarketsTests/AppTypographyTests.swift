@@ -18,7 +18,7 @@ struct AppTypographyTests {
 
     @Test func postScriptNames() {
         #expect(AppTypography.Family.display.postScriptName == "Grim-Creeper-Regular")
-        #expect(AppTypography.Family.body.postScriptName == "Dr.Caligari")
+        #expect(AppTypography.Family.body.postScriptName == "Breath-of-the-House")
     }
 
     @Test func bothFamiliesResolveAfterRegistration() {

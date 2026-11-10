@@ -98,8 +98,8 @@ struct MarketListView: View {
                     .appFont(.sectionHeader)
                 Spacer()
                 Text("\(count)")
-                    .appFont(.caption)
-                IconView(.sectionChevron, size: 12)
+                    .appFont(.sectionHeader)
+                IconView(.sectionChevron, size: 30)
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
             }
             .textCase(nil)

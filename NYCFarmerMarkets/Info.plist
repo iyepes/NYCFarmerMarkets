@@ -4,9 +4,8 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>DrCaligari.ttf</string>
 		<string>Grim Creeper.ttf</string>
-		<string>N8ghtmare.ttf</string>
+		<string>Breath of the House.ttf</string>
 	</array>
 </dict>
 </plist>

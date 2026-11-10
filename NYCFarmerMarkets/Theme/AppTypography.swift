@@ -16,24 +16,24 @@ nonisolated enum AppTypography {
     nonisolated enum Family: CaseIterable, Sendable {
         /// Grim Creeper: titles.
         case display
-        /// Dr. Caligari: all other text.
+        /// Breath of the House: all other text.
         case body
 
         var postScriptName: String {
             switch self {
             case .display: "Grim-Creeper-Regular"
-            case .body: "Dr.Caligari"
+            case .body: "Breath-of-the-House"
             }
         }
 
         var fileName: String {
             switch self {
             case .display: "Grim Creeper.ttf"
-            case .body: "DrCaligari.ttf"
+            case .body: "Breath of the House.ttf"
             }
         }
 
-        /// Multiplier applied to a role's design size. Dr. Caligari has a small x-height and
+        /// Multiplier applied to a role's design size. Breath of the House has a small x-height and
         /// thin strokes, so it needs about 15% more size to read like the system text.
         var sizeScale: CGFloat {
             switch self {
@@ -60,21 +60,21 @@ nonisolated enum AppTypography {
         case tabBarLabel
         case navigationTitle
         case detailTitle
+        case sectionHeader
         case favoriteItemTitle
         // Body family
         case body
         case bodyEmphasis
         case subheadline
-        case sectionHeader
         case caption
         case footnote
 
         var family: Family {
             switch self {
-            case .splash, .splashHint, .tabTitle, .tabBarLabel, .navigationTitle,
+            case .splash, .splashHint, .tabTitle, .sectionHeader, .tabBarLabel, .navigationTitle,
                  .detailTitle, .favoriteItemTitle:
                 .display
-            case .body, .bodyEmphasis, .subheadline, .sectionHeader, .caption, .footnote:
+            case .body, .bodyEmphasis, .subheadline, .caption, .footnote:
                 .body
             }
         }
@@ -82,7 +82,7 @@ nonisolated enum AppTypography {
         /// Point size at the default Dynamic Type size.
         var size: CGFloat {
             switch self {
-            case .splash: 26
+            case .splash: 40
             case .splashHint: 22
             case .tabTitle: 34
             case .tabBarLabel: 12
@@ -92,7 +92,7 @@ nonisolated enum AppTypography {
             case .body: 17
             case .bodyEmphasis: 17
             case .subheadline: 15
-            case .sectionHeader: 15
+            case .sectionHeader: 30
             case .caption: 12
             case .footnote: 13
             }
