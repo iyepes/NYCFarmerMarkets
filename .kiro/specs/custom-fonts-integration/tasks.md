@@ -70,7 +70,7 @@ Commands used below (discover the simulator name once with `xcrun simctl list de
   - Requirements: 2.1-2.3, 1.7
   - Verify: the report lists all three fonts and flags missing license text.
 
-- [ ] 8. Full verification and visual evidence
+- [x] 8. Full verification and visual evidence
   - Run the iOS and macOS builds, the full unit and UI suites, and the three convention greps. Check the build log for font/resource warnings. Confirm `.ttf` files are present in both built `.app` bundles.
   - Simulator screenshots (`xcrun simctl io booted screenshot`): splash loading and failed (`failDownload` launch option), each tab with large title, the nav bar before/after comparison, detail sheet, Favorites with at least one favorite, a long market name at `xcrun simctl ui booted content_size extra-extra-extra-large`, and a size change in a running app for task 5.3.
   - Review readability (splash hint in the display font; small tab labels), glyph coverage for market-data characters, search prompt and "Remove" rendering. Tune sizes only in `AppTypography.swift`. If the splash hint is unreadable, raise it with the owner rather than switching to the body font.
