@@ -57,13 +57,13 @@ nonisolated enum AppPalette {
     // MARK: Base values (the ONLY place hex literals live)
 
     enum Base {
-        static let primary = 0xC7D93D
-        static let secondary = 0x98A62E
-        static let deep = 0x525919
-        static let highlight = 0xE6F28D
-        static let surface = 0xF2F2F2
+        static let primary = 0xAC84D6 /// 0xC7D93D
+        static let secondary = 0xC56B23 /// 0x98A62E
+        static let deep = 0x31078C /// 0x525919
+        static let highlight = 0xCA881E /// 0xE6F28D
+        static let surface = 0xCBC7D9/// 0xF2F2F2
         /// Olive used as the app icon background.
-        static let appIconOlive = 0x78872B
+        static let appIconOlive = 0xC56B23 /// 0x78872B
     }
 
     // MARK: Semantic tokens
