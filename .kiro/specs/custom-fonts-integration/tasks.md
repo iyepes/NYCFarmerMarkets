@@ -47,14 +47,14 @@ Commands used below (discover the simulator name once with `xcrun simctl list de
     - Requirements: 4.2-4.4, 5.1, 5.2, 6.2
   - Verify: iOS and macOS builds succeed; full tests (unit and UI) pass.
 
-- [ ] 5. Style system-rendered bars (iOS only)
-  - [ ] 5.1 Create `NYCFarmerMarkets/Theme/AppTypography+UIKit.swift` under `#if canImport(UIKit) && !os(visionOS)`: `static func uiFont(_ role: Role) -> UIFont` (`UIFontMetrics` scaled, system font fallback) and a `Role` to `UIFont.TextStyle` mapping.
+- [x] 5. Style system-rendered bars (iOS only)
+  - [x] 5.1 Create `NYCFarmerMarkets/Theme/AppTypography+UIKit.swift` under `#if canImport(UIKit) && !os(visionOS)`: `static func uiFont(_ role: Role) -> UIFont` (`UIFontMetrics` scaled, system font fallback) and a `Role` to `UIFont.TextStyle` mapping.
     - Requirements: 3.4, 4.5, 6.1
-  - [ ] 5.2 In `Theme/ThemeStyling.swift` `ThemeAppearance.apply()`: add `.font: tabBarFont` (`let tabBarFont = AppTypography.uiFont(.tabBarLabel)`) to both tab item `titleTextAttributes`; create a `UINavigationBarAppearance()` with no `configureWith...`, set `largeTitleTextAttributes` (`.tabTitle`) and `titleTextAttributes` (`.navigationTitle`), assign to standard, compact and scroll-edge appearance, keep the tint; set `UISearchTextField.appearance().font` to `.body`. Split the font part into a function that can be re-run.
+  - [x] 5.2 In `Theme/ThemeStyling.swift` `ThemeAppearance.apply()`: add `.font: tabBarFont` (`let tabBarFont = AppTypography.uiFont(.tabBarLabel)`) to both tab item `titleTextAttributes`; create a `UINavigationBarAppearance()` with no `configureWith...`, set `largeTitleTextAttributes` (`.tabTitle`) and `titleTextAttributes` (`.navigationTitle`), assign to standard, compact and scroll-edge appearance, keep the tint; set `UISearchTextField.appearance().font` to `.body`. Split the font part into a function that can be re-run.
     - Requirements: 4.2, 4.3, 4.5, 5.2
-  - [ ] 5.3 Dynamic Type for the bars (owner choice a): observe `UIContentSizeCategory.didChangeNotification` (from `NYCFarmerMarketsApp.init()` or `ThemeAppearance`) and re-run the font part of `apply()`. If a bar does not rescale in a running app, record it as a limitation for the PR.
+  - [x] 5.3 Dynamic Type for the bars (owner choice a): observe `UIContentSizeCategory.didChangeNotification` (from `NYCFarmerMarketsApp.init()` or `ThemeAppearance`) and re-run the font part of `apply()`. If a bar does not rescale in a running app, record it as a limitation for the PR.
     - Requirements: 6.1
-  - [ ] 5.4 Nav bar fallback: if the Markets list screenshots differ from the task 1 baseline in bar background or scroll-edge look, remove the navigation bar appearance and use `.toolbar { ToolbarItem(placement: .principal) { Text(...).appFont(.navigationTitle) } }` for inline titles (keep `navigationTitle` for accessibility); report that large titles stay in the system font. Do not add `.principal` items for macOS (owner decision).
+  - [x] 5.4 Nav bar fallback: if the Markets list screenshots differ from the task 1 baseline in bar background or scroll-edge look, remove the navigation bar appearance and use `.toolbar { ToolbarItem(placement: .principal) { Text(...).appFont(.navigationTitle) } }` for inline titles (keep `navigationTitle` for accessibility); report that large titles stay in the system font. Do not add `.principal` items for macOS (owner decision).
     - Requirements: 4.2, 4.5
   - Verify: iOS and macOS builds succeed (macOS must compile without the UIKit file); full tests pass; screenshots in task 8.
 
