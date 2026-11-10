@@ -12,21 +12,21 @@ Commands used below (discover the simulator name once with `xcrun simctl list de
 
 ## Tasks
 
-- [ ] 1. Baseline and bundle layout check (no code changes)
+- [x] 1. Baseline and bundle layout check (no code changes)
   - Build iOS and macOS on the branch as is; record warnings. List the built `.app` (`find <DerivedData>/.../NYCFarmerMarkets.app -name '*.ttf'`) for both platforms to learn if the fonts are at the bundle root or in `fonts/`.
   - Take base-commit (`373af50`) simulator screenshots of the Markets list (large title unscrolled and scrolled) for the later nav bar comparison.
   - Files: none
   - Requirements: 1.1, 1.2, 1.6
   - Verify: both builds succeed; layout notes recorded in the task findings.
 
-- [ ] 2. Create `AppTypography` with pure logic
-  - [ ] 2.1 Create `NYCFarmerMarkets/Theme/AppTypography.swift`
+- [x] 2. Create `AppTypography` with pure logic
+  - [x] 2.1 Create `NYCFarmerMarkets/Theme/AppTypography.swift`
     - `nonisolated enum AppTypography` with nested `nonisolated` `Family` (postScriptName `Grim-Creeper-Regular` / `N8ghtmare`, fileName `Grim Creeper.ttf` / `N8ghtmare.ttf`), `Role` (13 cases per the design table: family, size, textStyle, fallbackWeight, `font`), `Resolved: Equatable, Sendable`, `Registration: Sendable { availableFamilies: Set<Family> }`.
     - `resolvedFont(for:isAvailable:)` pure function; `isAvailable(postScriptName:)` via `CTFontCreateWithName` + `CTFontCopyPostScriptName`.
     - `@discardableResult static func registerFonts() -> Registration` backed by a `static let registration`: URLs from `(Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: nil) ?? []) + (... subdirectory: "fonts" ?? [])`, de-duplicated, only the two `Family.fileName` files, `CTFontManagerRegisterFontsForURL(url, .process, &error)`, already-registered treated as success, `Logger` category `typography` on other errors, family available only if the PostScript name resolves. No force unwraps.
     - `extension View { func appFont(_ role: AppTypography.Role) -> some View }`. Detail borough line uses `bodyEmphasis` at `.title3` size: add a dedicated role only if needed; otherwise pick the closest body role and keep its previous visual size (design note 5). Splash caption keeps a size comparable to the old `.title3.weight(.semibold)` (use `splashHint`).
     - Requirements: 1.3, 1.4, 1.5, 3.1-3.4, 4.1, 5.1, 6.1
-  - [ ] 2.2 Create `NYCFarmerMarketsTests/AppTypographyTests.swift` (Swift Testing, `import Testing`, `@testable import NYCFarmerMarkets`)
+  - [x] 2.2 Create `NYCFarmerMarketsTests/AppTypographyTests.swift` (Swift Testing, `import Testing`, `@testable import NYCFarmerMarkets`)
     - PostScript name constants; after `registerFonts()` both families resolve (`UIFont`/`NSFont` non-nil under `#if canImport(UIKit)` / `#elseif canImport(AppKit)`); exhaustive `switch` over `Role.allCases` for family mapping; `resolvedFont` with `{ _ in true }` returns `.custom` with the right name/size/style and with `{ _ in false }` returns `.system` with the role's style and `fallbackWeight` for every role; font file names exist in the test host bundle.
     - Requirements: 8.1, 8.2, 8.3, 1.1
   - Verify: unit tests command passes; iOS and macOS builds succeed.
