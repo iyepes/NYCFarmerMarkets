@@ -64,7 +64,7 @@ Commands used below (discover the simulator name once with `xcrun simctl list de
   - Requirements: 3.5, 3.6, 8.6
   - Verify: `python3 -m json.tool .kiro/workflows/feature-to-pr.workflow.json > /dev/null` succeeds; run the existing color/hex/SF Symbol checks plus the three new commands by hand from the repo root, each printing zero lines. Keep the commands and output for the PR.
 
-- [ ] 7. Licensing report
+- [x] 7. Licensing report
   - Read name IDs 0, 7, 8, 9, 13, 14 of the three fonts with `fc-scan` or a throwaway script in `/tmp` (install `fontTools` only in a temporary virtual environment); delete the script. Quote the metadata verbatim; do not guess terms. The owner already saw: Grim Creeper "Free to use for personal & commercial purposes" (sinisterfonts.com); N8ghtmare copyright "LionelPailloncy", no license text; DrCaligari placeholder copyright, no license text. Confirm these.
   - Save the report to `.agents/tasks/feature-to-pr/` (not staged), for the top of the push approval request and the PR.
   - Requirements: 2.1-2.3, 1.7
