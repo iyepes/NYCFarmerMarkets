@@ -6,6 +6,7 @@
 import Testing
 import CoreText
 import Foundation
+import SwiftUI
 #if canImport(UIKit)
 import UIKit
 #elseif canImport(AppKit)
@@ -17,7 +18,7 @@ struct AppTypographyTests {
 
     @Test func postScriptNames() {
         #expect(AppTypography.Family.display.postScriptName == "Grim-Creeper-Regular")
-        #expect(AppTypography.Family.body.postScriptName == "N8ghtmare")
+        #expect(AppTypography.Family.body.postScriptName == "Dr.Caligari")
     }
 
     @Test func bothFamiliesResolveAfterRegistration() {
@@ -54,8 +55,31 @@ struct AppTypographyTests {
     @Test func availableFontResolvesToCustom() {
         for role in AppTypography.Role.allCases {
             let resolved = AppTypography.resolvedFont(for: role, isAvailable: { _ in true })
-            #expect(resolved == .custom(name: role.family.postScriptName, size: role.size, relativeTo: role.textStyle))
+            #expect(resolved == .custom(name: role.family.postScriptName, size: role.effectiveSize, relativeTo: role.textStyle))
         }
+    }
+
+    @Test func bodyRolesAreScaledAndNeverBelowTheMinimum() {
+        for role in AppTypography.Role.allCases where role.family == .body {
+            #expect(role.effectiveSize >= AppTypography.Family.body.minimumSize)
+            #expect(role.effectiveSize >= role.size * AppTypography.Family.body.sizeScale)
+        }
+        // Spot checks that document the intended numbers: 17 pt body becomes 19.55 pt,
+        // and the 12 pt caption is lifted to the 14 pt floor.
+        #expect(abs(AppTypography.Role.body.effectiveSize - 19.55) < 0.001)
+        #expect(AppTypography.Role.caption.effectiveSize == 14)
+    }
+
+    @Test func displayRolesKeepTheirDesignSize() {
+        for role in AppTypography.Role.allCases where role.family == .display {
+            #expect(role.effectiveSize == role.size)
+        }
+    }
+
+    @Test func systemFallbackKeepsTheDesignSizeStyle() {
+        // The fallback is described by text style and weight only, so the body scale never applies to it.
+        let resolved = AppTypography.resolvedFont(for: .body, isAvailable: { _ in false })
+        #expect(resolved == .system(.body, .regular))
     }
 
     @Test func unavailableFontFallsBackToSystem() {

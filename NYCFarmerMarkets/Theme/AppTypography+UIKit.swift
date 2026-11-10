@@ -13,13 +13,26 @@ extension AppTypography {
     /// Dynamic Type scaled UIFont for a role; system font if the family is unavailable.
     static func uiFont(_ role: Role) -> UIFont {
         let base = registerFonts().availableFamilies.contains(role.family)
-            ? UIFont(name: role.family.postScriptName, size: role.size) : nil
+            ? UIFont(name: role.family.postScriptName, size: role.effectiveSize) : nil
         let font = base ?? UIFont.systemFont(ofSize: role.size, weight: role.uiFallbackWeight)
-        return UIFontMetrics(forTextStyle: role.uiTextStyle).scaledFont(for: font)
+        let metrics = UIFontMetrics(forTextStyle: role.uiTextStyle)
+        if let cap = role.maximumPointSize {
+            return metrics.scaledFont(for: font, maximumPointSize: cap)
+        }
+        return metrics.scaledFont(for: font)
     }
 }
 
 extension AppTypography.Role {
+    /// Upper limit for system-owned bars that have a fixed height. The tab bar label would
+    /// otherwise grow over its icon at large accessibility sizes (system tab bars cap theirs too).
+    nonisolated var maximumPointSize: CGFloat? {
+        switch self {
+        case .tabBarLabel: 15
+        default: nil
+        }
+    }
+
     nonisolated var uiTextStyle: UIFont.TextStyle {
         switch self {
         case .splash: .title2

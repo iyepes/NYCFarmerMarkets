@@ -18,7 +18,7 @@ struct MarketRow: View {
     private var subtitle: String {
         [showsBorough ? market.borough : nil, market.address.isEmpty ? nil : market.address]
             .compactMap { $0 }
-            .joined(separator: " · ")
+            .joined(separator: ", ")
     }
 
     var body: some View {

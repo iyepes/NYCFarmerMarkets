@@ -16,20 +16,37 @@ nonisolated enum AppTypography {
     nonisolated enum Family: CaseIterable, Sendable {
         /// Grim Creeper: titles.
         case display
-        /// N8ghtmare: all other text.
+        /// Dr. Caligari: all other text.
         case body
 
         var postScriptName: String {
             switch self {
             case .display: "Grim-Creeper-Regular"
-            case .body: "N8ghtmare"
+            case .body: "Dr.Caligari"
             }
         }
 
         var fileName: String {
             switch self {
             case .display: "Grim Creeper.ttf"
-            case .body: "N8ghtmare.ttf"
+            case .body: "DrCaligari.ttf"
+            }
+        }
+
+        /// Multiplier applied to a role's design size. Dr. Caligari has a small x-height and
+        /// thin strokes, so it needs about 15% more size to read like the system text.
+        var sizeScale: CGFloat {
+            switch self {
+            case .display: 1
+            case .body: 1.15
+            }
+        }
+
+        /// Smallest point size (at the default Dynamic Type size) this family may be drawn at.
+        var minimumSize: CGFloat {
+            switch self {
+            case .display: 0
+            case .body: 14
             }
         }
     }
@@ -81,6 +98,12 @@ nonisolated enum AppTypography {
             }
         }
 
+        /// Size actually used with the custom font: the design size times the family's scale,
+        /// never below the family's minimum. The system-font fallback keeps `size`.
+        var effectiveSize: CGFloat {
+            max(size * family.sizeScale, family.minimumSize)
+        }
+
         /// Text style the size scales with.
         var textStyle: Font.TextStyle {
             switch self {
@@ -129,7 +152,7 @@ nonisolated enum AppTypography {
     /// Pure mapping from role to font description.
     static func resolvedFont(for role: Role, isAvailable: (Family) -> Bool) -> Resolved {
         if isAvailable(role.family) {
-            return .custom(name: role.family.postScriptName, size: role.size, relativeTo: role.textStyle)
+            return .custom(name: role.family.postScriptName, size: role.effectiveSize, relativeTo: role.textStyle)
         }
         return .system(role.textStyle, role.fallbackWeight)
     }

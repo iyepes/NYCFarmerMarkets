@@ -9,6 +9,7 @@ import SwiftUI
 struct MarketListView: View {
     @Environment(MarketStore.self) private var store
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var expansion = SectionExpansionState()
 
     private var query: String { store.searchQuery }
@@ -29,6 +30,11 @@ struct MarketListView: View {
                     if !searching { expansion.endSearch() }
                 }
         }
+        // The system search field keeps its old height when the text size changes while the app
+        // is running (its icon and prompt get clipped). Rebuilding the navigation container on a
+        // size change gives it a fresh search field. The query lives in the store and the
+        // expanded sections in this view's state, so both are kept.
+        .id(dynamicTypeSize)
     }
 
     @ViewBuilder
