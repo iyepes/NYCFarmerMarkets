@@ -77,7 +77,7 @@ Commands used below (discover the simulator name once with `xcrun simctl list de
   - Requirements: 1.1, 1.2, 1.6, 4.6, 5.3, 6.3, 6.4, 7.1, 7.2, 8.4, 8.5, 8.7
   - Verify: all commands pass; screenshots saved outside the repo or under `.agents/`.
 
-- [ ] 9. Specs and PR notes
+- [x] 9. Specs and PR notes
   - Copy requirements, design and this plan (as `tasks.md`) to `.kiro/specs/custom-fonts-integration/`; tick completed tasks.
   - Prepare the PR text: license findings at the top, observed bundle layout per platform, a "Deviations" section (macOS tab and navigation titles stay in the system font, deviating from 4.2, 4.3 and 4.5 by the owner's decision, confirmed), Map tab has no navigation title, assumptions to confirm (Markets rows and Retry use the body font), system-owned elements that stay in SF, not verified (macOS visual check, visionOS), convention command output, no full accessibility compliance claim.
   - Files: `.kiro/specs/custom-fonts-integration/{requirements,design,tasks}.md`
