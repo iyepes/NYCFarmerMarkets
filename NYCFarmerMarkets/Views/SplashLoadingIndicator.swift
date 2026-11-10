@@ -24,7 +24,7 @@ struct SplashLoadingIndicator: View {
                 }
             }
             Text(AppCopy.splashLoadingCaption)
-                .font(.title3.weight(.semibold))
+                .appFont(.splashHint)
                 .foregroundStyle(AppPalette.onAppIconBackground.color)
         }
         .onAppear {

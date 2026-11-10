@@ -35,7 +35,7 @@ extension View {
 struct ThemedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.headline)
+            .appFont(.bodyEmphasis)
             .foregroundStyle(AppPalette.onAccentFill.color)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)

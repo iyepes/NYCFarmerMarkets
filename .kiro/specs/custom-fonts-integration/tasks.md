@@ -38,12 +38,12 @@ Commands used below (discover the simulator name once with `xcrun simctl list de
   - Requirements: 1.2-1.4, 3.4, 5.3
   - Verify: iOS and macOS builds succeed with no new font/resource warnings; unit tests pass.
 
-- [ ] 4. Apply roles in the views
-  - [ ] 4.1 Splash: `SplashView.swift` (message `.splash`, hint `.splashHint`), `SplashLoadingIndicator.swift` (caption `.splashHint`).
+- [x] 4. Apply roles in the views
+  - [x] 4.1 Splash: `SplashView.swift` (message `.splash`, hint `.splashHint`), `SplashLoadingIndicator.swift` (caption `.splashHint`).
     - Requirements: 4.1, 5.1
-  - [ ] 4.2 Shared: `Views/Shared/MarketRow.swift` (new `titleRole: AppTypography.Role = .bodyEmphasis` parameter; subtitle `.subheadline`; days `.caption`), `OfflineBanner.swift` and `MapFilterIndicator.swift` (`.footnote`); `Theme/ThemeStyling.swift` `ThemedButtonStyle` (`.bodyEmphasis`). Accessibility code and identifiers unchanged.
+  - [x] 4.2 Shared: `Views/Shared/MarketRow.swift` (new `titleRole: AppTypography.Role = .bodyEmphasis` parameter; subtitle `.subheadline`; days `.caption`), `OfflineBanner.swift` and `MapFilterIndicator.swift` (`.footnote`); `Theme/ThemeStyling.swift` `ThemedButtonStyle` (`.bodyEmphasis`). Accessibility code and identifiers unchanged.
     - Requirements: 4.4, 5.1, 5.2, 7.3
-  - [ ] 4.3 Tabs: `FavoritesView.swift` passes `titleRole: .favoriteItemTitle`; `RootTabView.swift` tab-item `Text`s get `.appFont(.tabBarLabel)`; `MarketListView.swift` section header `.sectionHeader`, count `.caption`; `MarketMapView.swift` callout title `.bodyEmphasis`, subtitle `.subheadline`; `MarketDetailView.swift` name `.detailTitle`, borough per task 2.1, field label `.caption`, value `.body`; "Remove" swipe label as `Text("Remove").appFont(.bodyEmphasis)` inside its `Label`.
+  - [x] 4.3 Tabs: `FavoritesView.swift` passes `titleRole: .favoriteItemTitle`; `RootTabView.swift` tab-item `Text`s get `.appFont(.tabBarLabel)`; `MarketListView.swift` section header `.sectionHeader`, count `.caption`; `MarketMapView.swift` callout title `.bodyEmphasis`, subtitle `.subheadline`; `MarketDetailView.swift` name `.detailTitle`, borough per task 2.1, field label `.caption`, value `.body`; "Remove" swipe label as `Text("Remove").appFont(.bodyEmphasis)` inside its `Label`.
     - Requirements: 4.2-4.4, 5.1, 5.2, 6.2
   - Verify: iOS and macOS builds succeed; full tests (unit and UI) pass.
 

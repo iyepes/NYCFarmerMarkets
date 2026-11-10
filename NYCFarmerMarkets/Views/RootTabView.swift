@@ -14,15 +14,15 @@ struct RootTabView: View {
         TabView {
             MarketListView()
                 .tabItem {
-                    Label { Text("Markets") } icon: { AppIcon.tabMarkets.image }
+                    Label { Text("Markets").appFont(.tabBarLabel) } icon: { AppIcon.tabMarkets.image }
                 }
             MarketMapView()
                 .tabItem {
-                    Label { Text("Map") } icon: { AppIcon.tabMap.image }
+                    Label { Text("Map").appFont(.tabBarLabel) } icon: { AppIcon.tabMap.image }
                 }
             FavoritesView()
                 .tabItem {
-                    Label { Text("Favorites") } icon: { AppIcon.tabFavorites.image }
+                    Label { Text("Favorites").appFont(.tabBarLabel) } icon: { AppIcon.tabFavorites.image }
                 }
         }
         .tint(AppPalette.accent.color)

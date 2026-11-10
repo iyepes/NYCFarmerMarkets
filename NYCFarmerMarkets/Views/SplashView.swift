@@ -35,13 +35,13 @@ struct SplashView: View {
         case .failed(let message):
             VStack(spacing: 16) {
                 Text(message)
-                    .font(.title2.weight(.bold))
+                    .appFont(.splash)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("splash-error")
                 if let hint {
                     Text(hint)
-                        .font(.title3.weight(.semibold))
+                        .appFont(.splashHint)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("splash-error-hint")

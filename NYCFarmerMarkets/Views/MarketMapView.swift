@@ -88,10 +88,10 @@ private struct MarketCard: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(market.name)
-                    .font(.headline)
+                    .appFont(.bodyEmphasis)
                     .foregroundStyle(AppPalette.textPrimary.color)
                 Text(market.borough)
-                    .font(.subheadline)
+                    .appFont(.subheadline)
                     .foregroundStyle(AppPalette.textSecondary.color)
             }
             Spacer(minLength: 8)

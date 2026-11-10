@@ -10,7 +10,7 @@ struct OfflineBanner: View {
         HStack(spacing: 8) {
             IconView(.offline, size: 16)
             Text(AppCopy.offlineBanner)
-                .font(.footnote.weight(.medium))
+                .appFont(.footnote)
         }
         .foregroundStyle(AppPalette.textPrimary.color)
         .frame(maxWidth: .infinity)

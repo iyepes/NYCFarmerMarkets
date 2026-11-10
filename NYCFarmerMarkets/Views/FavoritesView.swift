@@ -41,7 +41,7 @@ struct FavoritesView: View {
                     Button {
                         store.selectedMarket = market
                     } label: {
-                        MarketRow(market: market, showsBorough: true)
+                        MarketRow(market: market, showsBorough: true, titleRole: .favoriteItemTitle)
                     }
                     .buttonStyle(.plain)
                     .listRowBackground(AppPalette.card.color)
@@ -51,7 +51,7 @@ struct FavoritesView: View {
                             favorites.remove(market)
                         } label: {
                             Label {
-                                Text("Remove")
+                                Text("Remove").appFont(.bodyEmphasis)
                             } icon: {
                                 AppIcon.remove.image
                             }

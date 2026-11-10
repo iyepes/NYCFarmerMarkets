@@ -87,10 +87,10 @@ struct MarketListView: View {
         } label: {
             HStack {
                 Text(section.borough)
-                    .font(.subheadline.weight(.bold))
+                    .appFont(.sectionHeader)
                 Spacer()
                 Text("\(count)")
-                    .font(.caption.weight(.semibold))
+                    .appFont(.caption)
                 IconView(.sectionChevron, size: 12)
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
             }
