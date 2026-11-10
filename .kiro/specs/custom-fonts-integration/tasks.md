@@ -31,7 +31,7 @@ Commands used below (discover the simulator name once with `xcrun simctl list de
     - Requirements: 8.1, 8.2, 8.3, 1.1
   - Verify: unit tests command passes; iOS and macOS builds succeed.
 
-- [ ] 3. Register fonts at launch and set the root font
+- [x] 3. Register fonts at launch and set the root font
   - In `NYCFarmerMarkets/NYCFarmerMarketsApp.swift`: call `AppTypography.registerFonts()` first in `init()`, before `ThemeAppearance.apply()`; add `.environment(\.font, AppTypography.Role.body.font)` on the `WindowGroup` content.
   - If task 1 showed the fonts in a `fonts/` subfolder, change the three `UIAppFonts` strings in `NYCFarmerMarkets/Info.plist` to `fonts/<file name>`; otherwise leave it.
   - Files: `NYCFarmerMarkets/NYCFarmerMarketsApp.swift`, `NYCFarmerMarkets/Info.plist` (conditional)

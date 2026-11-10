@@ -13,6 +13,8 @@ struct NYCFarmerMarketsApp: App {
     @State private var favoritesStore: FavoritesStore
 
     init() {
+        // Fonts first: the bar appearance below needs them.
+        AppTypography.registerFonts()
         ThemeAppearance.apply()
 
         // UI tests start from a clean slate.
@@ -43,6 +45,7 @@ struct NYCFarmerMarketsApp: App {
             AppRootView(minimumDisplayTime: splashMinimumDisplayTime)
                 .environment(marketStore)
                 .environment(favoritesStore)
+                .environment(\.font, AppTypography.Role.body.font)
         }
     }
 }
