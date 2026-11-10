@@ -1,64 +1,125 @@
-# Requirements: Internal map and directions button (issue #1)
+# Requirements Document
 
-## Summary
-In the Detail_Sheet, "Open in Maps" currently opens the market in the external Apple Maps app. It should instead push an in-app map screen, inside the sheet's existing NavigationStack, that shows only the selected market. A new "Directions" button takes over the current behavior (open the market in external Apple Maps). Amends Requirement 5.4 of `.kiro/specs/nyc-farmer-markets/requirements.md`.
+## Introduction
+
+This feature integrates two custom display fonts, Grim Creeper and N8ghtmare, into the NYC Farmer Markets app (iOS, macOS and visionOS). It first verifies that the font files ship inside the app and are registered on every platform. It then applies Grim Creeper to title-level text and N8ghtmare to all other text, through one typography type in `Theme/`, in the same way `AppPalette` holds colors and `AppIcon` holds icons. Dynamic Type and VoiceOver keep working. Colors, icons and the wording of texts do not change. The fonts are in `NYCFarmerMarkets/fonts/`. Tracks GitHub issue #7.
 
 ## Glossary
-- **Detail_Sheet**: `MarketDetailView`, the sheet shared by all tabs, which owns a NavigationStack.
-- **Market_Map_Screen**: New in-app screen showing a single market on a map.
-- **Selected_Market**: The market shown in the Detail_Sheet.
 
-## Functional Requirements
-
-### Requirement 1: In-app map for the selected market
-**User Story:** As a user, I want "Go to Map" to show the market on the app's own map, so that I can see where it is without leaving the app.
-
-#### Acceptance Criteria
-1. WHERE the Selected_Market has a coordinate, THE Detail_Sheet SHALL show an "Go to Map" button.
-2. WHEN the user taps "Go to Map", THE App SHALL push the Market_Map_Screen onto the Detail_Sheet's existing NavigationStack.
-3. THE App SHALL NOT present the Market_Map_Screen as a separate sheet or full-screen cover.
-4. THE Market_Map_Screen SHALL show exactly one annotation, for the Selected_Market, and SHALL NOT show any other market.
-5. THE Market_Map_Screen SHALL center on the Selected_Market's coordinate at a zoom level where the pin is clearly visible.
-6. THE Market_Map_Screen SHALL show the market name as its navigation title or annotation label.
-7. WHEN the user uses the standard back button, THE App SHALL return to the Detail_Sheet showing the same market.
-8. "Go to Map" SHALL NOT open the external Apple Maps app.
-
-### Requirement 2: Directions
-**User Story:** As a user, I want a "Directions" button, so that I can still get directions in Apple Maps.
-
-#### Acceptance Criteria
-1. WHERE the Selected_Market has a coordinate, THE Detail_Sheet SHALL show a "Directions" button.
-2. WHEN the user taps "Directions", THE App SHALL open the Selected_Market in the external Apple Maps app exactly as "Go to Map" does today (map item at the market coordinate, named with the market name).
-3. IF the Selected_Market has no coordinate, THEN THE Detail_Sheet SHALL show neither button.
-
-### Requirement 3: Accessibility and platforms
-1. Both buttons SHALL have accessibility labels matching their titles and stable accessibility identifiers (existing `open-in-maps` kept for "Go to Map"; a new identifier for "Directions").
-2. The Market_Map_Screen SHALL be usable with VoiceOver (annotation labelled with the market name).
-3. The feature SHALL work on iOS and macOS (and keep visionOS building).
-
-## Non-Functional Requirements
-- All colors come from AppPalette tokens and all icons from the AppIcon registry; no Color literals, hex literals or raw SF Symbol names outside `NYCFarmerMarkets/Theme/`.
-- Any new pure logic (e.g. building the single-market map region or the external map item) is `nonisolated` and unit tested with Swift Testing.
-- New files go in existing `NYCFarmerMarkets/` folders (auto-included; no project file edits).
-
-## Acceptance Criteria (numbered, testable)
-1. Tapping "Go to Map" pushes a map screen inside the detail sheet (back button visible on iOS; no new sheet/cover presented).
-2. The pushed map has exactly one annotation, for the selected market.
-3. The back button returns to the market detail view.
-4. A "Directions" button appears in the detail view whenever "Go to Map" does, and not otherwise.
-5. Tapping "Directions" opens the market in external Apple Maps with the same map item as before.
-6. Both buttons expose accessibility labels and identifiers; works on iOS and macOS.
-7. Existing unit and UI tests pass; new tests cover the single-market logic and the UI navigation where practical.
+- **App**: The NYC Farmer Markets application.
+- **App_Typography**: The single type in `NYCFarmerMarkets/Theme/` that defines both font families and the semantic text roles. The only place font names and `Font.custom` may appear.
+- **Display_Font**: Grim Creeper (`Grim Creeper.ttf`). The user wrote "Grim Crepper"; this is the file that exists.
+- **Body_Font**: N8ghtmare (`N8ghtmare.ttf`).
+- **Unused_Font**: `DrCaligari.ttf`. Not requested for the UI.
+- **Title_Role**: Splash text, tab titles, detail title, Favorites item titles.
+- **Splash_Screen**, **Markets_Tab**, **Map_Tab**, **Favorites_Tab**, **Detail_Sheet**: As in `.kiro/specs/nyc-farmer-markets/requirements.md`.
+- **Tab_Title**: The tab bar label of each tab and the large navigation title of each tab.
+- **Detail_Title**: The market name header in the Detail_Sheet and its navigation title.
+- **Favorite_Item_Title**: The market name in each Favorites_Tab row.
+- **Other_Text**: All visible text that is not a Title_Role (body text, hints, captions, buttons, banners, search field and prompt, section headers, detail field labels and values, empty and error states).
 
 ## Assumptions
-- The "Directions" button needs a new icon entry in the AppIcon registry (or reuses `openInMaps`); the design step decides. "Go to Map" may need a different icon since both would otherwise match.
-- The in-app map reuses MapKit's SwiftUI `Map`, as `MarketMapView` does; whether that view is reused or a new view is created is a design decision.
-- The pushed screen has no "More info" callout and no favorites toggle of its own; the sheet's toolbar (Close, favorite) stays as is.
-- Only a market with a valid coordinate gets the buttons, consistent with today's behavior.
-- The "Directions" title is the exact user-visible text (sentence case as given).
+
+1. "Titles" means title-level text only. Section headers (for example borough headers) and detail field labels are Other_Text.
+2. Tab_Title covers both the tab bar labels and the navigation titles of the three tabs.
+3. Market names in Markets_Tab list rows are Other_Text, because the user listed only Favorites item titles. The design may flag this for confirmation.
+4. Per the issue decision, `DrCaligari.ttf` stays tracked and bundled, and is not used in the UI.
+5. The repository already has `NYCFarmerMarkets/Info.plist` with a `UIAppFonts` array and `INFOPLIST_FILE` set alongside `GENERATE_INFOPLIST_FILE = YES`. Verification must confirm whether this works on every platform. It is not assumed to.
+6. The user's phrasing "Review that fonts are properly registered" means verify and fix, not only report.
+
+## Requirements
+
+### Requirement 1: Fonts are bundled and registered on every platform
+**User Story:** As the owner of the App, I want the fonts to ship with the App and load on iOS, macOS and visionOS, so that the typography appears on a real install and not only in my dev environment.
+
+#### Acceptance Criteria
+1. THE font files SHALL be tracked in git and present in the built app bundle of the iOS build and the macOS build.
+2. THE App SHALL use one registration mechanism that covers all three platforms, or a documented per-platform pair, and SHALL verify it works on the iOS simulator and on macOS.
+3. WHEN the iOS App starts, THE Display_Font and Body_Font SHALL be resolvable by their real PostScript names (`UIFont(name:size:)` returns non-nil).
+4. WHEN the macOS App starts, THE Display_Font and Body_Font SHALL be resolvable by their real PostScript names (`NSFont(name:size:)` returns non-nil).
+5. THE code SHALL use the PostScript names read from the font files with a tool, not the file names.
+6. THE iOS and macOS builds SHALL complete with no new warnings related to fonts or resources.
+7. THE Unused_Font SHALL remain tracked and bundled, and no view SHALL use it.
+
+### Requirement 2: Font licensing is reported
+**User Story:** As the owner of a public repository and a possibly distributed App, I want to know the fonts' licenses, so that I do not ship something I may not embed.
+
+#### Acceptance Criteria
+1. THE feature SHALL report the license and copyright metadata found in the name tables of all three font files, quoting what the metadata says.
+2. IF the metadata is missing, personal-use-only or unclear, THEN THE report SHALL flag it clearly and SHALL NOT guess the license terms.
+3. THE report SHALL be included in the pull request description.
+
+### Requirement 3: Central typography type
+**User Story:** As the owner of the App, I want fonts defined in one place, so that changing a font is a one-file change.
+
+#### Acceptance Criteria
+1. THE App SHALL define App_Typography in `NYCFarmerMarkets/Theme/`, `nonisolated` where the type holds only pure data.
+2. THE App_Typography SHALL define semantic roles, at least: splash, tab title, detail title, favorite item title, and body-level roles for the rest of the text.
+3. THE roles SHALL use `Font.custom(_:size:relativeTo:)` so that text scales with Dynamic Type.
+4. IF a font cannot be loaded, THEN THE role SHALL fall back to the system font with the same text style, so that text is never empty or broken.
+5. THE views SHALL use only App_Typography roles. No view outside `Theme/` SHALL contain a font-name string literal or `.custom(` call.
+6. THE existing convention check SHALL be extended to fail on font-name literals and `.custom(` outside `Theme/`.
+
+### Requirement 4: Display font on Title_Roles
+**User Story:** As a user, I want the headline text to use the spooky display font, so that the App has a distinct look.
+
+#### Acceptance Criteria
+1. THE Splash_Screen text SHALL use the Display_Font.
+2. THE Tab_Title of Markets_Tab, Map_Tab and Favorites_Tab, both the tab bar label and the navigation title, SHALL use the Display_Font.
+3. THE Detail_Title SHALL use the Display_Font.
+4. THE Favorite_Item_Title in each Favorites_Tab row SHALL use the Display_Font.
+5. WHERE a system-rendered element (tab bar, navigation bar) does not pick up SwiftUI font modifiers, THE App SHALL set the font through appearance configuration in `ThemeAppearance` (UIKit appearance on iOS, and the equivalent on macOS where applicable).
+6. THE appearance fix SHALL be verified with simulator screenshots, because unit tests cannot observe it.
+
+### Requirement 5: Body font on everything else
+**User Story:** As a user, I want all other text to use the body font, so that the look is consistent.
+
+#### Acceptance Criteria
+1. THE Other_Text SHALL use the Body_Font through App_Typography roles.
+2. THE search field text and prompt, offline banner, empty and error states, buttons, swipe actions, section headers, and detail field labels and values SHALL use the Body_Font.
+3. THE App SHALL NOT leave any visible text in the default system font, unless it is a documented fallback or a system-owned element that cannot be styled (to be listed in the PR).
+
+### Requirement 6: Accessibility and readability
+**User Story:** As a user with accessibility needs, I want the new fonts to stay usable, so that the theme does not block me.
+
+#### Acceptance Criteria
+1. THE text SHALL scale with the user's Dynamic Type setting.
+2. VoiceOver labels, values and hints SHALL be unchanged by this feature.
+3. THE feature SHALL review the readability of both decorative fonts at small sizes and flag any text that is hard to read, and SHALL state what was done (for example size adjustment or use of the other font).
+4. THE feature SHALL NOT claim full accessibility compliance. Manual VoiceOver and expert review remain outside this feature.
+
+### Requirement 7: Layout stays intact
+**User Story:** As a user, I want long names and large text sizes to remain readable, so that the new fonts do not break screens.
+
+#### Acceptance Criteria
+1. THE Splash_Screen, tab bar labels, navigation titles, Detail_Title and Favorites rows SHALL be checked with long market names and the largest standard Dynamic Type sizes.
+2. IF text is truncated or clipped, THEN THE App SHALL show it with wrapping, line limits or scaling that keeps the content reachable, and SHALL NOT hide information that was visible before.
+3. THE accessibility identifiers used by existing UI tests SHALL be unchanged.
+
+### Requirement 8: Tests and verification
+**User Story:** As the owner of the App, I want automated checks and recorded evidence, so that regressions are caught.
+
+#### Acceptance Criteria
+1. THE unit tests (Swift Testing) SHALL verify that both families resolve to the expected PostScript names.
+2. THE unit tests SHALL verify that each Title_Role maps to the Display_Font family and each body role maps to the Body_Font family.
+3. THE unit tests SHALL verify the fallback to the system font when a font name does not resolve.
+4. THE existing unit tests and UI tests (XCTest) SHALL pass.
+5. THE iOS and macOS builds SHALL succeed.
+6. THE convention grep (no color literals, hex literals, raw SF Symbol names, font-name literals or `.custom(` outside `Theme/`) SHALL pass.
+7. THE feature SHALL include iOS simulator screenshots of the Splash_Screen, each tab, the Detail_Sheet and Favorites_Tab with at least one favorite.
+8. THE pull request SHALL state what was not verified, expected to include the macOS visual check and visionOS.
+
+## Non-Functional Requirements
+
+1. THE change SHALL follow project conventions: no project file edits for new source files (synchronized groups), colors only from `AppPalette`, icons only from `AppIcon`.
+2. Adding the fonts SHALL NOT noticeably slow down app start.
+3. Specs for this feature live in `.kiro/specs/custom-fonts-integration/` as `requirements.md`, `design.md` and `tasks.md`.
 
 ## Out of Scope
-- Showing the user's location, routing, or in-app directions.
-- Changes to the Map tab, its pins, or clustering.
-- Changes to data loading, caching, or favorites.
-- Changing the existing behavior of how the external Apple Maps item is built.
+
+- Changing colors, icons or the wording of texts.
+- Using the Unused_Font anywhere in the UI.
+- Removing `DrCaligari.ttf` (decided: keep).
+- Adding a user setting to switch fonts.
+- Localization and non-Latin glyph coverage, beyond noting missing glyphs found in the market data.
+- Full accessibility audit with assistive technologies.

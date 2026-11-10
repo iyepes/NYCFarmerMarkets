@@ -1,13 +1,34 @@
-Show selected market on in-app map and add "Directions" button
+Integrate custom fonts Grim Creeper and N8ghtmare
 
 ## Description
-In the market detail view, the "Go to Map" button currently opens the market in the external Apple Maps app. Change it so it pushes an internal map screen inside the existing detail sheet's NavigationStack (a NavigationLink/navigation destination pushed from MarketDetailView), showing only the selected market. It must not be presented as a separate sheet or full-screen cover. Add a second button, "Directions", that performs the current behavior (opening the market in external Apple Maps).
+The fonts `Grim Creeper.ttf`, `N8ghtmare.ttf` and `DrCaligari.ttf` were added under `NYCFarmerMarkets/fonts`. Make sure they are properly registered and bundled for distribution (iOS, macOS, visionOS) and apply them across the app through a single typography entry point.
+
+Usage:
+- Grim Creeper: splash screen text, tab titles (tab bar labels and large navigation titles of the three tabs), market detail title (name header and its navigation title), and item titles in the Favorites list.
+- N8ghtmare: all other visible text (body, hints, captions, buttons, banners, search field, section headers, detail field labels and values).
+
+Question for the maintainer: `DrCaligari.ttf` is not requested for the UI. Keep it in the repo or remove it?
+
+## Scope
+- Verify font files are tracked in git and included in the app target's resources (the project uses file-system-synchronized groups).
+- Choose one registration mechanism that works on all targets (supplemental Info.plist with UIAppFonts / ATSApplicationFontsPath, or runtime CTFontManagerRegisterFontsForURL).
+- Add `Theme/AppTypography.swift` next to AppPalette and AppIcon, with semantic roles, `Font.custom(_:size:relativeTo:)` for Dynamic Type, and a system font fallback.
+- Style system-rendered tab bar labels and navigation titles (e.g. via ThemeAppearance).
+- Out of scope: changing colors, icons or text wording.
 
 ## Acceptance criteria
-- [ ] "Go to Map" pushes an internal map screen inside the detail sheet's existing NavigationStack (no separate sheet or full-screen cover).
-- [ ] The internal map shows only the selected market (no other markets' pins).
-- [ ] The standard back button returns to the market detail view.
-- [ ] A new "Directions" button is shown in the market detail view.
-- [ ] "Directions" opens the market in the external Apple Maps app, exactly as "Go to Map" does today.
-- [ ] Both buttons have accessibility labels and work on iOS and macOS.
-- [ ] Existing tests pass; tests cover the new behavior where practical.
+- [ ] Fonts are tracked in git and present in the built .app bundle on iOS and macOS, with no new build warnings
+- [ ] One registration mechanism is chosen and works on iOS and macOS (visionOS reviewed)
+- [ ] Real PostScript names are verified with a tool and used in code
+- [ ] Font license and copyright metadata from each font's name table is inspected and reported; missing, personal-use-only or unknown licenses are flagged clearly
+- [ ] `AppTypography` defines both families once, with semantic roles (splash, tab title, detail title, favorite item title, body, etc.)
+- [ ] Views use only typography roles; no `.custom(` or font-name literals outside `Theme/` (convention grep extended)
+- [ ] Grim Creeper is used for splash, tab titles, detail title and Favorites item titles; N8ghtmare for everything else
+- [ ] Tab bar labels and navigation titles pick up the fonts
+- [ ] Dynamic Type keeps working; fallback to the system font if a font fails to load
+- [ ] Readability of the decorative fonts reviewed and any hard-to-read text flagged with what was done; VoiceOver text unchanged
+- [ ] Long strings and large Dynamic Type checked for truncation on splash, tab labels, navigation titles, detail title and Favorites rows
+- [ ] Unit tests cover font loading (expected PostScript names), role-to-family mapping and fallback
+- [ ] Existing unit and UI tests still pass
+- [ ] iOS and macOS builds pass; iOS simulator screenshots of splash, each tab, detail and Favorites; unverified items (macOS visual check, visionOS) reported
+- [ ] Decision on `DrCaligari.ttf` recorded

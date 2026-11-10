@@ -1,27 +1,27 @@
 ## Plan recorded
 
-Spec: `.kiro/specs/internal-map-and-directions-button/` (requirements.md, design.md, tasks.md) on branch `feature/1-internal-map-and-directions-button`.
+Spec: `.kiro/specs/custom-fonts-integration/` (requirements.md, design.md, tasks.md) on branch `feature/7-custom-fonts-integration`.
 
 ### Key requirements
-- "Go to Map" pushes an in-app map screen onto the detail sheet's existing NavigationStack (no new sheet or cover). It shows exactly one annotation, the selected market, centered and zoomed, with the market name as the title. Back returns to the same market. It no longer opens Apple Maps.
-- New "Directions" button opens the market in external Apple Maps exactly as "Go to Map" does today.
-- Both buttons appear only when the market has a coordinate, have accessibility labels and identifiers (`open-in-maps` kept, `look-for-directions` new), and work on iOS and macOS.
-- Amends Requirement 5.4 of the original nyc-farmer-markets spec.
+- Fonts ship in the app bundle and resolve by their real PostScript names on iOS and macOS (`Grim-Creeper-Regular`, `N8ghtmare`). `DrCaligari.ttf` stays tracked and bundled, unused in the UI.
+- Grim Creeper on the splash, tab titles, detail title and Favorites item titles. N8ghtmare on all other text.
+- One typography type in `Theme/`; no font names or `.custom(` in views. Dynamic Type keeps working, with a system-font fallback.
+- Font license metadata is reported in the PR. Colors, icons, copy and accessibility labels do not change.
+- Owner decision: macOS tab and navigation titles stay in the system font (listed as a deviation in the PR).
 
 ### Design approach
-- `nonisolated enum SingleMarketMap` (pure, unit tested) returns the single pin and the map region.
-- New `MarketLocationMapView` using MapKit `Map`; no `MarketStore` dependency, so it cannot show other markets.
-- `MarketPin` moves to a shared file; the Close and favorite toolbar is extracted to a shared `MarketDetailToolbar` used on both screens.
-- `MarketDetailView` uses `navigationDestination(isPresented:)`; the old external-Maps code becomes `openInExternalMaps()` behind "Directions".
-- New `AppIcon.directions` entry; colors and icons only from the theme tokens.
+- New `nonisolated enum AppTypography` (families, 13 semantic roles, `appFont(_:)` modifier) with CoreText runtime registration, which works the same on every platform. `UIAppFonts` stays.
+- Pure `resolvedFont(for:isAvailable:)` so the fallback and role-to-family mapping are unit tested.
+- iOS tab bar, navigation bar and search field are styled in `ThemeAppearance` (minimal `UINavigationBarAppearance`, re-applied on content size changes), with screenshot checks and a SwiftUI `.principal` fallback.
+- Convention gate gets three new grep patterns.
 
 ### Tasks
-- [ ] 1. Add the `directions` icon to the AppIcon registry
-- [ ] 2. Add the pure `SingleMarketMap` logic with unit tests
-- [ ] 3. Move `MarketPin` to a shared file
-- [ ] 4. Extract the shared detail toolbar
-- [ ] 5. Create the pushed screen `MarketLocationMapView`
-- [ ] 6. Wire the two buttons and the push in `MarketDetailView`
-- [ ] 7. Add UI tests for the push, pin, toolbar, back and close
-- [ ] 8. Full verification and manual check
-- [ ] 9. Record the spec and amend the original requirement
+- [ ] 1. Baseline and bundle layout check
+- [ ] 2. Create `AppTypography` with pure logic and unit tests
+- [ ] 3. Register fonts at launch and set the root font
+- [ ] 4. Apply roles in the views
+- [ ] 5. Style system-rendered bars (iOS only)
+- [ ] 6. Extend the convention gate
+- [ ] 7. Licensing report
+- [ ] 8. Full verification and visual evidence
+- [ ] 9. Specs and PR notes

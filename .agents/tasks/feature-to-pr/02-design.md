@@ -1,166 +1,230 @@
-# Design: Internal map and directions button (issue #1)
+# Design: Custom fonts integration (issue #7)
 
 ## Overview
-`MarketDetailView` currently has one button, "Go to Map", which calls `MKMapItem.openInMaps()`. After this change, "Go to Map" pushes a new in-app screen (`MarketLocationMapView`) onto the NavigationStack the sheet already owns. That screen shows a MapKit `Map` with exactly one annotation, for the selected market, and keeps the sheet's Close and favorite toolbar. A second button, "Directions", takes over the old `openInMaps()` code unchanged. Both buttons appear only when `market.coordinate != nil`, as today.
 
-**Technology stack (locked):** Swift, SwiftUI, MapKit's SwiftUI `Map` (already used by `MarketMapView`), Swift Testing for unit tests, XCTest for UI tests. No new dependencies, no project file edits (synchronized groups).
+Grim Creeper (display) and N8ghtmare (body) are applied through one new type, `AppTypography`, in `NYCFarmerMarkets/Theme/`, in the same spirit as `AppPalette` and `AppIcon`. The type holds the two font families, a semantic `Role` enum, and a `View.appFont(_:)` modifier. Views stop calling `.font(.headline)` and similar, and call `.appFont(.role)` instead. Fonts are registered at launch at runtime with CoreText, which works the same on iOS, macOS and visionOS. System-rendered bars (tab bar, navigation bar, search field) are styled in `ThemeAppearance` with UIKit appearance on iOS. No Xcode project file edits are needed.
+
+**Technology stack (locked on approval):** Swift, SwiftUI (`Font.custom(_:size:relativeTo:)`), CoreText (`CTFontManagerRegisterFontsForURL`, `CTFontCreateWithName`), UIKit appearance (`UITabBarAppearance`, `UINavigationBarAppearance`, `UIFontMetrics`) behind `#if canImport(UIKit) && !os(visionOS)`, AppKit only if a macOS hook turns out to be needed. Swift Testing for unit tests, XCTest for UI tests. No new dependencies.
+
+## What exists today (read from the source)
+
+- `NYCFarmerMarkets/fonts/` holds `DrCaligari.ttf`, `Grim Creeper.ttf`, `N8ghtmare.ttf`, all tracked in git.
+- `NYCFarmerMarkets/Info.plist` is tracked and contains only a `UIAppFonts` array with the three file names. `INFOPLIST_FILE = NYCFarmerMarkets/Info.plist` is set together with `GENERATE_INFOPLIST_FILE = YES` (Debug and Release of the app target). The synchronized-group exception set lists `Info.plist` as a membership exception, so it is not copied as a resource. The `.ttf` files are therefore in the synchronized folder and should be copied as resources. Whether they land at the bundle root or in a `fonts/` subfolder is not known yet and must be checked on the built `.app`. `UIAppFonts` lists bare names, so it only resolves if the files are at the bundle root.
+- `fc-scan` gives these PostScript names: `Grim-Creeper-Regular` (family "Grim Creeper"), `N8ghtmare` (family "N8ghtmare"), `Dr.Caligari` (unused). The file name `Grim Creeper.ttf` differs from its PostScript name, so the code must use the PostScript names.
+- `UIAppFonts` only applies to UIKit platforms. macOS ignores it, and macOS needs `ATSApplicationFontsPath` or runtime registration. Nothing in the repo registers fonts at runtime today.
+- `ThemeAppearance.apply()` (in `Theme/ThemeStyling.swift`) styles `UITabBar` through `UITabBarAppearance` and only sets the tint of `UINavigationBar`. It is called from `NYCFarmerMarketsApp.init()` and is guarded by `#if canImport(UIKit) && !os(visionOS)`.
+- Fonts are set in views with system styles: `SplashView` (`.title2.weight(.bold)`, `.title3.weight(.semibold)`), `SplashLoadingIndicator` (`.title3.weight(.semibold)`), `MarketRow` (`.headline`, `.subheadline`, `.caption`), `MarketDetailView` (`.title.bold()`, `.title3`, `.caption`, `.body`), `MarketListView` section header (`.subheadline.weight(.bold)`, `.caption.weight(.semibold)`), `MarketMapView` callout (`.headline`, `.subheadline`), `MapFilterIndicator` and `OfflineBanner` (`.footnote.weight(.medium)`), `ThemedButtonStyle` (`.headline`). Text with no explicit font: tab labels, `navigationTitle`s ("Markets", "Favorites", "Market details", and `market.name` in `MarketLocationMapView`), `ContentUnavailableView` content, "Remove", "Go to Map", "Directions", "Retry", the search prompt.
+- `MarketRow` is shared by `MarketListView` and `FavoritesView`.
 
 ## Key decisions
 
-**Navigation: `navigationDestination(isPresented:)` driven by `@State private var showsMap = false`.** The alternatives were `NavigationLink(value:)` with a Hashable route type, or a `NavigationPath`. A link would force `ThemedButtonStyle` onto a NavigationLink, which renders inconsistently on macOS, and a path needs a route type for a single destination. A `Button` that sets `showsMap = true` keeps `ThemedButtonStyle`, the `open-in-maps` identifier, and the Button element type UI tests query. The destination modifier goes on the `ScrollView` inside the `NavigationStack`, so the screen is pushed (Req 1.2/1.3) and the standard back button returns to the same `MarketDetailView` (Req 1.7). Nothing is presented as a sheet or cover.
+### 1. Registration: runtime CoreText registration on all platforms (chosen), `UIAppFonts` left as is
 
-**New view instead of reusing `MarketMapView`.** `MarketMapView` is the Map tab: it depends on `MarketStore`, shows every market, and has selection, a card and an offline banner. Adding a "single market" mode would add branches to a working screen and risk the Map tab (out of scope). A small new view is simpler. The pin is shared: `MarketPin` is `private` in `MarketMapView.swift`, so it moves unchanged to `NYCFarmerMarkets/Views/Shared/MarketPin.swift` as an internal struct (visuals, accessibility and `market-pin` identifier unchanged).
+Options considered:
+- A. `UIAppFonts` (supplemental Info.plist, already present) on iOS and visionOS plus `ATSApplicationFontsPath` on macOS. Two mechanisms, and `ATSApplicationFontsPath` is a macOS-only Info.plist key that would need a per-SDK build setting or a second plist, which means project file edits.
+- B. Runtime `CTFontManagerRegisterFontsForURL(url, .process, &error)` for every `.ttf` found in the bundle. One mechanism, no project edits, and it does not depend on where synchronized groups place the files.
 
-**Pure logic in a `nonisolated` type.** New file `NYCFarmerMarkets/Models/SingleMarketMap.swift`:
+Decision: B. `AppTypography.registerFonts()` runs first in `NYCFarmerMarketsApp.init()` (before `ThemeAppearance.apply()`, which needs the fonts). The `UIAppFonts` entry is kept (removing it would need project file edits) but is made correct by this rule: after the first iOS build, list the `.app` contents. If the `.ttf` files are in a `fonts/` subfolder, update the three `UIAppFonts` strings in `NYCFarmerMarkets/Info.plist` to `fonts/<file name>`; this is a plist edit, not a project file edit. If they are at the root, leave the plist as is. The observed layout (iOS and macOS) goes in the PR. Registering a font that `UIAppFonts` already registered returns `kCTFontManagerErrorAlreadyRegistered`; this is treated as success. The design documents the pair honestly: runtime registration is the mechanism that is verified on every platform; `UIAppFonts` is redundant on iOS and visionOS.
 
-```swift
-import MapKit
+Implementation of the URL lookup: `Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: nil) + Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: "fonts")`, de-duplicated by `lastPathComponent`. Only the two used families are registered (match by file name against the `Family.fileName` values); `DrCaligari.ttf` stays bundled and no code references it. Note that on iOS and visionOS it is still registered by the existing `UIAppFonts` entry; the runtime code does not register it.
 
-/// What the single-market map screen shows. Pure so it can be unit tested.
-nonisolated enum SingleMarketMap {
-    struct Pin: Identifiable, Equatable, Sendable {
-        let id: String
-        let name: String
-        let latitude: Double
-        let longitude: Double
-        var coordinate: CLLocationCoordinate2D {
-            CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        }
-    }
+Idempotence: registration lives in a `static let registration: Registration = ...` initializer, so it runs once per process even if called from tests, previews and the app.
 
-    /// Degrees visible around the pin (about 1 km, neighborhood level).
-    static let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+### 2. Availability and fallback
 
-    /// The only annotations the screen may show: one pin, or none when the market has no coordinate.
-    static func pins(for market: Market) -> [Pin]
+`Font.custom` with an unknown name silently falls back to the system font at its own size, without scaling rules we control. To make the fallback explicit and testable, each role asks the cached availability set first. The single lookup is `static func isAvailable(postScriptName: String) -> Bool`, implemented as `CTFontCopyPostScriptName(CTFontCreateWithName(name as CFString, 12, nil)) as String == name` (works on all three platforms without UIKit or AppKit). It is called only while building the `registration` static (see Decision 1), which stores `availableFamilies: Set<Family>`. `Role.font` reads that static, which also triggers registration, so previews and tests without app launch work, and CoreText is never called during view body evaluation. If available: `Font.custom(postScriptName, size: size, relativeTo: textStyle)`. If not: `Font.system(textStyle, design: .default)` (with the weight the role declares, which is `.regular` for most). Text is therefore never empty, and the system fallback still scales with Dynamic Type.
 
-    /// Region centered on the market's coordinate with `span`, or nil without a coordinate.
-    static func region(for market: Market) -> MKCoordinateRegion?
-}
-```
+For testability, the lookup is a pure function: `AppTypography.resolvedFont(for role: Role, isAvailable: (Family) -> Bool) -> Resolved`, where `Resolved` is a small `nonisolated enum { case custom(name: String, size: CGFloat, relativeTo: Font.TextStyle); case system(Font.TextStyle, Font.Weight) }` (weight comes from `Role.fallbackWeight`). `Role.font` calls it with the real availability check and maps `Resolved` to `Font`. Tests inject `{ _ in false }` to check the fallback, and `{ _ in true }` to check family mapping, without depending on the host app's bundle.
 
-`pins(for:)` returns `[]` when `latitude` or `longitude` is nil, otherwise exactly one `Pin` built from the market's id, name and coordinates. The screen renders `ForEach(pins)`, so "exactly one annotation, only the selected market" (Req 1.4) holds by construction. `Pin` stores raw doubles because `CLLocationCoordinate2D` is not `Equatable` or `Sendable`.
-
-**New screen** `NYCFarmerMarkets/Views/MarketLocationMapView.swift`:
+### 3. Type shape (`Theme/AppTypography.swift`, `nonisolated`)
 
 ```swift
-struct MarketLocationMapView: View {
-    let market: Market
-    let onClose: () -> Void          // the SHEET's dismiss action, passed down from MarketDetailView
-    @Environment(FavoritesStore.self) private var favorites
-    @State private var position: MapCameraPosition   // set in init from SingleMarketMap.region(for:); .automatic if nil
-
-    var body: some View {
-        Map(position: $position) {
-            ForEach(SingleMarketMap.pins(for: market)) { pin in
-                Annotation(pin.name, coordinate: pin.coordinate, anchor: .center) {
-                    MarketPin(name: pin.name, isFavorite: favorites.isFavorite(market), isSelected: false)
-                }
-            }
-        }
-        .mapStyle(.standard)
-        .navigationTitle(market.name)
-        #if !os(macOS)
-        .navigationBarTitleDisplayMode(.inline)
-        #endif
-        .toolbar { MarketDetailToolbar(market: market, onClose: onClose) }
-        .accessibilityIdentifier("market-location-map")
+nonisolated enum AppTypography {
+    // Every nested type is also marked `nonisolated` (the project default isolation is MainActor).
+    nonisolated enum Family: CaseIterable, Sendable {
+        case display   // Grim Creeper
+        case body      // N8ghtmare
+        var postScriptName: String   // "Grim-Creeper-Regular", "N8ghtmare"
+        var fileName: String         // "Grim Creeper.ttf", "N8ghtmare.ttf"
+    }
+    nonisolated enum Role: CaseIterable, Sendable {
+        // Display family (title roles)
+        case splash            // splash error message and loading caption
+        case splashHint        // splash hint under the message
+        case tabTitle          // large navigation title of the three tabs
+        case tabBarLabel       // tab bar item labels (12 pt, .caption2)
+        case navigationTitle   // inline navigation titles, e.g. "Market details" (20 pt, .headline)
+        case detailTitle       // market name in the detail header
+        case favoriteItemTitle // market name in Favorites rows
+        // Body family
+        case body              // detail values, empty/error text, default
+        case bodyEmphasis      // buttons, list row titles, callout titles (was .headline)
+        case subheadline       // row subtitles, borough in detail, callout subtitle
+        case sectionHeader     // borough headers and counts
+        case caption           // row days, detail field labels
+        case footnote          // offline banner, map filter indicator
+        var family: Family
+        var size: CGFloat
+        var textStyle: Font.TextStyle
+        var fallbackWeight: Font.Weight
+        var font: Font
     }
 }
+// Also nonisolated: Resolved (enum) and Registration (struct).
+extension View { func appFont(_ role: AppTypography.Role) -> some View }
 ```
 
-The pin's existing accessibility label (market name, plus ", favorite" when applicable) satisfies VoiceOver (Req 3.2). The title shows the market name (Req 1.6). The map stays interactive (pan/zoom) and shows no user location (Out of Scope). The screen has no card, offline banner or `MarketStore` dependency, so it cannot show other markets. Its environment dependency is `FavoritesStore` (pin state and the favorite toggle), which `MarketDetailView` already reads; it also takes the `onClose` closure. It does not use `@Environment(\.dismiss)`: inside a pushed destination `dismiss` pops the screen instead of closing the sheet, so the sheet-level dismiss held by `MarketDetailView` is passed in.
+Initial size table (points at the default Dynamic Type size; `relativeTo` supplies scaling). These are starting values from the system sizes; the implementer may tune them in this one file after reading screenshots, because the fonts have different metrics than SF:
 
-The annotation anchor is `.center` because `MarketPin` is a circular badge, so the circle sits on the coordinate. `MarketMapView` anchors the same pin at `.bottom`; that is existing Map-tab behavior and stays untouched (out of scope), so the screens intentionally differ.
+| Role | Family | Size | relativeTo | fallbackWeight |
+|---|---|---|---|---|
+| splash | display | 26 | .title2 | .bold |
+| splashHint | display | 22 | .title3 | .semibold |
+| tabTitle | display | 34 | .largeTitle | .semibold |
+| tabBarLabel | display | 12 | .caption2 | .semibold |
+| navigationTitle | display | 20 | .headline | .semibold |
+| detailTitle | display | 30 | .title | .bold |
+| favoriteItemTitle | display | 20 | .headline | .semibold |
+| body | body | 17 | .body | .regular |
+| bodyEmphasis | body | 17 | .headline | .semibold |
+| subheadline | body | 15 | .subheadline | .regular |
+| sectionHeader | body | 15 | .subheadline | .bold |
+| caption | body | 12 | .caption | .regular |
+| footnote | body | 13 | .footnote | .medium |
 
-**Shared toolbar (user decision: Close and favorite stay available on the pushed screen).** New file `NYCFarmerMarkets/Views/Shared/MarketDetailToolbar.swift`:
+The custom fonts have a single regular weight each, so roles do not request `.bold` or `.semibold`; asking for it would produce synthetic bold. Where a view used bold or semibold, hierarchy now comes from size and family. The system fallback uses the `fallbackWeight` column in `Resolved.system`, matching today's weights (`.title.bold()` for detailTitle, `.headline` semibold for the title-like roles, `.medium` for footnote), so the fallback looks like today's UI. The count badge (`.caption.weight(.semibold)` today) uses `caption` and accepts regular weight in the fallback; a minor documented difference.
 
-```swift
-struct MarketDetailToolbar: ToolbarContent {
-    let market: Market
-    let onClose: () -> Void
-    @Environment(FavoritesStore.self) private var favorites
+A default body font is also set once at the root: the `WindowGroup` content in `NYCFarmerMarketsApp` gets `.environment(\.font, AppTypography.Role.body.font)` directly. This catches text that has no explicit font (button titles in `Label`, "Remove", "Go to Map", "Directions", "Retry", `ContentUnavailableView` content). Every view that previously set a system font gets an explicit role.
 
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) { /* Close button, moved verbatim, action: onClose */ }
-        ToolbarItem(placement: .primaryAction) { /* favorite toggle, moved verbatim */ }
-    }
-}
+### 4. Which text gets which role
+
+- Splash (`SplashView`, `SplashLoadingIndicator`): message and caption `.splash`, hint `.splashHint`. "Retry" is a button, so it uses `.bodyEmphasis` through `ThemedButtonStyle` (assumption: the Retry button is Other_Text). The logo is an image and is unchanged.
+- Tab titles: The three tab-item `Text`s in `RootTabView` get `.appFont(.tabBarLabel)` (honoured on macOS and possibly visionOS). On iOS the tab bar ignores SwiftUI fonts, so `ThemeAppearance` sets `titleTextAttributes[.font]` with the `tabBarLabel` font (see 5). `tabTitle` is used only for the large navigation title, set through the navigation bar appearance. The Map tab has no navigation bar and no navigation title (`MarketMapView` has no `NavigationStack`), so it gets the Display_Font only on its tab bar label. No title is added, since that would change UI and copy. The PR states that the navigation-title clause of requirement 4.2 applies to Markets and Favorites only.
+- Detail title: `MarketDetailView.header` market name `.detailTitle`; the borough under it `.subheadline`. The inline navigation title "Market details" and `MarketLocationMapView`'s `navigationTitle(market.name)` use the display font via the navigation bar appearance (their inline size is the standard nav title size, 17 to 20 pt, so the display font is applied at a size set in the appearance code, see 5).
+- Favorites item title: `MarketRow` gets a new parameter `titleRole: AppTypography.Role = .bodyEmphasis`. `MarketListView` rows keep the default (assumption 3: Markets list rows are Other_Text; the PR asks the owner to confirm). `FavoritesView` passes `.favoriteItemTitle`. Row subtitle `.subheadline`, days `.caption`. `MarketRow`'s accessibility label code does not change.
+- Everything else: `MarketListView` section headers `.sectionHeader`, count badge `.caption`; detail field label `.caption`, value `.body`; `MarketMapView` callout title `.bodyEmphasis`, subtitle `.subheadline`; `OfflineBanner` and `MapFilterIndicator` `.footnote`; `ThemedButtonStyle` `.bodyEmphasis`.
+
+### 5. System-rendered elements (`ThemeAppearance`, iOS only)
+
+All code stays under `#if canImport(UIKit) && !os(visionOS)`.
+
+- A platform helper `AppTypography.uiFont(for role: Role, textStyle override: ...) -> UIFont` in a new file `Theme/AppTypography+UIKit.swift` returns `UIFontMetrics(forTextStyle: role.uiTextStyle).scaledFont(for: UIFont(name: postScriptName, size: role.size) ?? .systemFont(ofSize: role.size))`. The fallback is the system font, same as for SwiftUI roles. A `Role` to `UIFont.TextStyle` mapping lives next to it.
+- Tab bar: in the existing loop over the three item appearances, add `.font: tabBarFont` to both `titleTextAttributes` dictionaries (keeping the `.foregroundColor`). The `tabBarLabel` role (display, 12 pt, `.caption2`) is used by this appearance code and by the SwiftUI tab `Text`. `Role` has 13 cases.
+- Navigation bar: the deployment target is iOS 26.5 (Liquid Glass) and the existing code deliberately sets only the tint, so the change is the smallest possible. Create `UINavigationBarAppearance()`, do NOT call any `configureWith...` method, set only `largeTitleTextAttributes = [.font: uiFont(.tabTitle)]` and `titleTextAttributes = [.font: uiFont(.navigationTitle)]`, and assign it to `standardAppearance`, `compactAppearance` and `scrollEdgeAppearance`. The tint line stays. Required check: screenshots of the Markets list with the large title unscrolled and scrolled, compared with the same screens on the base commit (`373af50`). If the bar background or scroll-edge look changed, drop the navigation bar appearance and fall back to SwiftUI: inline titles through `.toolbar { ToolbarItem(placement: .principal) { Text(...).appFont(.navigationTitle) } }` (keeping `navigationTitle` for accessibility), and report in the PR that large titles stay in the system font. Do not accept a changed system look silently.
+- Search field: `.searchable` text and the prompt are system-owned. Best effort: `UISearchTextField.appearance().font = uiFont(.body)`. The prompt placeholder font cannot be set through appearance; if the simulator screenshot shows it still in SF, it is listed as a system-owned element in the PR (allowed by requirement 5.3).
+- Swipe action title ("Remove"): set the label explicitly as `Text("Remove").appFont(.bodyEmphasis)` inside the `Label`, then check the simulator screenshot. If the system still renders it in SF, list it in the PR as a system-owned element (requirement 5.3). The same explicit-role-then-screenshot check applies to the search prompt (try `UISearchTextField.appearance().font`; if the prompt stays SF, document it). Both results go in the PR either way.
+- macOS: navigation titles and window titles are drawn by AppKit and are not changed. The macOS tab control gets the SwiftUI font from the `Text` in the tab `Label` if the system honours it. This is recorded as "not verified visually" in the PR (requirement 8.8). No AppKit appearance code is added, because there is no supported global hook for title fonts.
+- visionOS: the code compiles with the SwiftUI roles; UIKit appearance is excluded by the existing `!os(visionOS)` guard. Not verified at runtime.
+
+### 6. Convention check
+
+The gate lives in the `"prompt"` of step 6 (line 157) of the tracked file `.kiro/workflows/feature-to-pr.workflow.json`, in its "Project conventions" paragraph. This feature edits that prompt text to add the new rules (a tracked, in-scope change). Because the running workflow's gate still uses the old prompt text, the implementer also runs the checks by hand and pastes the commands and their (empty) output into the PR. Command form, run from the repo root, expecting zero lines each:
+
+```
+grep -rnE '<pattern>' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'
 ```
 
-The two `ToolbarItem`s move verbatim from `MarketDetailView` (same icons, `close-detail` and `favorite-toggle` identifiers, accessibility labels, spring animation, sensory feedback). `MarketDetailView` uses `.toolbar { MarketDetailToolbar(market: market, onClose: { dismiss() }) }` and the pushed screen uses the same type, so behavior cannot drift. Close on the pushed screen dismisses the whole sheet; the system back button pops. If the `.cancellationAction` item does not render on the pushed bar on some platform, that is caught by the UI assertion below and the manual iOS/macOS check, and the implementer reports it rather than redesigning.
+The three new patterns:
+- `\.custom\(|\bFont\.(system|custom)\(` (no custom or explicit system fonts in views)
+- `Grim|N8ghtmare|Caligari|\.ttf` (no font or file names in Swift files outside `Theme/`)
+- `\.font\(\s*(\.|Font\.)` (no `.font(.headline)` or `.font(Font.headline)`; views use `.appFont`)
 
-**Detail view changes** (`MarketDetailView.swift`): inside `if market.coordinate != nil`, a `VStack(spacing: 10)` with two buttons.
-1. "Go to Map": the existing `Label { Text("Go to Map") } icon: { IconView(.openInMaps, size: 18) }`, `ThemedButtonStyle()`, identifier `open-in-maps` (kept), action `showsMap = true`.
-2. "Directions": the label mirrors the first one exactly, `Label { Text("Directions") } icon: { IconView(.directions, size: 18) }`, `ThemedButtonStyle()`, identifier `look-for-directions`, action: the existing private `openInMaps()` renamed `openInExternalMaps()` with an unchanged body (`MKMapItem(location:address:)`, `name = market.name`, `openInMaps()`). The accessibility label is the visible title (the icon is hidden by `IconView`), so Req 3.1 needs no extra modifier.
+`.font(variable)` forms are not caught by a regex; code review covers them. `IconView` in `Theme/AppIcon.swift` uses `.font(.system(size:))` inside `Theme/`, so it is allowed.
 
-`.navigationDestination(isPresented: $showsMap) { MarketLocationMapView(market: market, onClose: { dismiss() }) }` is attached to the `ScrollView`; `dismiss` is the sheet-level action `MarketDetailView` already holds.
+Layer ownership: the convention that "views use only roles" is enforced by this grep (the CI-like gate), not by the compiler. The "role maps to family" invariant is owned by `AppTypography.Role.family` and tested.
 
-**Icons.** `AppIcon` gets one new case, `directions`: source `.symbol("arrow.triangle.turn.up.right.diamond.fill")`, accessibilityName `"Directions"`. `openInMaps` keeps `map.fill`, so the buttons have distinct icons. The existing `everyIconResolves` test verifies the symbol exists. No colors are added.
+## Error handling
 
-## Error handling and validation
-- Input: the only external input is `Market`, already validated at parse time by `Market.parseCoordinate` (rejects nil, non-numeric and zero). Latitude and longitude are optional; if either is nil there is no coordinate. No range validation is added; that is the data layer's concern and unchanged.
-- No coordinate: the buttons are not rendered, so the screen is unreachable (Req 2.3). Defensively, `pins(for:)` returns `[]` and `region(for:)` returns nil, and the screen falls back to an `.automatic` camera with an empty map. Not an error, not logged.
-- `MKMapItem.openInMaps()` returns `Void` and surfaces no failure, same as today. The caller gets nothing and nothing is logged; behavior is unchanged (Out of Scope).
-- Map tile failures (offline) are handled by MapKit (blank tiles, pin remains). Nothing to handle or log.
-- Invariant "only the selected market appears on the in-app map" is owned by `SingleMarketMap.pins(for:)`, a pure function of one `Market`; the screen has no access to `MarketStore`.
-- Invariant "toolbar behaves the same on both screens" is owned by the single `MarketDetailToolbar` type.
+| Operation | Failure | Recoverable? | What the caller receives | Logging |
+|---|---|---|---|---|
+| `registerFonts()` finds no `.ttf` for a family | Resource not in the bundle | Yes | Registration reports the family as not registered; `isAvailable` returns false; roles return the system fallback | `Logger` (subsystem = bundle id, category `typography`), level `.error`, once per family, no user data |
+| `CTFontManagerRegisterFontsForURL` returns false | Corrupt file, or already registered | Already registered: yes, treated as success, no log. Other errors: yes, fallback | Same as above | `.error` with the CFError description for non-"already registered" errors |
+| `isAvailable(family)` false | Font not registered or name wrong | Yes | System font with the same text style and weight | Logged once at registration time, not per render |
+| `uiFont(for:)` returns nil from `UIFont(name:size:)` | Same | Yes | `UIFont.systemFont(ofSize:)`, scaled with `UIFontMetrics` | Not logged separately |
+
+No failure here is fatal and none is surfaced to the user. Registration never throws or crashes, and it uses no force unwraps. The registration result type is `struct Registration: Sendable { let registeredFamilies: Set<Family> }`; tests read it.
+
+## Validation of inputs
+
+The only external inputs are the bundle file names and the font files themselves. Rules: the file name must match `Family.fileName` exactly (case-sensitive); the PostScript name read back after registration must equal `Family.postScriptName`, otherwise the family is treated as unavailable (this catches a replaced file with a different internal name). No runtime user input reaches the typography code. Market names and other strings are rendered as before.
+
+## Licensing report (requirement 2)
+
+Done as a verification task, not in app code. A throwaway script (`python3` with `fontTools` if it can be installed in a temporary virtual environment, otherwise a small CoreText/`fc-scan` script, since `fontTools` is not installed on this machine) prints name IDs 0 (copyright), 7 (trademark), 8 (manufacturer), 9 (designer), 13 (license description) and 14 (license URL) for all three fonts. The PR description quotes the output verbatim. If name ID 13 and 14 are absent or say personal use, the PR says so plainly and does not state license terms. The script is deleted after use.
+
+## Readability and layout (requirements 6 and 7)
+
+- Splash: messages come from `LoadFailureMessage` and are short, but the hint is a sentence. The splash texts already use `.fixedSize(horizontal: false, vertical: true)` and centred multi-line text, so they wrap. The hint is the most likely hard-to-read case in the display font; the design keeps Display_Font per requirement 4.1, sets `splashHint` to a larger size than the old `.title3`, and the implementer reviews it on screen. If it is unreadable, the fix is a size change in the one file; switching the hint to the body font is a deviation from requirement 4.1 and must be raised with the owner, not done silently.
+- Tab bar labels: three short words. Check at the largest standard size (`.accessibilityExtraExtraExtraLarge` is outside "standard", use `.xxxLarge`) that labels are not clipped.
+- Navigation titles: large titles wrap or truncate in the system bar. "Favorites" and "Markets" are short (the Map tab has no navigation title). The detail inline title "Market details" is short. `MarketLocationMapView` shows `market.name` as an inline title, which can be long; the system truncates it with a tail ellipsis as before, and the full name is visible in the detail header (no information is lost that was visible elsewhere).
+- Detail header market name: add `.fixedSize(horizontal: false, vertical: true)` only if screenshots with the longest market name show clipping; today it wraps in a `VStack`.
+- Favorites rows: add `.lineLimit(nil)` is the default; the row `VStack` already grows. Check with a long name at `.xxxLarge`.
+- Glyph coverage: the implementer checks that the fonts cover the characters in the market data (letters, digits, `.`, `,`, `-`, `'`, `&`, `/`, `·`, parentheses). Missing glyphs fall back per character to the system font by CoreText. Anything noticed is reported in the PR (localization is out of scope).
+- Accessibility: only visual fonts change. `accessibilityLabel`, values, hints, identifiers and traits are not touched. UI tests find elements by identifier and by a few visible texts; text content is unchanged.
 
 ## Files
-- Add `NYCFarmerMarkets/Models/SingleMarketMap.swift`.
-- Add `NYCFarmerMarkets/Views/MarketLocationMapView.swift`.
-- Add `NYCFarmerMarkets/Views/Shared/MarketDetailToolbar.swift` (extracted from `MarketDetailView`).
-- Add `NYCFarmerMarkets/Views/Shared/MarketPin.swift` (moved from `MarketMapView.swift`, `private` removed).
-- Modify `NYCFarmerMarkets/Views/MarketMapView.swift` (remove `MarketPin`).
-- Modify `NYCFarmerMarkets/Views/MarketDetailView.swift` (buttons, destination, shared toolbar).
-- Modify `NYCFarmerMarkets/Theme/AppIcon.swift` (`directions` case in `source` and `accessibilityName`).
-- Tests: `NYCFarmerMarketsTests/SingleMarketMapTests.swift` (new; `import MapKit`, `import Testing`, `@testable import NYCFarmerMarkets`), `NYCFarmerMarketsTests/NYCFarmerMarketsTests.swift` (icon assertion; uses no MapKit types, so no new import), `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift` (new UI tests).
-- Spec docs: `.kiro/specs/internal-map-and-directions-button/{requirements,design,tasks}.md`, plus a note amending Requirement 5.4 in `.kiro/specs/nyc-farmer-markets/requirements.md`.
+
+New:
+- `NYCFarmerMarkets/Theme/AppTypography.swift` (families, roles, registration, availability, `appFont`).
+- `NYCFarmerMarkets/Theme/AppTypography+UIKit.swift` (UIKit font helper, iOS guard `#if canImport(UIKit) && !os(visionOS)`).
+- `NYCFarmerMarketsTests/AppTypographyTests.swift` (Swift Testing).
+- `.kiro/specs/custom-fonts-integration/requirements.md`, `design.md`, `tasks.md` (copied from the task artifacts after approval).
+
+Modified:
+- `NYCFarmerMarkets/NYCFarmerMarketsApp.swift`: call `AppTypography.registerFonts()` first in `init()`; apply the root `.appFont(.body)`.
+- `NYCFarmerMarkets/Theme/ThemeStyling.swift`: `ThemedButtonStyle` font; `ThemeAppearance.apply()` tab bar and navigation bar fonts and search field font.
+- `NYCFarmerMarkets/Views/SplashView.swift`, `SplashLoadingIndicator.swift`, `RootTabView.swift`, `MarketDetailView.swift`, `MarketListView.swift`, `MarketMapView.swift`, `FavoritesView.swift`, `Views/Shared/MarketRow.swift`, `Views/Shared/OfflineBanner.swift`, `Views/Shared/MapFilterIndicator.swift`: replace system `.font(...)` calls with `.appFont(...)`.
+- `.kiro/workflows/feature-to-pr.workflow.json`: extend the step 6 prompt's conventions paragraph with the three patterns.
+- `NYCFarmerMarkets/Info.plist`: only if the built bundle shows the fonts in a `fonts/` subfolder (Decision 1).
+- Not modified: `project.pbxproj`, the font files.
 
 ## Testing
-Unit tests (Swift Testing, using `Fixture.market(...)`):
-- `pins(for:)` returns exactly one pin with the market's id, name and coordinates when a coordinate exists.
-- `pins(for:)` returns `[]` for `lat: nil, lon: nil` and for only one of them missing.
-- `region(for:)` is centered on the coordinate with `SingleMarketMap.span`, and is nil without a coordinate.
-- `AppIcon.directions.accessibilityName == "Directions"` and its source is the expected symbol.
 
-UI tests (XCTest), using the Map tab path because pins always have coordinates:
-1. `waitForMarkets()`, `selectTab("Map")`, tap `market-pin`, tap `more-info`, wait for `close-detail`.
-2. Assert buttons `open-in-maps` and `look-for-directions` exist.
-3. Tap `open-in-maps`. Assert the pushed map with `let map = app.maps.firstMatch; XCTAssertTrue(map.waitForExistence(timeout: 10))`, as the existing map test does. Fallback if that does not distinguish the screens: `app.descendants(matching: .any).matching(identifier: "market-location-map").firstMatch`. Do not use `app.otherElements["market-location-map"]`; an identifier on a `Map` may not surface there.
-4. Assert one pin: `app.descendants(matching: .any).matching(identifier: "market-pin").count == 1`. If MapKit keeps the Map tab's pins in the hierarchy and the count is larger, scope the query to `map.descendants(matching: .any)`; the single-pin guarantee is also covered by the unit test.
-5. Assert push, not a new sheet: `open-in-maps` disappears (`waitUntilGone`) and `app.navigationBars.buttons.element(boundBy: 0)` (Back) exists. No `app.sheets` assertion, since SwiftUI sheets often do not surface as sheet elements and it would pass vacuously.
-6. Assert `close-detail` and `favorite-toggle` exist on the pushed screen.
-7. Tap Back and assert `open-in-maps` and `look-for-directions` exist again.
-8. Second test: push the map, tap `close-detail`, assert `more-info` reappears and `close-detail` is gone (Close dismisses the whole sheet).
+Unit tests (Swift Testing, `NYCFarmerMarketsTests/AppTypographyTests.swift`), pure and fast:
+1. `Family.postScriptName` values equal `Grim-Creeper-Regular` and `N8ghtmare`.
+2. After `registerFonts()` in the test host, `CTFontCopyPostScriptName(CTFontCreateWithName(...))` equals each family's name (this covers the "resolves by real PostScript name" criterion on whichever platform runs the tests, and `UIFont(name:size:)` or `NSFont(name:size:)` non-nil under `#if canImport(UIKit)` / `#elseif canImport(AppKit)`).
+3. Title roles (`splash`, `splashHint`, `tabTitle`, `tabBarLabel`, `navigationTitle`, `detailTitle`, `favoriteItemTitle`) have family `.display`; every other role has `.body`. Written as an exhaustive `switch` over `Role.allCases` so a new role forces a decision.
+4. `resolvedFont(for:isAvailable:)` returns `.custom` with the right name, size and text style when available, and `.system` with the same text style and the role's `fallbackWeight` when not available, for every role.
+5. A file-name check: the files named by `Family.fileName` are present in the test host's `Bundle.main` (or `Bundle(for:)`) resources, which covers "present in the built app bundle" per platform.
 
-The tests do not tap "Directions" because it would leave the app for Maps; that call is unchanged code and is covered by manual verification. Manual check on macOS: both buttons render, the push works, and Close dismisses the sheet from the pushed screen.
+Integration and manual checks (cannot be unit tested):
+- Build for iOS Simulator and macOS (scheme `NYCFarmerMarkets`), list the `.app` contents to confirm the `.ttf` paths, and check the build log for font or resource warnings.
+- Run the unit suite and the UI suite (XCTest) on the iOS simulator and the unit suite on macOS.
+- Simulator screenshots: splash (loading and failed via the existing `failDownload` launch option), each tab with large title visible, detail sheet, Favorites with at least one favorite, and one at a large Dynamic Type size with a long market name.
+- The macOS visual check and visionOS are listed as not verified unless run.
 
-## Edge cases
-- Favorite toggled on either screen: both read the same `FavoritesStore`, so the pin and toolbar icon stay in sync.
-- Very long market names: the inline title truncates; the annotation label is system-managed.
-- Dynamic Type, dark mode: no custom layout; `ThemedButtonStyle` and palette tokens handle them.
-- Returning from the pushed screen resets `showsMap` to false via the binding, so the button works again.
-- visionOS: only cross-platform APIs are used; the `#if !os(macOS)` guard is repeated for the title display mode.
+## Out of scope reminders
 
-## Responses to design review
-- Finding 1 (MEDIUM, toolbar): addressed with Option A, as the user decided. The toolbar is extracted into `MarketDetailToolbar` and used on both screens; the pushed view gets `FavoritesStore` from the environment and an `onClose` closure. I pass a closure instead of using `@Environment(\.dismiss)` because `dismiss` in a pushed destination pops the screen rather than closing the sheet. The "no environment dependencies" claim is corrected, the wrong "per requirements" attribution is removed, and a UI assertion for `close-detail` on the pushed screen is added. The requirements assumption is unchanged.
-- Finding 2 (MEDIUM, map query): addressed. The test uses `app.maps.firstMatch` with the descendants identifier query as fallback; `otherElements` is ruled out.
-- Finding 3 (NIT, sheets assertion): addressed by dropping it.
-- Finding 4 (NIT, label markup): addressed; the `Label { Text } icon: { IconView(.directions, size: 18) }` markup is stated.
-- Finding 5 (NIT, anchor): addressed with `.center`. The review suggested matching `MarketMapView`, but that view anchors the same circular pin at `.bottom`; I chose the correct anchor for the new screen and left the Map tab alone (out of scope).
-- Finding 6 (NIT, imports and file layout): addressed. The unit test file imports MapKit. `SingleMarketMap` holds one `Pin` type in one file, so no split is needed.
+No colors, icons, copy or accessibility labels change. `DrCaligari.ttf` stays tracked and bundled and is not registered or used. No font setting for users.
 
-## Implementation notes (from design review round 4; the design loop was ended by the user with these still open)
+## Assumptions to confirm in the PR
+
+1. Markets list row titles use the body font (only Favorites item titles use the display font).
+2. The Retry button on the splash uses the body font.
+3. The Map tab has the display font on its tab bar label only. Navigation titles of the detail sheet and the single-market map use the display font because they are "detail title" and share the global navigation appearance.
+
+## Responses to design review findings
+
+1. Addressed. Map tab gets the display font on the tab bar label only; no title added; the PR notes 4.2 applies to Markets and Favorites navigation titles.
+2. Addressed. Tab-item `Text` and UIKit tab bar use `tabBarLabel`; `tabTitle` is for large navigation titles only; the enum has 13 cases.
+3. Addressed. `fallbackWeight` added to `Role` and to the table; test 4 asserts it.
+4. Addressed. Conditional `Info.plist` rule added to Decision 1 and the Files list.
+5. Addressed. Gate named (step 6 prompt in `.kiro/workflows/feature-to-pr.workflow.json`), three regexes and command form given, manual run pasted in the PR.
+6. Addressed. Minimal `UINavigationBarAppearance` without `configureWith...`, required before/after screenshots, SwiftUI `.principal` fallback.
+7. Addressed. Claim reworded.
+8. Addressed. One `isAvailable(postScriptName:)`, cached in the `registration` static, read by `Role.font`.
+9. Addressed. Nested types marked `nonisolated`.
+10. Addressed. Root font on `WindowGroup` content; Catalyst wording removed; grep covers `Font.` forms.
+11. Addressed. Explicit `Text("Remove").appFont(.bodyEmphasis)` and search prompt check, results reported either way.
+
+## Implementation notes (from design review round 2; the design loop was ended by the user with these still open)
 
 These items override anything earlier in this document that conflicts with them. Treat them as requirements for the plan and the implementation.
 
-1. **Pushed-map UI assertion (was MEDIUM).** In the UI test, after tapping `open-in-maps`, wait on `app.descendants(matching: .any).matching(identifier: "market-location-map").firstMatch.waitForExistence(timeout: 10)`. Do NOT use `app.maps.firstMatch` for this step: the Map tab's own map stays in the hierarchy under the sheet and would make the assertion pass vacuously. Count pins only after `market-location-map` exists, scoped to that element's descendants, and never count the Map tab's pins. If an identifier on `Map` hides its children, put the identifier on a wrapping `ZStack`/`Group` and keep the pin identifier `selected-market-pin` on the pin.
-2. **Back button query (was MEDIUM).** Do not use `navigationBars.buttons.element(boundBy: 0)`. Find the Back button by the previous screen's title: `app.navigationBars.buttons["Market details"]`, with a macOS-safe fallback `app.buttons["Market details"]` or `app.buttons["Back"]`; if neither can be made reliable, make the push/back UI test iOS-only (`#if os(iOS)`) and cover macOS with the build, the unit tests and a manual check. Verify empirically by running the UI test.
-3. `MarketLocationMapView` init must be shown explicitly: set `market` (and any close closure), and `_position = State(initialValue: <region for the market> ?? .automatic)`.
-4. Mark the nested `SingleMarketMap.Pin` type `nonisolated` explicitly (project default isolation is MainActor).
-5. `everyIconResolves` runs only under `canImport(UIKit)`, so it covers iOS only; keep the explicit `AppIcon.directions.source == .symbol(...)` assertion, which runs on macOS too.
-6. Drop the `app.sheets.count == 0` assertion or label it best-effort only.
-7. Ignore the "Responses to design review" section: it is process history. Do not copy it into the spec (`design.md`) and omit it when recording the spec.
-8. The body of the external-Maps action stays unchanged (only the method rename to `openInExternalMaps()`); it is intentionally not unit tested.
-9. The Close and favorite toolbar MUST stay available on the pushed screen (shared `MarketDetailToolbar`), as decided by the user (Option A); assert `close-detail` exists on the pushed screen.
+1. **Dynamic Type for the UIKit-rendered bars: user chose (a) (was MEDIUM).** Do not rely on launch-time scaling. Observe `UIContentSizeCategory.didChangeNotification` and re-run the font part of `ThemeAppearance.apply()` (re-assign the tab bar, navigation bar and `UISearchTextField` appearances) so the system-owned bars rescale while the app is running. Add the notification hook to the Files list. Verify with a screenshot at `.xxxLarge` taken after changing the text size in a running app (simulator: Settings > Accessibility > Display & Text Size > Larger Text, or `xcrun simctl ui booted content_size extra-extra-extra-large`). State in the "Readability and layout" check that option (a) was used. If it proves impossible for a specific bar (appearance proxies only affect views created afterwards), say so explicitly in the PR as a limitation instead of claiming it works.
+2. **macOS titles: user chose (b) (was MEDIUM).** Keep macOS as designed: navigation titles and tab titles on macOS stay in the system font. Do NOT add `.principal` toolbar items for macOS. Remove the sentence claiming macOS has "no supported hook" for title fonts (it is not true: a `.principal` toolbar item works on macOS); say instead that the owner chose not to style macOS titles in this change. In the PR description, add a named section "Deviations": macOS tab and navigation titles stay in the system font, deviating from requirements 4.2, 4.3 and 4.5 by the owner's decision, and the owner has confirmed it.
+3. **Naming (NIT).** Define `struct Registration: Sendable { let availableFamilies: Set<Family> }` (a family is available if its PostScript name resolves after the registration attempt, including when `UIAppFonts` already registered it), `@discardableResult static func registerFonts() -> Registration` and `static func isAvailable(postScriptName: String) -> Bool`. Do not use the name `registeredFamilies`. `resolvedFont(for:isAvailable:)` keeps `(Family) -> Bool`, and `Role.font` passes `{ registration.availableFamilies.contains($0) }`.
+4. **Snippets (NIT).** Write `static func uiFont(_ role: Role) -> UIFont` (no override parameter), define `let tabBarFont = AppTypography.uiFont(.tabBarLabel)`, combine bundle URLs as `(Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: nil) ?? []) + (Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: "fonts") ?? [])`, and declare `nonisolated enum Resolved: Equatable, Sendable`.
+5. **Detail borough line and splash caption (NIT).** Do not silently shrink them: map the detail borough line to a body-family role at the previous `.title3` size (for example `bodyEmphasis` at `.title3`), and the splash caption keeps a size comparable to its previous `.title3.weight(.semibold)` unless the design explicitly states the change is intended.
+6. **Favorites rows (NIT).** No code change expected (line limit is already unlimited); verify with a long market name at `.xxxLarge`.
+7. **Licenses.** The owner has already seen the license metadata read from the font files (Grim Creeper: 'Free to use for personal & commercial purposes' from sinisterfonts.com; N8ghtmare: copyright 'LionelPailloncy', no license text; DrCaligari: placeholder copyright, no license text). Confirm these in the license review and put the license findings AT THE TOP of the push approval request. The owner decided to KEEP DrCaligari.ttf for now (bundled, tracked, unused in the UI).
