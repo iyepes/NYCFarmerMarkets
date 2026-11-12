@@ -42,10 +42,10 @@ struct AppTypographyTests {
         for role in AppTypography.Role.allCases {
             let expected: AppTypography.Family
             switch role {
-            case .splash, .splashHint, .tabTitle, .tabBarLabel, .navigationTitle,
+            case .splash, .splashHint, .tabTitle, .sectionHeader, .tabBarLabel, .navigationTitle,
                  .detailTitle, .favoriteItemTitle:
                 expected = .display
-            case .body, .bodyEmphasis, .subheadline, .sectionHeader, .caption, .footnote:
+            case .body, .bodyEmphasis, .subheadline, .caption, .footnote:
                 expected = .body
             }
             #expect(role.family == expected)
