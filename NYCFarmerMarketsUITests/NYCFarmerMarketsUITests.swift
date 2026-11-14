@@ -116,6 +116,22 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["favorites-empty"].waitForExistence(timeout: 5))
     }
 
+    /// Detail favorite toggle: add, then remove, then add again.
+    @MainActor
+    func testDetailToggleAddsThenRemovesFavorite() throws {
+        waitForMarkets()
+        firstMarketRow.tap()
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 5))
+
+        let toggle = app.buttons["favorite-toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        XCTAssertEqual(toggle.label, "Add to favorites")
+        toggle.tap()
+        XCTAssertEqual(toggle.label, "Remove from favorites")
+        toggle.tap()
+        XCTAssertEqual(toggle.label, "Add to favorites")
+    }
+
     /// Map -> select a pin -> card -> More info -> Close -> back on the map.
     @MainActor
     func testMapPinMoreInfoAndClose() throws {

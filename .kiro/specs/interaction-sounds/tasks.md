@@ -141,7 +141,7 @@ Earlier text above is unchanged. Run git as `git -C /Users/isabelyepes/Documents
   - Files: `NYCFarmerMarkets/Views/FavoritesView.swift` (swipe action and `.accessibilityAction(named: "Remove from favorites")`: `sounds.play(FavoriteCue.removal)`, keep `favorites.remove(market)`); `NYCFarmerMarkets/Views/Shared/MarketDetailToolbar.swift` (toggle: `sounds.play(FavoriteCue.toggle(wasFavorite: isFavorite))` before `favorites.toggle(market)`).
   - Leave the row-tap `.hiss`, the toolbar Close `.hiss` and every other `.hiss` unchanged. Do not write `.ay` or `"ay"` in views.
   - Depends on: tasks 1 and 2. Requirements: A2, A3, A4.1. Verify: iOS and macOS builds succeed; the diff has exactly one `sounds.play` per removal action (code review, no automated test).
-- [ ] 5. Add the UI test for toggling a favorite off in the detail.
+- [x] 5. Add the UI test for toggling a favorite off in the detail.
   - Files: `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift`.
   - Add `testDetailToggleAddsThenRemovesFavorite` after `testFavoriteAppearsInFavoritesTabAndSwipeRemoves`, reusing its helpers and launch setup (`-uiTestingReset`, `-uiTestingMuteSounds`). Open the first market; `favorite-toggle` label goes `Add to favorites`, `Remove from favorites`, `Add to favorites`. Existing identifiers only.
   - Depends on: task 4. Requirements: A2.3, A2.5, A3. Verify: this test and `testFavoriteAppearsInFavoritesTabAndSwipeRemoves` pass; re-run once on a transient xctrunner launch error.
