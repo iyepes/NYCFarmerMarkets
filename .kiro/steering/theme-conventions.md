@@ -46,10 +46,10 @@ Everything visual comes from `NYCFarmerMarkets/Theme/`. Views use semantic names
 Run from the repo root before finishing any UI change:
 
 ```sh
-grep -rnE '\.custom\(|\bFont\.(system|custom)\(' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'
-grep -rnE 'Grim|Breath|\.ttf' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'
-grep -rnE '\.font\(\s*(\.|Font\.)' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'
-grep -rnE 'Image\(systemName:|systemImage: *"|0x[0-9A-Fa-f]{6}|"#[0-9A-Fa-f]{6}"|Color\.(red|blue|green|orange|yellow|purple|pink|gray|black|white)\b' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'
+grep -rnE '\.custom\(|\bFont\.(system|custom)\(' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
+grep -rnE 'Grim|Breath|\.ttf' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
+grep -rnE '\.font\(\s*(\.|Font\.)' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
+grep -rnE 'Image\(systemName:|systemImage: *"|0x[0-9A-Fa-f]{6}|"#[0-9A-Fa-f]{6}"|Color\.(red|blue|green|orange|yellow|purple|pink|gray|black|white)\b' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
 ```
 
 Use judgment on matches (for example `Image(systemName:` inside `Theme/AppIcon.swift` is the registry itself).
