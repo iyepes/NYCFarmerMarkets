@@ -37,4 +37,11 @@
 - test-report.md, test-gate.json: test report and verdict
 - README.md: this index
 
-Paths were sanitized (repository path replaced by `<repo>`, home directory by `~`). pr.json, respond.json and pr-body.md are not part of this archive.
+Paths were sanitized (repository path replaced by `<repo>`, home directory by `~`). pr-body.md is not part of this archive.
+
+## Added after the merge (PR #19, 2026-11-14)
+
+Added by hand after PR #19 was merged (these files are created after the push, so the archive step cannot include them):
+- issue-body-ay-sound-on-favorite-removal.md: the issue body posted as #18
+- pr.json: PR #19 metadata
+- respond.json: final PR responder status (PR merged, no comments, no failed checks)
