@@ -36,4 +36,4 @@ f5ea59e docs: add spec for #14 interaction-sounds
 - code-review-agent.md, code-review-semantic.md, code-review-summary.md, code-review.json: code review
 - test-report.md, test-gate.json: test results and gate
 
-Paths were sanitized (<repo> and ~). pr.json, respond.json and pr-body.md are not part of this archive.
+Paths were sanitized (`<repo>` and ~). pr.json, respond.json and pr-body.md are not part of this archive.
