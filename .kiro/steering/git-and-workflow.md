@@ -26,8 +26,8 @@ inclusion: always
 ## Specs, workflow and agent files
 
 - Specs live in `.kiro/specs/<feature-name>/` as `requirements.md`, `design.md` and `tasks.md`. When the code changes outside a spec (manual commits), amend the spec with a dated "Amendment" section instead of rewriting history.
-- Features usually run through the workflow recipe `.kiro/workflows/feature-to-pr.workflow.json` (issue → branch → requirements → design loop → plan → spec → code loop → test loop → archive → push → PR → PR loop). It pauses for the owner's approval of the issue draft and the push.
-- `.agents/tasks/feature-to-pr/` holds the working files of the current workflow run; never stage or commit them. The archive step copies each run into `.agents/runs/<issue>-<slug>/` and commits only that folder. The owner commits other `.agents/` changes themselves.
+- Features usually run through the workflow recipe `.kiro/workflows/feature-to-pr.workflow.json` (issue → branch → requirements → design loop → plan → spec → code loop → test loop → archive → push → PR → PR loop → archive_pr). It pauses for the owner's approval of the issue draft, the push, and the archive_pr docs PR.
+- `.agents/tasks/feature-to-pr/` holds the working files of the current workflow run; never stage or commit them. The archive step copies each run into `.agents/runs/<issue>-<slug>/` and commits only that folder. After the PR is merged, the archive_pr step adds the issue body, `pr.json` and `respond.json` to that folder on a `docs/archive-<issue>-pr-traces` branch from `origin/main`, and reports any feature-branch commits the merge missed. The owner commits other `.agents/` changes themselves.
 - Manual design changes are recorded in `Design/design-changes.md`.
 
 ## Tooling pitfalls
