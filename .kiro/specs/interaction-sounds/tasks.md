@@ -133,7 +133,7 @@ Earlier text above is unchanged. Run git as `git -C /Users/isabelyepes/Documents
   - Files: create `NYCFarmerMarkets/Models/FavoriteCue.swift` and `NYCFarmerMarketsTests/FavoriteCueTests.swift`.
   - `nonisolated enum FavoriteCue` with `removal` (`.ay`) and `toggle(wasFavorite:)`. Tests: `removal == .ay`, `removal != .hiss`, `toggle(wasFavorite: true) == .ay`, `toggle(wasFavorite: false) == .hiss`.
   - Depends on: task 1. Requirements: A2.1 to A2.4, A3. Verify: `-only-testing:NYCFarmerMarketsTests/FavoriteCueTests` passes.
-- [ ] 3. Add `.ay` gating tests to `SoundControllerTests`.
+- [x] 3. Add `.ay` gating tests to `SoundControllerTests`.
   - Files: `NYCFarmerMarketsTests/SoundControllerTests.swift`.
   - Use the existing pattern (`makeDefaults()`, `defer { cleanUp() }`, `FakeSoundPlayer`, `makeController`). Cases: forwarded when enabled and VoiceOver off; not forwarded after `setEnabled(false)`; not forwarded with `setVoiceOverOn(true)`; not forwarded with `muted: true`; forwarded again after `setVoiceOverOn(false)`. `setEnabled(false)` and `setVoiceOverOn(true)` append `.stopAll`, so filter for `.play` calls instead of asserting `isEmpty`.
   - Depends on: task 1. Requirements: A4.2 to A4.5. Verify: `-only-testing:NYCFarmerMarketsTests/SoundControllerTests` passes.

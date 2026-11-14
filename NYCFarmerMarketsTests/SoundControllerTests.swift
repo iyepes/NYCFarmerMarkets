@@ -75,6 +75,35 @@ struct SoundControllerTests {
         #expect(!player.calls.contains(.play(.door)))
     }
 
+    @Test func ayFollowsTheSamePolicyAsEverySound() {
+        defer { cleanUp() }
+        let plays = { (player: FakeSoundPlayer) in player.calls.filter { $0 == .play(.ay) } }
+
+        // Enabled and VoiceOver off: forwarded.
+        let player = FakeSoundPlayer()
+        let controller = makeController(defaults: makeDefaults(), player: player)
+        controller.play(.ay)
+        #expect(player.calls == [.play(.ay)])
+
+        // VoiceOver on: not forwarded. Off again: forwarded.
+        controller.setVoiceOverOn(true)
+        controller.play(.ay)
+        #expect(plays(player).count == 1)
+        controller.setVoiceOverOn(false)
+        controller.play(.ay)
+        #expect(plays(player).count == 2)
+
+        // Muted for UI tests (sounds still enabled in defaults): nothing at all.
+        let mutedPlayer = FakeSoundPlayer()
+        makeController(defaults: makeDefaults(), muted: true, player: mutedPlayer).play(.ay)
+        #expect(mutedPlayer.calls.isEmpty)
+
+        // Sounds disabled: not forwarded.
+        controller.setEnabled(false)
+        controller.play(.ay)
+        #expect(plays(player).count == 2)
+    }
+
     @Test func disablingStopsEverything() {
         defer { cleanUp() }
         let player = FakeSoundPlayer()
