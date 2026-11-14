@@ -10,7 +10,9 @@ import SwiftUI
 
 struct AppRootView: View {
     @Environment(MarketStore.self) private var store
+    @Environment(SoundController.self) private var sounds
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
     var minimumDisplayTime: Duration = SplashDecision.minimumDisplayTime
 
@@ -62,6 +64,10 @@ struct AppRootView: View {
         }
         .onChange(of: phase, initial: true) { _, newValue in
             if newValue == .dismissed { hasDismissed = true }  // latch: the splash never returns
+        }
+        // Sounds are muted while VoiceOver runs. This view parents both the splash and the tabs.
+        .onChange(of: voiceOverEnabled, initial: true) { _, enabled in
+            sounds.setVoiceOverOn(enabled)
         }
     }
 }

@@ -44,7 +44,7 @@ Commands (from `.kiro/steering/tech.md`):
   - Requirements: R2.5, R6.2, R6.3, R7.1, R7.2, R8.1-R8.4, NFR2, AC11-AC14
   - Verify: `-only-testing:NYCFarmerMarketsTests/SoundControllerTests` passes; iOS and macOS builds succeed; no temporary log lines remain (`git diff` shows none).
 
-- [ ] 5. VoiceOver wiring
+- [x] 5. VoiceOver wiring
   - `Views/AppRootView.swift`: read `@Environment(\.accessibilityVoiceOverEnabled)` and `@Environment(SoundController.self)`; `.onChange(of: voiceOverEnabled, initial: true) { _, on in sounds.setVoiceOverOn(on) }` on the root (parent of splash and tabs). Read the file first to place it on the outermost view.
   - Files: `Views/AppRootView.swift`
   - Requirements: R7.1-R7.3
