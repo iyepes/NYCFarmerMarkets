@@ -137,7 +137,7 @@ Earlier text above is unchanged. Run git as `git -C /Users/isabelyepes/Documents
   - Files: `NYCFarmerMarketsTests/SoundControllerTests.swift`.
   - Use the existing pattern (`makeDefaults()`, `defer { cleanUp() }`, `FakeSoundPlayer`, `makeController`). Cases: forwarded when enabled and VoiceOver off; not forwarded after `setEnabled(false)`; not forwarded with `setVoiceOverOn(true)`; not forwarded with `muted: true`; forwarded again after `setVoiceOverOn(false)`. `setEnabled(false)` and `setVoiceOverOn(true)` append `.stopAll`, so filter for `.play` calls instead of asserting `isEmpty`.
   - Depends on: task 1. Requirements: A4.2 to A4.5. Verify: `-only-testing:NYCFarmerMarketsTests/SoundControllerTests` passes.
-- [ ] 4. Switch the three removal paths to the helper.
+- [x] 4. Switch the three removal paths to the helper.
   - Files: `NYCFarmerMarkets/Views/FavoritesView.swift` (swipe action and `.accessibilityAction(named: "Remove from favorites")`: `sounds.play(FavoriteCue.removal)`, keep `favorites.remove(market)`); `NYCFarmerMarkets/Views/Shared/MarketDetailToolbar.swift` (toggle: `sounds.play(FavoriteCue.toggle(wasFavorite: isFavorite))` before `favorites.toggle(market)`).
   - Leave the row-tap `.hiss`, the toolbar Close `.hiss` and every other `.hiss` unchanged. Do not write `.ay` or `"ay"` in views.
   - Depends on: tasks 1 and 2. Requirements: A2, A3, A4.1. Verify: iOS and macOS builds succeed; the diff has exactly one `sounds.play` per removal action (code review, no automated test).
