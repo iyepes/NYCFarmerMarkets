@@ -75,6 +75,7 @@ Commits: `243862a` "Icon and name changes", `e247b5d` "Gradient icon".
   "for one project". OS/2 `fsType` 0x0004 (preview & print embedding). The dafont page has the same
   €2 terms; some mirrors list it as donationware or personal use only. No license file is in the repo.
   The `.ttf` is also published in this public GitHub repo, which the license text does not mention.
+  **Update 2026-11-14:** the owner paid the €2 license. Redistribution in the public repo is still to be confirmed with the author.
 - Embedded PostScript name is `Breath of the House` (spaces); the code asks for `Breath-of-the-House`.
   CoreText still resolves it (`bothFamiliesResolveAfterRegistration` passes), so no change needed.
 - `.kiro/specs/custom-fonts-integration/` still describes Dr. Caligari and the old role map.

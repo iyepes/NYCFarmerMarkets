@@ -291,7 +291,7 @@ The owner changed the typography by hand on `main` after PR #8 was merged (`d74e
 
 ### Licensing (supersedes the license notes above)
 
-- **Breath of the House:** embedded copyright "Copyright (c) 2026 by BlackFridayFont. All rights reserved."; the license field asks for a €2 payment, after which the font may be used for one project; OS/2 `fsType` 0x0004 (preview & print). The [dafont page](https://www.dafont.com/breath-of-the-house.font) states the same €2 terms. Some mirror sites list it as donationware or personal use only. No license file is in the repository, and the `.ttf` is published in this public GitHub repository, which the license text does not mention. Confirm the €2 payment and ask the author about redistribution before distributing the app.
+- **Breath of the House:** embedded copyright "Copyright (c) 2026 by BlackFridayFont. All rights reserved."; the license field asks for a €2 payment, after which the font may be used for one project; OS/2 `fsType` 0x0004 (preview & print). The [dafont page](https://www.dafont.com/breath-of-the-house.font) states the same €2 terms. Some mirror sites list it as donationware or personal use only. No license file is in the repository, and the `.ttf` is published in this public GitHub repository, which the license text does not mention. The owner paid the €2 license (confirmed 2026-11-14). Still open: ask the author whether the `.ttf` may stay in the public repository.
 - **Grim Creeper:** "Free to use for personal & commercial purposes" (sinisterfonts.com), as before.
 - Dr. Caligari and N8ghtmare are no longer in the repository; their licensing open points no longer apply to new builds (they remain in git history).
 
