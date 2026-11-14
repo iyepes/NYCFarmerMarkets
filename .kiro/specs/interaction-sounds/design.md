@@ -131,8 +131,10 @@ final class SilentSoundPlayer: SoundPlaying {}
 // Stores/SoundController.swift
 @Observable final class SoundController {
     // @ObservationIgnored private let: defaults, key, testMuted, player
-    private(set) var isEnabled: Bool // saved to UserDefaults "soundEnabled" by setEnabled(_:); default true
-    var voiceOverOn: Bool            // didSet stops all when it becomes true
+    private(set) var isEnabled: Bool   // saved to UserDefaults "soundEnabled" by setEnabled(_:); default true
+    private(set) var voiceOverOn = false
+    func setEnabled(_ enabled: Bool)   // the only way to change isEnabled; saves it, stops all sounds when false
+    func setVoiceOverOn(_ on: Bool)    // stops all sounds when VoiceOver turns on; resumes nothing by itself
     private(set) var currentLoop: AppSound?
     init(defaults: UserDefaults = .standard, key: String = "soundEnabled",
          testMuted: Bool = false, player: any SoundPlaying)
