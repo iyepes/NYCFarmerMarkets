@@ -125,7 +125,8 @@ Verified by reading: nothing has been built or tested in this planning step. Tod
 
 - [ ] 12. Confirm the Breath of the House license before distributing (owner)
   - [x] 12.1 €2 license payment made (confirmed by the owner, 2026-11-14).
-  - [ ] 12.2 Ask BlackFridayFont whether the `.ttf` may stay in the public GitHub repository, or remove it from the public repo.
+  - [ ] 12.2 Keep the €2 license receipt.
+  - [ ] 12.3 Ask BlackFridayFont whether the `.ttf` may stay in the public GitHub repository, or remove it from the public repo.
   - Requirements: 2.4
 
 - [ ] 13. Review Breath of the House on screen
