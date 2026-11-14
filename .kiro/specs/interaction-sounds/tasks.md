@@ -129,7 +129,7 @@ Earlier text above is unchanged. Run git as `git -C /Users/isabelyepes/Documents
   - Add `case ay` after `hiss`; `fileName` `"ay"`; add `.ay` to the non-loop branch of `loops`.
   - Add `ayIsABundledOneShot` to `NYCFarmerMarketsTests/AppSoundTests.swift` (`fileName == "ay"`, `fileExtension == "m4a"`, `!loops`, in `allCases`, bundle URL exists).
   - Requirements: A1, A4.5. Verify: iOS build; `-only-testing:NYCFarmerMarketsTests/AppSoundTests` passes.
-- [ ] 2. Add the pure cue helper and its tests.
+- [x] 2. Add the pure cue helper and its tests.
   - Files: create `NYCFarmerMarkets/Models/FavoriteCue.swift` and `NYCFarmerMarketsTests/FavoriteCueTests.swift`.
   - `nonisolated enum FavoriteCue` with `removal` (`.ay`) and `toggle(wasFavorite:)`. Tests: `removal == .ay`, `removal != .hiss`, `toggle(wasFavorite: true) == .ay`, `toggle(wasFavorite: false) == .hiss`.
   - Depends on: task 1. Requirements: A2.1 to A2.4, A3. Verify: `-only-testing:NYCFarmerMarketsTests/FavoriteCueTests` passes.
