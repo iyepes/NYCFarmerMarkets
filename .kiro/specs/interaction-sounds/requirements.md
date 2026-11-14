@@ -54,7 +54,7 @@ Add interaction sounds to Spooky Markets using five recordings made by the owner
 
 ### R7. VoiceOver
 1. No sound plays while VoiceOver runs, whatever the toggle says.
-2. When VoiceOver starts, any playing sound stops. When it stops, sounds resume if the toggle is on, with no relaunch.
+2. When VoiceOver starts, any playing sound stops. WHEN VoiceOver stops, THE App SHALL play the next sound cue again if Sounds_Enabled is on, without restarting the App; a Step_Loop stopped by VoiceOver restarts on the next scroll.
 3. The toggle stays usable with VoiceOver and its choice is saved.
 
 ### R8. System audio behavior
@@ -73,7 +73,7 @@ Add interaction sounds to Spooky Markets using five recordings made by the owner
 ## Acceptance Criteria
 
 1. The five files exist under `NYCFarmerMarkets/Sounds/` with the names above, `Sounds/` originals are gone, and the files are in the iOS and macOS app bundles. (R1)
-2. `grep` finds no `.m4a` sound file name outside `NYCFarmerMarkets/Theme/`. (R1.3)
+2. `grep` finds no `.m4a` sound file name in Swift source outside `NYCFarmerMarkets/Theme/`. (R1.3)
 3. Scrolling the Markets list loops human steps and scrolling Favorites loops cat steps. The loop continues through coasting without restarting. (R2.1, R2.2)
 4. Stopping the scroll fades the loop out over about 0.3 s. Leaving the screen stops it. Never two loops at once. (R2.3 to R2.5)
 5. Each listed button press plays one hiss. A second press during playback restarts it. (R3)
