@@ -8,6 +8,7 @@ import SwiftUI
 /// Tab 1: searchable list of markets grouped by borough.
 struct MarketListView: View {
     @Environment(MarketStore.self) private var store
+    @Environment(SoundController.self) private var sounds
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var expansion = SectionExpansionState()
@@ -66,6 +67,7 @@ struct MarketListView: View {
                         if expansion.isExpanded(section.borough, query: query) {
                             ForEach(section.markets) { market in
                                 Button {
+                                    sounds.play(.hiss)
                                     store.selectedMarket = market
                                 } label: {
                                     MarketRow(market: market)
@@ -92,6 +94,7 @@ struct MarketListView: View {
         let isExpanded = expansion.isExpanded(section.borough, query: query)
         let count = section.markets.count
         return Button {
+            sounds.play(.hiss)
             withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
                 expansion.toggle(section.borough, query: query)
             }

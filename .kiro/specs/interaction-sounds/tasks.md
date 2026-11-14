@@ -58,7 +58,7 @@ Commands (from `.kiro/steering/tech.md`):
   - Requirements: R6.1-R6.3, R3.2, R7.3, AC8, AC9, AC14
   - Verify: full tests pass including `testSoundToggleIsSaved`; the theme-conventions checks stay at zero lines; macOS build succeeds (`.primaryAction` toolbar compiles there).
 
-- [ ] 7. Hiss on button presses
+- [x] 7. Hiss on button presses
   - `Theme/ThemeStyling.swift`: `ThemedButtonStyle.makeBody` returns a private `HissOnPress` view that reads `@Environment(SoundController.self) private var sounds: SoundController?` (optional, silent in previews) and runs `.onChange(of: configuration.isPressed) { _, pressed in if pressed { sounds?.play(.hiss) } }`. Visual output unchanged.
   - Rows, section headers (`Views/MarketListView.swift` lines ~70 and ~113) and Favorites rows (`Views/FavoritesView.swift` line ~48): keep `.buttonStyle(.plain)`; call `sounds.play(.hiss)` first in each button action.
   - `Views/Shared/MarketDetailToolbar.swift`: hiss in the Close and favorite toggle actions. `Views/FavoritesView.swift`: hiss in the swipe-to-remove action and in the "Remove from favorites" accessibility action.
