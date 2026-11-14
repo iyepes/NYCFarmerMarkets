@@ -25,7 +25,7 @@ Commands (from `.kiro/steering/tech.md`):
   - Requirements: R2.1-R2.5, R7.1, R6.3, AC13
   - Verify: `-only-testing:NYCFarmerMarketsTests/SoundPolicyTests` passes; iOS and macOS builds succeed.
 
-- [ ] 3. `LaunchOptions.muteSounds` and test-mute plumbing in UI tests
+- [x] 3. `LaunchOptions.muteSounds` and test-mute plumbing in UI tests
   - `Models/LaunchOptions.swift`: add `var muteSounds = false`, set by `arguments.contains("-uiTestingMuteSounds")`, with a doc comment in the existing style. Update the `resetFavorites` doc comment to "Clears persisted favorites and the sound setting".
   - `NYCFarmerMarketsTests/LaunchOptionsTests.swift`: add tests that the argument sets `muteSounds`, absence leaves it false, and a similarly named argument does not match.
   - Add `"-uiTestingMuteSounds"` to every UI launch list: `NYCFarmerMarketsUITests.swift` line 18 (`setUp`) and line 204 (`testSplashAppearsAtLaunch`), `SplashFailureUITests.swift` line 13, and in `NYCFarmerMarketsUITestsLaunchTests.testLaunch` set `app.launchArguments = ["-uiTestingMuteSounds"]` (read the file first; it has no list today).

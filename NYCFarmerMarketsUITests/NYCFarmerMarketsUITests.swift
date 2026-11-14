@@ -15,7 +15,7 @@ final class NYCFarmerMarketsUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["-uiTestingReset"]
+        app.launchArguments = ["-uiTestingReset", "-uiTestingMuteSounds"]
         app.launch()
     }
 
@@ -201,7 +201,7 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         // launch() returns only once the app is idle (~3 s), which is after the default 1 s splash,
         // so relaunch with a longer minimum display time to observe the splash.
         app.terminate()
-        app.launchArguments = ["-uiTestingReset", "-uiTestingSplashMinimumSeconds", "6"]
+        app.launchArguments = ["-uiTestingReset", "-uiTestingMuteSounds", "-uiTestingSplashMinimumSeconds", "6"]
         app.launch()
         XCTAssertTrue(element("splash-screen").waitForExistence(timeout: 2), "Splash did not appear at launch")
         XCTAssertTrue(element("splash-loading").exists, "Splash should show the loading indicator")

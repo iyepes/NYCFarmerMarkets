@@ -47,6 +47,19 @@ struct LaunchOptionsTests {
         #expect(options.failDownload == false)
     }
 
+    @Test func muteSoundsArgumentSetsMuteSounds() {
+        #expect(LaunchOptions(arguments: ["/app", "-uiTestingMuteSounds"]).muteSounds == true)
+    }
+
+    @Test func muteSoundsIsFalseWhenAbsent() {
+        #expect(LaunchOptions(arguments: ["/app", Self.reset]).muteSounds == false)
+    }
+
+    @Test func similarlyNamedMuteArgumentsDoNotMatch() {
+        let options = LaunchOptions(arguments: ["-uiTestingMuteSoundsX", "uiTestingMuteSounds"])
+        #expect(options.muteSounds == false)
+    }
+
     @Test func splashMinimumSecondsParsesPositiveValue() {
         let options = LaunchOptions(arguments: ["/app", "-uiTestingSplashMinimumSeconds", "4.5"])
         #expect(options.splashMinimumSeconds == 4.5)

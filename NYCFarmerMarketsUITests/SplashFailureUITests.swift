@@ -10,7 +10,7 @@ final class SplashFailureUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["-uiTestingReset", "-uiTestingFailDownload"]
+        app.launchArguments = ["-uiTestingReset", "-uiTestingMuteSounds", "-uiTestingFailDownload"]
         app.launch()
     }
 
