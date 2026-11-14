@@ -53,7 +53,7 @@ struct FavoritesView: View {
                     .listRowSeparatorTint(AppPalette.separator.color)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
-                            sounds.play(.hiss)
+                            sounds.play(FavoriteCue.removal)
                             favorites.remove(market)
                         } label: {
                             Label {
@@ -64,7 +64,7 @@ struct FavoritesView: View {
                         }
                     }
                     .accessibilityAction(named: "Remove from favorites") {
-                        sounds.play(.hiss)
+                        sounds.play(FavoriteCue.removal)
                         favorites.remove(market)
                     }
                     .accessibilityIdentifier("favorite-row")

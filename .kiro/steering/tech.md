@@ -18,7 +18,7 @@ inclusion: always
 - `Theme/`: the only place for colors, icons, fonts and spooky copy (see `theme-conventions.md`).
 - `Views/`: screens; `Views/Shared/`: reusable views (`MarketRow`, `MarketPin`, `OfflineBanner`, `MapFilterIndicator`, `MarketDetailToolbar`).
 - `fonts/`: `Grim Creeper.ttf`, `Breath of the House.ttf`, listed in `Info.plist` `UIAppFonts` and registered at runtime by `AppTypography.registerFonts()`.
-- `Sounds/`: the owner's recordings (`human-steps`, `cat-steps`, `door`, `door-and-hit`, `short-hiss`, all `.m4a`), bundled automatically and named only in `Theme/AppSound.swift`.
+- `Sounds/`: the owner's recordings (`human-steps`, `cat-steps`, `door`, `door-and-hit`, `short-hiss`, `ay`, all `.m4a`), bundled automatically and named only in `Theme/AppSound.swift`.
 
 ## Error handling and logging
 

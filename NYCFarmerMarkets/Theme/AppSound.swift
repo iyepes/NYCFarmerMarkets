@@ -14,6 +14,7 @@ nonisolated enum AppSound: String, CaseIterable, Sendable {
     case door
     case doorAndHit
     case hiss
+    case ay
 
     var fileName: String {
         switch self {
@@ -22,6 +23,7 @@ nonisolated enum AppSound: String, CaseIterable, Sendable {
         case .door: "door"
         case .doorAndHit: "door-and-hit"
         case .hiss: "short-hiss"
+        case .ay: "ay"
         }
     }
 
@@ -31,7 +33,7 @@ nonisolated enum AppSound: String, CaseIterable, Sendable {
     var loops: Bool {
         switch self {
         case .humanSteps, .catSteps: true
-        case .door, .doorAndHit, .hiss: false
+        case .door, .doorAndHit, .hiss, .ay: false
         }
     }
 }

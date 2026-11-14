@@ -37,7 +37,8 @@ Everything visual comes from `NYCFarmerMarkets/Theme/`. Views use semantic names
 
 ## Sounds: `AppSound`
 
-- Every sound is an `AppSound` case (`humanSteps`, `catSteps`, `door`, `doorAndHit`, `hiss`) with `fileName`, `fileExtension` and `loops`. File names live only in `Theme/AppSound.swift`; views never touch audio and send cues to `SoundController` (`play(_:)`, `handle(_:loop:)`).
+- Every sound is an `AppSound` case (`humanSteps`, `catSteps`, `door`, `doorAndHit`, `hiss`, `ay`) with `fileName`, `fileExtension` and `loops`. File names live only in `Theme/AppSound.swift`; views never touch audio and send cues to `SoundController` (`play(_:)`, `handle(_:loop:)`).
+- Removing a favorite (swipe "Remove", the "Remove from favorites" accessibility action, or the detail toggle turning it off) plays `.ay` through `FavoriteCue` instead of the hiss; adding a favorite keeps the hiss. Views call `FavoriteCue`, never `.ay`. Like every sound, Ay is silent while VoiceOver runs.
 - Sound toggle icons: `AppIcon.soundOn` ("Sounds on") and `soundOff` ("Sounds off"), used by `SoundToggleButton` (identifier `sound-toggle`, label "Sounds", value "On"/"Off").
 - New buttons that use `ThemedButtonStyle` hiss on press automatically. Plain-style buttons call `sounds.play(.hiss)` in their action.
 

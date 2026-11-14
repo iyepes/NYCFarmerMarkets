@@ -119,3 +119,36 @@ Verified by reading (no code changed in this step):
 Verified today: the five recordings exist at `Sounds/` with spaces and capitals in their names (`Cat steps.m4a`, `Door and hit.m4a`, `Door.m4a`, `Human steps.m4a`, `Short hiss.m4a`); `NYCFarmerMarkets/` has no `Sounds/` folder yet; `.kiro/steering/` has `git-and-workflow.md`, `known-limits.md`, `product.md`, `tech.md`, `theme-conventions.md`; the convention greps are at `theme-conventions.md` lines 49-52. Not run in this step: builds and tests (planning only).
 
 Rules for the coder: commit locally on the branch when the owner or workflow asks, stage files by name, never stage anything under `.agents/tasks/`; `rm` only with full literal paths; remove temporary log lines and temp files.
+
+## Amendment: Ay on favorite removal (2026-11-14, issue #18)
+
+Earlier text above is unchanged. Run git as `git -C /Users/isabelyepes/Documents/XCode/NYCFarmerMarkets ...`, never stage anything under `.agents/tasks/`, and do not edit `project.pbxproj`.
+
+- [x] 1. Register `ay` in `AppSound` (registry only).
+  - Files: `NYCFarmerMarkets/Theme/AppSound.swift`.
+  - Add `case ay` after `hiss`; `fileName` `"ay"`; add `.ay` to the non-loop branch of `loops`.
+  - Add `ayIsABundledOneShot` to `NYCFarmerMarketsTests/AppSoundTests.swift` (`fileName == "ay"`, `fileExtension == "m4a"`, `!loops`, in `allCases`, bundle URL exists).
+  - Requirements: A1, A4.5. Verify: iOS build; `-only-testing:NYCFarmerMarketsTests/AppSoundTests` passes.
+- [x] 2. Add the pure cue helper and its tests.
+  - Files: create `NYCFarmerMarkets/Models/FavoriteCue.swift` and `NYCFarmerMarketsTests/FavoriteCueTests.swift`.
+  - `nonisolated enum FavoriteCue` with `removal` (`.ay`) and `toggle(wasFavorite:)`. Tests: `removal == .ay`, `removal != .hiss`, `toggle(wasFavorite: true) == .ay`, `toggle(wasFavorite: false) == .hiss`.
+  - Depends on: task 1. Requirements: A2.1 to A2.4, A3. Verify: `-only-testing:NYCFarmerMarketsTests/FavoriteCueTests` passes.
+- [x] 3. Add `.ay` gating tests to `SoundControllerTests`.
+  - Files: `NYCFarmerMarketsTests/SoundControllerTests.swift`.
+  - Use the existing pattern (`makeDefaults()`, `defer { cleanUp() }`, `FakeSoundPlayer`, `makeController`). Cases: forwarded when enabled and VoiceOver off; not forwarded after `setEnabled(false)`; not forwarded with `setVoiceOverOn(true)`; not forwarded with `muted: true`; forwarded again after `setVoiceOverOn(false)`. `setEnabled(false)` and `setVoiceOverOn(true)` append `.stopAll`, so filter for `.play` calls instead of asserting `isEmpty`.
+  - Depends on: task 1. Requirements: A4.2 to A4.5. Verify: `-only-testing:NYCFarmerMarketsTests/SoundControllerTests` passes.
+- [x] 4. Switch the three removal paths to the helper.
+  - Files: `NYCFarmerMarkets/Views/FavoritesView.swift` (swipe action and `.accessibilityAction(named: "Remove from favorites")`: `sounds.play(FavoriteCue.removal)`, keep `favorites.remove(market)`); `NYCFarmerMarkets/Views/Shared/MarketDetailToolbar.swift` (toggle: `sounds.play(FavoriteCue.toggle(wasFavorite: isFavorite))` before `favorites.toggle(market)`).
+  - Leave the row-tap `.hiss`, the toolbar Close `.hiss` and every other `.hiss` unchanged. Do not write `.ay` or `"ay"` in views.
+  - Depends on: tasks 1 and 2. Requirements: A2, A3, A4.1. Verify: iOS and macOS builds succeed; the diff has exactly one `sounds.play` per removal action (code review, no automated test).
+- [x] 5. Add the UI test for toggling a favorite off in the detail.
+  - Files: `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift`.
+  - Add `testDetailToggleAddsThenRemovesFavorite` after `testFavoriteAppearsInFavoritesTabAndSwipeRemoves`, reusing its helpers and launch setup (`-uiTestingReset`, `-uiTestingMuteSounds`). Open the first market; `favorite-toggle` label goes `Add to favorites`, `Remove from favorites`, `Add to favorites`. Existing identifiers only.
+  - Depends on: task 4. Requirements: A2.3, A2.5, A3. Verify: this test and `testFavoriteAppearsInFavoritesTabAndSwipeRemoves` pass; re-run once on a transient xctrunner launch error.
+- [x] 6. Update the steering files.
+  - Files: `.kiro/steering/theme-conventions.md` (add `ay` to the `AppSound` case list and one bullet: removing a favorite by swipe, the accessibility action, or the detail toggle turning it off plays `.ay` through `FavoriteCue`; adding keeps the hiss); `.kiro/steering/tech.md` (add `ay` to the `Sounds/` recordings list).
+  - Requirements: A5. Verify: re-read the edited lines; the steering grep check (no sound file names outside `Theme/`) finds nothing new.
+- [x] 7. Final verification.
+  - Run iOS build, macOS build, unit tests and full tests. `git status --short` shows only the files from tasks 1 to 6 (plus `ay.m4a` if untracked) and nothing under `.agents/tasks/`.
+  - Requirements: acceptance criteria 1 to 11. Report as not verified by tests: hearing Ay on a device (swipe, toggle off, accessibility action through Voice Control or Switch Control), silence under VoiceOver, and the hiss on toggle-on.
+- [x] 8. Spec amendment (record_spec step): this section, `requirements.md` and `design.md` amended with dated sections; earlier text not edited.

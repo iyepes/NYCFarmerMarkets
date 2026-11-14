@@ -28,7 +28,7 @@ struct MarketDetailToolbar: ToolbarContent {
         }
         ToolbarItem(placement: .primaryAction) {
             Button {
-                sounds.play(.hiss)
+                sounds.play(FavoriteCue.toggle(wasFavorite: isFavorite))
                 favorites.toggle(market)
             } label: {
                 IconView(isFavorite ? .favoriteOn : .favoriteOff, size: 26)
