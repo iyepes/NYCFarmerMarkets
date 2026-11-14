@@ -18,7 +18,7 @@ Commands (from `.kiro/steering/tech.md`):
   - Requirements: R1.1, R1.2, R1.3, AC1, AC13
   - Verify: unit tests `-only-testing:NYCFarmerMarketsTests/AppSoundTests` pass; `find /tmp/dd-fonts -name '*.m4a' -path '*NYCFarmerMarkets.app*'` lists five files; macOS build succeeds and its `.app` also contains them. Record `afinfo` durations for the PR notes.
 
-- [ ] 2. `SoundPolicy` pure logic
+- [x] 2. `SoundPolicy` pure logic
   - Create `NYCFarmerMarkets/Models/SoundPolicy.swift` with `import SwiftUI` (the one `Models/` file that does; `ScrollPhase` is a plain enum). `nonisolated enum ScrollActivity { scrolling, stopped, left }`, `LoopAction: Equatable { start, stop, none }`, `SoundPolicy` with `shouldPlay(enabled:voiceOverOn:testMuted:)`, `activity(for: ScrollPhase) -> ScrollActivity?` (`.interacting`/`.decelerating` → `.scrolling`, `.idle` → `.stopped`, `.tracking`/`.animating` → `nil`, plus `@unknown default: return nil`), `loopAction(isLooping:activity:)` (start when scrolling and not looping; stop when stopped/left and looping; otherwise none).
   - Create `NYCFarmerMarketsTests/SoundPolicyTests.swift`: all 8 `shouldPlay` combinations; each `ScrollPhase` case; `loopAction` sequences start, repeat (none), stop, stop when not looping (none), left while looping (stop).
   - Files: `Models/SoundPolicy.swift`, `NYCFarmerMarketsTests/SoundPolicyTests.swift`
