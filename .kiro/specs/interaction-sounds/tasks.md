@@ -50,7 +50,7 @@ Commands (from `.kiro/steering/tech.md`):
   - Requirements: R7.1-R7.3
   - Verify: iOS and macOS builds succeed; unit tests still pass. On the simulator, enable VoiceOver via Settings and confirm silence (manual pass, report result).
 
-- [ ] 6. Sound toggle in the Markets toolbar
+- [x] 6. Sound toggle in the Markets toolbar
   - `Theme/AppIcon.swift`: add `soundOn` (`speaker.wave.2.fill`, accessibility name "Sounds on") and `soundOff` (`speaker.slash.fill`, "Sounds off") in both the `source` and `accessibilityName` switches.
   - `Views/MarketListView.swift`: attach `.toolbar { ToolbarItem(placement: .primaryAction) { SoundToggleButton() } }` next to `.navigationTitle("Markets")` inside the `NavigationStack` (and inside `.id(dynamicTypeSize)`). `SoundToggleButton` (private view in the same file, or `Views/Shared/SoundToggleButton.swift`): image `AppIcon.soundOn.image`/`soundOff.image`, `accessibilityIdentifier("sound-toggle")`, `accessibilityLabel("Sounds")`, `accessibilityValue(isEnabled ? "On" : "Off")`; action `sounds.setEnabled(!sounds.isEnabled)` then `sounds.play(.hiss)` (the policy blocks it when off).
   - `NYCFarmerMarketsUITests.swift`: add `testSoundToggleIsSaved`: tap `sound-toggle`, assert value "Off", terminate, relaunch with only `["-uiTestingMuteSounds"]`, assert value still "Off". No restore (next `setUp` resets via `-uiTestingReset`). Also assert in `setUp` or the test that the initial value is "On".

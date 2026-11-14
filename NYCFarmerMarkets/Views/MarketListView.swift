@@ -25,6 +25,9 @@ struct MarketListView: View {
                 .offlineBanner(store.isShowingCachedData)
                 .themedBackground()
                 .navigationTitle("Markets")
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) { SoundToggleButton() }
+                }
                 .searchable(text: $store.searchQuery, prompt: AppCopy.searchPrompt)
                 .onChange(of: SectionExpansionState.isSearching(query)) { _, searching in
                     if !searching { expansion.endSearch() }

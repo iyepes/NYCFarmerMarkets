@@ -65,6 +65,24 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         XCTAssertFalse(closeButton.exists)
     }
 
+    /// Sound toggle starts On, turns Off, and stays Off after a relaunch.
+    @MainActor
+    func testSoundToggleIsSaved() throws {
+        let toggle = app.buttons["sound-toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 30), "Sound toggle did not appear")
+        XCTAssertEqual(toggle.value as? String, "On")
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "Off")
+
+        // The next setUp resets the setting through -uiTestingReset, so there is no restore step.
+        app.terminate()
+        app.launchArguments = ["-uiTestingMuteSounds"]
+        app.launch()
+        let relaunched = app.buttons["sound-toggle"]
+        XCTAssertTrue(relaunched.waitForExistence(timeout: 30), "Sound toggle did not appear after relaunch")
+        XCTAssertEqual(relaunched.value as? String, "Off")
+    }
+
     /// Favorite in the sheet -> shows in Favorites tab -> swipe to remove -> empty state.
     @MainActor
     func testFavoriteAppearsInFavoritesTabAndSwipeRemoves() throws {

@@ -32,6 +32,8 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
     case logo
     case sectionChevron
     case searchFilter
+    case soundOn
+    case soundOff
 
     enum Source: Equatable, Sendable {
         case symbol(String)
@@ -63,6 +65,8 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
         case .logo: .asset("logo-carrot")
         case .sectionChevron: .symbol("chevron.right")
         case .searchFilter: .symbol("line.3.horizontal.decrease.circle.fill")
+        case .soundOn: .symbol("speaker.wave.2.fill")
+        case .soundOff: .symbol("speaker.slash.fill")
         }
     }
 
@@ -100,6 +104,8 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
         case .logo: "NYC Farmer Markets"
         case .sectionChevron: "Section"
         case .searchFilter: "Filtered"
+        case .soundOn: "Sounds on"
+        case .soundOff: "Sounds off"
         }
     }
 }
