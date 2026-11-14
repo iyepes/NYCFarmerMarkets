@@ -1,0 +1,11 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {"id": 1, "severity": "MEDIUM", "title": "SoundPlaying has no single-sound hard stop, but the design requires hard-stopping the previous loop; use stopLoop fade or add stop(_:)"},
+    {"id": 2, "severity": "NIT", "title": "activity(for:) needs @unknown default for ScrollPhase"},
+    {"id": 3, "severity": "NIT", "title": "State that the sound toolbar attaches inside the NavigationStack next to navigationTitle"},
+    {"id": 4, "severity": "NIT", "title": "soundEnabled reset must run before SoundController init; use one key constant"},
+    {"id": 5, "severity": "NIT", "title": "didSet on @Observable properties is new to Stores/; cover with tests or use explicit setters"}
+  ],
+  "reviewDoc": "<repo>/.agents/tasks/feature-to-pr/03-design-review.md"
+}
