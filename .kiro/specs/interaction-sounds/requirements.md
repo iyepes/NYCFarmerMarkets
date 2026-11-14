@@ -107,7 +107,7 @@ This feature adds interaction sounds to the NYC Farmer Markets app ("Spooky Mark
 1. ON iOS and visionOS, THE App SHALL use the ambient audio session category, so that sounds are silenced by the silent switch and mix with audio from other apps.
 2. THE App SHALL NOT pause or duck audio from other apps.
 3. ON macOS, THE App SHALL play sounds at the system volume with no session setup.
-4. IF a Sound_File cannot be loaded or played, THEN THE App SHALL log the failure with `Logger` once and continue silently, with no crash and no message to the user.
+4. IF a Sound_File cannot be loaded, THEN THE App SHALL log the failure with `Logger` once and continue silently, with no crash and no message to the user. IF playback fails, THEN THE App SHALL continue silently without logging.
 
 ### Requirement 9: Tests and verification
 **User Story:** As the owner of the App, I want automated checks, so that the sound rules do not regress and test runs stay quiet.
