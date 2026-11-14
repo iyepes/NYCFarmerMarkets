@@ -18,7 +18,7 @@ Reference this file with `#known-limits` when working on typography, theming or 
 ## Not verified
 
 - visionOS at runtime; macOS visually.
-- Breath of the House on screen with the inherited body `sizeScale` 1.15 and 14 pt floor (tuned for the previous font); the `sizeScale` comment still describes Dr. Caligari.
+- Breath of the House on screen with the inherited body `sizeScale` 1.15 and 14 pt floor (tuned for the previous font).
 - Whether Breath of the House draws "·" (rows use ", ").
 - Borough headers (30 pt text and chevron) at `.xxxLarge`; `sectionHeader` scales with `.subheadline`.
 
