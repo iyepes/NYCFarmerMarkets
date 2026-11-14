@@ -2,6 +2,8 @@
 
 ## Overview
 
+> Tasks 1-9 are the original plan, done in PR #8 (the body font there became Dr. Caligari). Tasks 10-14 cover the manual changes after PR #8: the body font is now Breath of the House. See the design "Amendment 2".
+
 Add `AppTypography` (Grim Creeper for title roles, N8ghtmare for the rest) in `Theme/`, register the fonts at runtime with CoreText, switch every view to `.appFont(role)`, style the UIKit bars in `ThemeAppearance`, extend the convention gate, then verify with builds, tests, screenshots and a license report. New files under `NYCFarmerMarkets/` and `NYCFarmerMarketsTests/` are picked up automatically (synchronized groups); do not edit `project.pbxproj`. All paths are under `/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/`. Run git as `git -C <repo> ...`; never stage anything under `.agents/`.
 
 Commands used below (discover the simulator name once with `xcrun simctl list devices available`; call it `$SIM`):
@@ -105,3 +107,34 @@ Verified by reading: nothing has been built or tested in this planning step. Tod
 - `.kiro/workflows/feature-to-pr.workflow.json`: step 6 prompt conventions paragraph.
 - Not touched: `project.pbxproj`, font files, `Theme/AppIcon.swift` (its `.font(.system(size:))` is inside `Theme/` and allowed).
 - Existing tests in `NYCFarmerMarketsTests/` and UI tests in `NYCFarmerMarketsUITests/` must keep passing; they are not run yet.
+
+## Tasks after PR #8 (design "Amendment 2")
+
+- [x] 10. Replace the body font and adjust headers (owner, manual commits)
+  - [x] 10.1 Body family to Breath of the House: `Family.body` PostScript name `Breath-of-the-House`, file `Breath of the House.ttf`; `Info.plist` `UIAppFonts` lists only `Grim Creeper.ttf` and `Breath of the House.ttf`; `DrCaligari.ttf` and `N8ghtmare.ttf` deleted (`d74e03e`, `40dd19c`).
+    - Requirements: 1.3-1.5, 1.7, 5.1
+  - [x] 10.2 `sectionHeader` moved to the display family at 30 pt; `splash` 26 → 40 pt; borough header count uses `.sectionHeader` and the chevron is 30 pt in `MarketListView` (`40dd19c`).
+    - Requirements: 4.1, 4.7
+  - [x] 10.3 `AppTypographyTests` updated for the new PostScript name and role map (`40dd19c`, `a3ad360`).
+    - Requirements: 8.1, 8.2
+  - Verify: done 2026-11-14, `-only-testing:NYCFarmerMarketsTests/AppTypographyTests` passes (10 tests) on the iOS simulator.
+
+- [x] 11. License report for Breath of the House
+  - Read the embedded name table (copyright, license, `fsType`) and the publisher's dafont page. Result in the design "Amendment 2", Licensing.
+  - Requirements: 2.1, 2.2, 2.4
+
+- [ ] 12. Confirm the Breath of the House license before distributing (owner)
+  - Confirm the €2 payment and keep the receipt; ask BlackFridayFont whether the `.ttf` may stay in the public GitHub repository, or remove it from the public repo.
+  - Requirements: 2.4
+
+- [ ] 13. Review Breath of the House on screen
+  - Re-check the body `sizeScale` (1.15) and `minimumSize` (14 pt) for the new font and fix the `sizeScale` comment, which still describes Dr. Caligari. Tune only in `AppTypography.swift`.
+  - Check whether the font draws "·"; if it does, the owner may restore it as the row separator in `MarketRow`.
+  - Check the borough headers (30 pt text and chevron) at `.xxxLarge`; `sectionHeader` scales with `.subheadline`.
+  - Requirements: 6.1, 6.3, 7.1, 7.2
+  - Verify: simulator screenshots at the default size and at `.xxxLarge`; unit and UI tests pass.
+
+- [ ] 14. Extend the convention gate to the new font name
+  - Add `Breath` to the font-name pattern (`Grim|Breath|\.ttf`; the removed names may be dropped) in the conventions paragraph of the test-gate step of `.kiro/workflows/feature-to-pr.workflow.json`. Keep the JSON valid.
+  - Requirements: 3.5, 3.6, 8.6
+  - Verify: `python3 -m json.tool .kiro/workflows/feature-to-pr.workflow.json > /dev/null` succeeds; the grep prints zero lines outside `Theme/`.

@@ -2,28 +2,34 @@
 
 ## Introduction
 
-This feature integrates two custom display fonts, Grim Creeper and N8ghtmare, into the NYC Farmer Markets app (iOS, macOS and visionOS). It first verifies that the font files ship inside the app and are registered on every platform. It then applies Grim Creeper to title-level text and N8ghtmare to all other text, through one typography type in `Theme/`, in the same way `AppPalette` holds colors and `AppIcon` holds icons. Dynamic Type and VoiceOver keep working. Colors, icons and the wording of texts do not change. The fonts are in `NYCFarmerMarkets/fonts/`. Tracks GitHub issue #7.
+This feature integrates two custom fonts, Grim Creeper (titles) and Breath of the House (everything else), into the NYC Farmer Markets app (iOS, macOS and visionOS). It first verifies that the font files ship inside the app and are registered on every platform. It then applies Grim Creeper to title-level text and Breath of the House to all other text, through one typography type in `Theme/`, in the same way `AppPalette` holds colors and `AppIcon` holds icons. Dynamic Type and VoiceOver keep working. Colors, icons and the wording of texts do not change. The fonts are in `NYCFarmerMarkets/fonts/`. Tracks GitHub issue #7.
+
+### Revision history
+
+- **Original (issue #7):** body font N8ghtmare; Dr. Caligari bundled and unused.
+- **PR #8 (`cd3812d`):** body font changed to Dr. Caligari after visual review (N8ghtmare digits unreadable); body size scale 1.15 with a 14 pt floor; tab bar label capped at 15 pt. See the design "Amendment after visual review".
+- **Manual commits after PR #8 (`d74e03e`, `40dd19c`, `a3ad360`, 2026-11-10/11):** body font changed to Breath of the House for readability; `DrCaligari.ttf` and `N8ghtmare.ttf` removed from the repo; section headers moved to the display font at 30 pt; splash text 40 pt. See the design "Amendment 2". This document describes the current state.
 
 ## Glossary
 
 - **App**: The NYC Farmer Markets application.
 - **App_Typography**: The single type in `NYCFarmerMarkets/Theme/` that defines both font families and the semantic text roles. The only place font names and `Font.custom` may appear.
 - **Display_Font**: Grim Creeper (`Grim Creeper.ttf`). The user wrote "Grim Crepper"; this is the file that exists.
-- **Body_Font**: N8ghtmare (`N8ghtmare.ttf`).
-- **Unused_Font**: `DrCaligari.ttf`. Not requested for the UI.
-- **Title_Role**: Splash text, tab titles, detail title, Favorites item titles.
+- **Body_Font**: Breath of the House (`Breath of the House.ttf`, by BlackFridayFont). Was N8ghtmare, then Dr. Caligari.
+- **Removed_Fonts**: `N8ghtmare.ttf` and `DrCaligari.ttf`, no longer in the repository or the bundle.
+- **Title_Role**: Splash text, tab titles, detail title, Favorites item titles, and borough section headers.
 - **Splash_Screen**, **Markets_Tab**, **Map_Tab**, **Favorites_Tab**, **Detail_Sheet**: As in `.kiro/specs/nyc-farmer-markets/requirements.md`.
 - **Tab_Title**: The tab bar label of each tab and the large navigation title of each tab.
 - **Detail_Title**: The market name header in the Detail_Sheet and its navigation title.
 - **Favorite_Item_Title**: The market name in each Favorites_Tab row.
-- **Other_Text**: All visible text that is not a Title_Role (body text, hints, captions, buttons, banners, search field and prompt, section headers, detail field labels and values, empty and error states).
+- **Other_Text**: All visible text that is not a Title_Role (body text, hints, captions, buttons, banners, search field and prompt, detail field labels and values, empty and error states).
 
 ## Assumptions
 
-1. "Titles" means title-level text only. Section headers (for example borough headers) and detail field labels are Other_Text.
+1. "Titles" means title-level text. Borough section headers were added to the Title_Roles by the owner for readability (`40dd19c`); detail field labels remain Other_Text.
 2. Tab_Title covers both the tab bar labels and the navigation titles of the three tabs.
 3. Market names in Markets_Tab list rows are Other_Text, because the user listed only Favorites item titles. The design may flag this for confirmation.
-4. Per the issue decision, `DrCaligari.ttf` stays tracked and bundled, and is not used in the UI.
+4. Only the two used font files are bundled. The issue originally decided to keep `DrCaligari.ttf`; the owner later removed both unused files (`d74e03e`).
 5. The repository already has `NYCFarmerMarkets/Info.plist` with a `UIAppFonts` array and `INFOPLIST_FILE` set alongside `GENERATE_INFOPLIST_FILE = YES`. Verification must confirm whether this works on every platform. It is not assumed to.
 6. The user's phrasing "Review that fonts are properly registered" means verify and fix, not only report.
 
@@ -39,15 +45,16 @@ This feature integrates two custom display fonts, Grim Creeper and N8ghtmare, in
 4. WHEN the macOS App starts, THE Display_Font and Body_Font SHALL be resolvable by their real PostScript names (`NSFont(name:size:)` returns non-nil).
 5. THE code SHALL use the PostScript names read from the font files with a tool, not the file names.
 6. THE iOS and macOS builds SHALL complete with no new warnings related to fonts or resources.
-7. THE Unused_Font SHALL remain tracked and bundled, and no view SHALL use it.
+7. THE repository and bundle SHALL contain only the font files the App uses (Display_Font and Body_Font); `Info.plist` `UIAppFonts` SHALL list exactly those two files.
 
 ### Requirement 2: Font licensing is reported
 **User Story:** As the owner of a public repository and a possibly distributed App, I want to know the fonts' licenses, so that I do not ship something I may not embed.
 
 #### Acceptance Criteria
-1. THE feature SHALL report the license and copyright metadata found in the name tables of all three font files, quoting what the metadata says.
+1. THE feature SHALL report the license and copyright metadata found in the name tables of every bundled font file, quoting what the metadata says.
 2. IF the metadata is missing, personal-use-only or unclear, THEN THE report SHALL flag it clearly and SHALL NOT guess the license terms.
 3. THE report SHALL be included in the pull request description.
+4. IF a bundled font requires payment or limits redistribution, THEN THE report SHALL say so, and the font SHALL NOT be distributed (App Store or public repository) until the owner confirms the license is met. Current state: Breath of the House asks for a €2 payment per project; see the design "Amendment 2".
 
 ### Requirement 3: Central typography type
 **User Story:** As the owner of the App, I want fonts defined in one place, so that changing a font is a one-file change.
@@ -70,13 +77,14 @@ This feature integrates two custom display fonts, Grim Creeper and N8ghtmare, in
 4. THE Favorite_Item_Title in each Favorites_Tab row SHALL use the Display_Font.
 5. WHERE a system-rendered element (tab bar, navigation bar) does not pick up SwiftUI font modifiers, THE App SHALL set the font through appearance configuration in `ThemeAppearance` (UIKit appearance on iOS, and the equivalent on macOS where applicable).
 6. THE appearance fix SHALL be verified with simulator screenshots, because unit tests cannot observe it.
+7. THE borough section headers in Markets_Tab, including the market count and the chevron next to them, SHALL use the Display_Font at a size that reads as a header (30 pt design size).
 
 ### Requirement 5: Body font on everything else
 **User Story:** As a user, I want all other text to use the body font, so that the look is consistent.
 
 #### Acceptance Criteria
 1. THE Other_Text SHALL use the Body_Font through App_Typography roles.
-2. THE search field text and prompt, offline banner, empty and error states, buttons, swipe actions, section headers, and detail field labels and values SHALL use the Body_Font.
+2. THE search field text and prompt, offline banner, empty and error states, buttons, swipe actions, and detail field labels and values SHALL use the Body_Font.
 3. THE App SHALL NOT leave any visible text in the default system font, unless it is a documented fallback or a system-owned element that cannot be styled (to be listed in the PR).
 
 ### Requirement 6: Accessibility and readability
@@ -118,8 +126,7 @@ This feature integrates two custom display fonts, Grim Creeper and N8ghtmare, in
 ## Out of Scope
 
 - Changing colors, icons or the wording of texts.
-- Using the Unused_Font anywhere in the UI.
-- Removing `DrCaligari.ttf` (decided: keep).
+- Re-adding any of the Removed_Fonts.
 - Adding a user setting to switch fonts.
 - Localization and non-Latin glyph coverage, beyond noting missing glyphs found in the market data.
 - Full accessibility audit with assistive technologies.
