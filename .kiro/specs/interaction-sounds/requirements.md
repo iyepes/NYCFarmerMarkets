@@ -54,7 +54,7 @@ Add interaction sounds to Spooky Markets using five recordings made by the owner
 
 ### R7. VoiceOver
 1. No sound plays while VoiceOver runs, whatever the toggle says.
-2. When VoiceOver starts, any playing sound stops. When it stops, sounds resume if the toggle is on, with no relaunch.
+2. When VoiceOver starts, any playing sound stops. WHEN VoiceOver stops, THE App SHALL play the next sound cue again if Sounds_Enabled is on, without restarting the App; a Step_Loop stopped by VoiceOver restarts on the next scroll.
 3. The toggle stays usable with VoiceOver and its choice is saved.
 
 ### R8. System audio behavior
