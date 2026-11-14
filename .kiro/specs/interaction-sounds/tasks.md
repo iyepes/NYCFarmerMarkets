@@ -145,7 +145,7 @@ Earlier text above is unchanged. Run git as `git -C /Users/isabelyepes/Documents
   - Files: `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift`.
   - Add `testDetailToggleAddsThenRemovesFavorite` after `testFavoriteAppearsInFavoritesTabAndSwipeRemoves`, reusing its helpers and launch setup (`-uiTestingReset`, `-uiTestingMuteSounds`). Open the first market; `favorite-toggle` label goes `Add to favorites`, `Remove from favorites`, `Add to favorites`. Existing identifiers only.
   - Depends on: task 4. Requirements: A2.3, A2.5, A3. Verify: this test and `testFavoriteAppearsInFavoritesTabAndSwipeRemoves` pass; re-run once on a transient xctrunner launch error.
-- [ ] 6. Update the steering files.
+- [x] 6. Update the steering files.
   - Files: `.kiro/steering/theme-conventions.md` (add `ay` to the `AppSound` case list and one bullet: removing a favorite by swipe, the accessibility action, or the detail toggle turning it off plays `.ay` through `FavoriteCue`; adding keeps the hiss); `.kiro/steering/tech.md` (add `ay` to the `Sounds/` recordings list).
   - Requirements: A5. Verify: re-read the edited lines; the steering grep check (no sound file names outside `Theme/`) finds nothing new.
 - [ ] 7. Final verification.
