@@ -124,7 +124,7 @@ Rules for the coder: commit locally on the branch when the owner or workflow ask
 
 Earlier text above is unchanged. Run git as `git -C /Users/isabelyepes/Documents/XCode/NYCFarmerMarkets ...`, never stage anything under `.agents/tasks/`, and do not edit `project.pbxproj`.
 
-- [ ] 1. Register `ay` in `AppSound` (registry only).
+- [x] 1. Register `ay` in `AppSound` (registry only).
   - Files: `NYCFarmerMarkets/Theme/AppSound.swift`.
   - Add `case ay` after `hiss`; `fileName` `"ay"`; add `.ay` to the non-loop branch of `loops`.
   - Add `ayIsABundledOneShot` to `NYCFarmerMarketsTests/AppSoundTests.swift` (`fileName == "ay"`, `fileExtension == "m4a"`, `!loops`, in `allCases`, bundle URL exists).
