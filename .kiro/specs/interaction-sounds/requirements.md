@@ -96,3 +96,56 @@ Add interaction sounds to Spooky Markets using five recordings made by the owner
 - Haptics changes (the favorite toggle keeps `sensoryFeedback`).
 - Sounds for map pan and zoom, pin taps, search typing, or pull-to-refresh beyond the step loop.
 - Localization of the toggle label.
+
+## Amendment: Ay on favorite removal (2026-11-14, issue #18)
+
+Issue: https://github.com/iyepes/NYCFarmerMarkets/issues/18. Earlier text above is unchanged. Where it says the hiss plays on removal, this amendment supersedes it for removal only.
+
+When a market is removed from favorites, the app plays the owner's "Ay" recording (`NYCFarmerMarkets/Sounds/ay.m4a`, 1.0 s, stereo AAC, owner-recorded, OK to publish) instead of the hiss. Exactly one sound plays per removal. Adding a favorite keeps the hiss. The VoiceOver mute rule (R7) is unchanged. No other behavior changes.
+
+### Assumptions
+1. Each removal path currently plays `.hiss` before `favorites.remove(market)` or `favorites.toggle(market)`. Only that cue changes.
+2. "Removal" means a favorite becomes a non-favorite through a user action.
+3. In the detail toolbar, the toggle plays Ay when the market is a favorite at the moment of the press, and the hiss when it is not.
+4. Ay is a one-shot sound. A new Ay while one plays restarts it and does not stack (R3.3).
+5. Ay obeys the existing `SoundPolicy` gates (Sounds toggle off, VoiceOver running). It is silent under VoiceOver. It can play when the accessibility action is triggered by Switch Control or Voice Control, because VoiceOver is not running then.
+6. Removing several favorites quickly plays Ay once per removal (restarting).
+
+### Requirements
+- **A1. Ay is a bundled sound.** `AppSound.ay` has `fileName` `ay`, `fileExtension` `m4a`, and `loops` false. `ay.m4a` is in the iOS and macOS bundles with no `project.pbxproj` edit. No code outside `Theme/` contains the file name `ay`.
+- **A2. Ay replaces the hiss on removal.**
+  1. Swiping "Remove" on a Favorites row plays Ay once and no hiss.
+  2. The "Remove from favorites" accessibility action on a Favorites row plays Ay once and no hiss.
+  3. The detail toolbar favorite toggle, when the market is a favorite, plays Ay once and no hiss.
+  4. Exactly one sound plays per removal on each path.
+  5. The market is still removed on each path.
+- **A3. The hiss stays elsewhere.** The toggle on a non-favorite (adding) plays the hiss, not Ay. All other hiss cues (rows, Close, section headers, sound toggle, themed buttons) are unchanged.
+- **A4. Architecture and muting.**
+  1. Views send the cue through `SoundController.play(_:)` and do not touch audio.
+  2. With the Sounds toggle off, Ay does not play.
+  3. While VoiceOver runs, Ay does not play, whatever the toggle says.
+  4. With VoiceOver off and the toggle on, Ay plays, including when the accessibility action comes from Switch Control or Voice Control.
+  5. Under `-uiTestingMuteSounds`, Ay goes through `SilentSoundPlayer` like every sound.
+- **A5. Documentation.** `.kiro/steering/theme-conventions.md` lists `ay` among the `AppSound` cases and states that removing a favorite plays Ay instead of the hiss.
+
+### Non-functional
+Only Apple frameworks. No new colors, icons or accessibility identifiers; existing identifiers (`favorite-row`, `favorite-toggle`, `favorites-list`) are not renamed. Pure logic added to `Models/` is `nonisolated` and unit tested with Swift Testing.
+
+### Acceptance criteria
+1. `AppSound.ay.fileName == "ay"`, `fileExtension == "m4a"`, `loops == false`.
+2. `AppSound.allCases` includes `ay`, and `AppSoundTests` verifies that `ay.m4a` is bundled and that `ay` is not a loop.
+3. Swipe "Remove" plays only Ay (`.ay`, no `.hiss`) and removes the market.
+4. The "Remove from favorites" accessibility action plays only Ay and removes the market.
+5. The detail toggle on a favorite plays only Ay and removes the market.
+6. The detail toggle on a non-favorite plays only the hiss and adds the market.
+7. With sounds off, or with VoiceOver running, a removal plays no sound (controller test with `.ay`).
+8. With VoiceOver off and sounds on, `.ay` is allowed to play.
+9. No Swift source outside `NYCFarmerMarkets/Theme/` contains `ay.m4a` or `"ay"`.
+10. `theme-conventions.md` and the three `interaction-sounds` spec files carry this amendment.
+11. iOS and macOS builds succeed, unit tests pass, and existing UI tests still pass.
+
+### Verification notes
+Unit tests cover the registry, the cue helper and the `SoundController` gating with a recording fake player. UI tests confirm removal still works, but cannot hear audio. Hearing Ay on a device (swipe, toggle off, accessibility action through Voice Control or Switch Control), silence under VoiceOver, and the hiss on toggle-on are manual checks and are not verified by automated tests.
+
+### Out of scope
+Changing the VoiceOver muting rule or adding a VoiceOver-specific sound; changing the hiss on adding or any other cue; editing `ay.m4a`; new settings, per-sound toggles or volume controls; haptic changes; sound on removal paths that do not exist today (undo, bulk removal).

@@ -234,3 +234,56 @@ These notes override anything earlier in this document that conflicts with them.
 ## Amendment: palette test fix (owner-approved)
 
 Date: 2026-11-14. Commit `9b16611` on this branch changed `AppPalette.onAppIconBackground` from `Base.surface` (`0xCBC7D9`, 2.31:1 on orange) to `Base.deep` (`0x31078C`, 3.57:1), so the splash logo, dots and text pass the 3.0 contrast test. `basePaletteMatchesDesign()` was updated to the current palette. This fixes two ThemeTests that fail on `main` since the "Spooky Colors" commit `e11636c`. It is outside the sound scope by the owner's choice. See `Design/design-changes.md`.
+
+## Amendment: Ay on favorite removal (2026-11-14, issue #18)
+
+Earlier text above is unchanged. The table rows "Swipe-to-remove and its accessibility action | Hiss" and "Close, favorite toggle | Hiss" are superseded for removal only: removing a favorite plays Ay. Close, adding a favorite and every other cue keep the hiss.
+
+### Overview
+Every sound goes through `SoundController.play(_:)`, which asks `SoundPolicy.shouldPlay` (toggle on, VoiceOver off, not test-muted) and forwards to a `SoundPlaying` player. This change adds the registry case `AppSound.ay` and swaps the cue on the three removal paths from `.hiss` to `.ay`. A small pure helper, `FavoriteCue`, owns the cue choice so it can be unit tested. The policy, controller, player and audio session are not modified. Ay is muted under VoiceOver because the gate is in `SoundController`.
+
+### Facts from the code
+- `Theme/AppSound.swift`: `nonisolated enum AppSound: String, CaseIterable, Sendable`. `fileName` and `loops` are exhaustive switches, so a new case forces both to be updated.
+- `Services/SoundPlayer.swift` builds one `AVAudioPlayer` per `AppSound.allCases` entry, so `ay` needs no player change. `play(_:)` sets `currentTime = 0` then plays, so a second Ay restarts and does not stack. A missing file is logged and skipped by `prepare()`.
+- `Views/FavoritesView.swift`: the swipe action and `.accessibilityAction(named: "Remove from favorites")` each call `sounds.play(.hiss)` then `favorites.remove(market)`. The row tap also plays `.hiss` and stays unchanged.
+- `Views/Shared/MarketDetailToolbar.swift`: the favorite toggle calls `sounds.play(.hiss)` then `favorites.toggle(market)`.
+- Neither the swipe button nor the toolbar button uses `ThemedButtonStyle`, so there is no second automatic hiss. One `play` call is made per removal.
+- `NYCFarmerMarkets/Sounds/ay.m4a` is in the repo and bundled by the synchronized group.
+
+### Decisions
+1. **Registry.** Add `case ay` after `hiss`; `fileName` is `"ay"`; `loops` is false (`case .door, .doorAndHit, .hiss, .ay: false`).
+2. **Cue helper (chosen over inline literals).** New `NYCFarmerMarkets/Models/FavoriteCue.swift`, `nonisolated`, Foundation only:
+   ```swift
+   nonisolated enum FavoriteCue {
+       /// Cue for removing a favorite (swipe action, accessibility action).
+       static let removal: AppSound = .ay
+       /// Cue for the detail toolbar toggle, from the state before the press.
+       static func toggle(wasFavorite: Bool) -> AppSound { wasFavorite ? removal : .hiss }
+   }
+   ```
+   The toolbar needs a branch that is easy to get backwards, and the helper makes it unit testable. Views never write `.ay`.
+3. **Call sites.** In `FavoritesView`, the swipe action and the "Remove from favorites" action play `FavoriteCue.removal`, then call `favorites.remove(market)`. In `MarketDetailToolbar`, the toggle plays `FavoriteCue.toggle(wasFavorite: isFavorite)` and then calls `favorites.toggle(market)`; `isFavorite` is read before the toggle. Row tap and Close keep `.hiss`.
+4. **Policy, VoiceOver, test mute.** No change. `setVoiceOverOn(true)` already calls `stopAll()`. When Switch Control or Voice Control triggers the action and VoiceOver is off, Ay plays. Under `-uiTestingMuteSounds` the `SilentSoundPlayer` handles it.
+5. **Rapid removals.** Each removal calls `play(.ay)` once; the player restarts the clip.
+6. **Documentation.** `theme-conventions.md` lists `ay` and states the removal rule. `tech.md` adds `ay` to the list of recordings so it is not stale.
+
+### Error handling
+A missing or unreadable `ay.m4a` is logged by `SoundPlayer.prepare()` and skipped; `play(.ay)` returns when no player exists, and the removal still happens. Audio session or `AVAudioPlayer` failures are handled by the existing player. No new error paths and no external inputs are added.
+
+### Invariant ownership
+- One sound per removal: the call sites (one `play` call per action) and the helper (one cue per path).
+- Muted under VoiceOver, sounds off, test mute: `SoundController` and `SoundPolicy` only. Views do not check these.
+- Sound file names only in `Theme/`: `AppSound`, enforced by the convention grep.
+
+### Testing
+- `AppSoundTests`: add `ayIsABundledOneShot` (file name, extension, not a loop, in `allCases`, bundle URL exists). Existing `everySoundFileIsBundled`, `fileNamesAreUnique` and `onlyStepSoundsLoop` also cover `ay`.
+- New `FavoriteCueTests`: `removal == .ay`, `removal != .hiss`, `toggle(wasFavorite: true) == .ay`, `toggle(wasFavorite: false) == .hiss`.
+- `SoundControllerTests`: with `FakeSoundPlayer`, `play(.ay)` is forwarded when enabled and VoiceOver is off; not forwarded when sounds are off, when VoiceOver is on, or when muted; forwarded again after VoiceOver turns off.
+- UI test `testDetailToggleAddsThenRemovesFavorite`: open the first market, expect the `favorite-toggle` label `Add to favorites`, tap, expect `Remove from favorites`, tap, expect `Add to favorites`. It proves removal still works; it cannot hear the cue.
+- Wiring of the three views to `FavoriteCue` is verified by code review and the manual device check only, not by automated tests.
+
+### Files
+`Theme/AppSound.swift` (case), `Models/FavoriteCue.swift` (new), `Views/FavoritesView.swift`, `Views/Shared/MarketDetailToolbar.swift`, `AppSoundTests.swift`, `FavoriteCueTests.swift` (new), `SoundControllerTests.swift`, `NYCFarmerMarketsUITests.swift`, `.kiro/steering/theme-conventions.md`, `.kiro/steering/tech.md`, and this spec folder.
+
+### Edge cases
+Ay playing when VoiceOver turns on or Sounds turns off is stopped by `stopAll()`. Two removals within 1 s restart Ay. Ay and the cat-steps loop can overlap briefly, as the hiss did; the swipe action does not scroll the list. Removing the last favorite shows the empty state and still plays one sound. The pushed single map shares `MarketDetailToolbar`, so it behaves the same.
