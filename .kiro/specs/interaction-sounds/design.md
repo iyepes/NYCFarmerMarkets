@@ -88,7 +88,7 @@ The resume-during-fade path cannot be unit tested (it needs real `AVAudioPlayer`
 
 ### 7. Sound toggle
 
-`MarketListView` gets `.toolbar { ToolbarItem(placement: .primaryAction) { SoundToggleButton() } }`. The button shows `AppIcon.soundOn.image` or `soundOff.image`, `accessibilityIdentifier("sound-toggle")`, `accessibilityLabel("Sounds")`, `accessibilityValue(isEnabled ? "On" : "Off")`. Its action sets `sounds.isEnabled.toggle()` then `play(.hiss)` (the policy blocks the hiss when off). `AppIcon` gains `soundOn` (`speaker.wave.2.fill`, "Sounds on") and `soundOff` (`speaker.slash.fill`, "Sounds off"). The toggle is not blocked by VoiceOver mute: it stays usable and the choice is saved (R7.3).
+`MarketListView` gets `.toolbar { ToolbarItem(placement: .primaryAction) { SoundToggleButton() } }`. The button shows `AppIcon.soundOn.image` or `soundOff.image`, `accessibilityIdentifier("sound-toggle")`, `accessibilityLabel("Sounds")`, `accessibilityValue(isEnabled ? "On" : "Off")`. Its action calls `sounds.setEnabled(!sounds.isEnabled)` then `play(.hiss)` (the policy blocks the hiss when off). `AppIcon` gains `soundOn` (`speaker.wave.2.fill`, "Sounds on") and `soundOff` (`speaker.slash.fill`, "Sounds off"). The toggle is not blocked by VoiceOver mute: it stays usable and the choice is saved (R7.3).
 
 ### 8. Audio session
 
@@ -123,6 +123,7 @@ protocol SoundPlaying: AnyObject {
     func play(_ sound: AppSound)
     func startLoop(_ sound: AppSound)
     func stopLoop(_ sound: AppSound)   // fade ~0.3 s
+    func stop(_ sound: AppSound)       // hard stop, no fade
     func stopAll()
 }
 final class SoundPlayer: SoundPlaying {}
@@ -130,8 +131,10 @@ final class SilentSoundPlayer: SoundPlaying {}
 // Stores/SoundController.swift
 @Observable final class SoundController {
     // @ObservationIgnored private let: defaults, key, testMuted, player
-    var isEnabled: Bool              // didSet saves to UserDefaults "soundEnabled"; default true
-    var voiceOverOn: Bool            // didSet stops all when it becomes true
+    private(set) var isEnabled: Bool   // saved to UserDefaults "soundEnabled" by setEnabled(_:); default true
+    private(set) var voiceOverOn = false
+    func setEnabled(_ enabled: Bool)   // the only way to change isEnabled; saves it, stops all sounds when false
+    func setVoiceOverOn(_ on: Bool)    // stops all sounds when VoiceOver turns on; resumes nothing by itself
     private(set) var currentLoop: AppSound?
     init(defaults: UserDefaults = .standard, key: String = "soundEnabled",
          testMuted: Bool = false, player: any SoundPlaying)

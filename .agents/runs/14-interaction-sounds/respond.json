@@ -1,0 +1,7 @@
+{
+  "pr": "https://github.com/iyepes/NYCFarmerMarkets/pull/15",
+  "state": "MERGED",
+  "action": "none",
+  "notes": "PR merged. The only new item was a SonarQube Cloud comment reporting the quality gate passed (0 new issues). All inline review threads were already answered by the owner. No code changes, commits or pushes were made in this pass.",
+  "newFailedChecks": []
+}

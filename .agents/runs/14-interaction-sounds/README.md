@@ -36,4 +36,14 @@ f5ea59e docs: add spec for #14 interaction-sounds
 - code-review-agent.md, code-review-semantic.md, code-review-summary.md, code-review.json: code review
 - test-report.md, test-gate.json: test results and gate
 
-Paths were sanitized (`<repo>` and ~). pr.json, respond.json and pr-body.md are not part of this archive.
+Paths were sanitized (`<repo>` and ~). pr-body.md is not part of this archive.
+
+## Added after the merge (PR #15, 2026-11-14)
+
+Added by hand after PR #15 was squash-merged:
+- issue-body-interaction-sounds.md: the issue body posted as #14
+- pr.json: PR #15 metadata
+- respond.json: final PR responder status (PR merged, no actions)
+- code-review.json: updated with the review findings archived during the cubic review (from commit 846c9d0 on the feature branch, which the squash merge did not include)
+
+The live spec `.kiro/specs/interaction-sounds/` also got the cubic review fixes from 846c9d0 and 88c6cec (narrowed VoiceOver resume criterion R7.2) in the same PR.
