@@ -1,140 +1,98 @@
-# Requirements Document
+# Requirements: Interaction sounds (issue #14)
 
-## Introduction
+Branch: `feature/14-interaction-sounds`. Basis: the approved spec `.kiro/specs/interaction-sounds/requirements.md`, which the record_spec step updates in place (no new spec folder).
 
-This feature adds interaction sounds to the NYC Farmer Markets app ("Spooky Markets"), using five sounds recorded by the owner. Footsteps loop while the user scrolls the Markets list (human steps) and the Favorites list (cat steps). A short hiss plays when a button is pressed. A sliding door that hits plays when the market detail sheet or the single-market map opens, and a sliding door plays when a tab appears. The user can turn sounds off in the app, and sounds are silent while VoiceOver runs. Sounds follow the device's silent switch and mix with other audio. The recordings are in `Sounds/` at the repository root and move to `NYCFarmerMarkets/Sounds/` with kebab-case names.
+## Summary
 
-## Glossary
-
-- **App**: The NYC Farmer Markets application.
-- **Sound_Files**: The five owner-recorded files, after the move: `NYCFarmerMarkets/Sounds/human-steps.m4a` (6.7 s), `cat-steps.m4a` (1.4 s), `door.m4a` (2.9 s), `door-and-hit.m4a` (2.9 s), `short-hiss.m4a` (1.0 s). Originals: `Sounds/Human steps.m4a`, `Sounds/Cat steps.m4a`, `Sounds/Door.m4a`, `Sounds/Door and hit.m4a`, `Sounds/Short hiss.m4a`.
-- **App_Sound**: The single registry type in `NYCFarmerMarkets/Theme/` that names each sound and its file. The only place sound file names may appear.
-- **Sound_Controller**: The store that decides whether a sound may play and asks the player to play it.
-- **Sound_Player**: The component that loads and plays Sound_Files.
-- **Step_Loop**: A sound that repeats while a list scrolls: Human_Steps for the Markets list, Cat_Steps for the Favorites list.
-- **Hiss**: `short-hiss.m4a`, played on a button press.
-- **Door**: `door.m4a`, played when a tab appears.
-- **Door_And_Hit**: `door-and-hit.m4a`, played when the Detail_Sheet or the Single_Market_Map opens.
-- **Sound_Toggle**: The speaker button in the Markets_Tab toolbar that turns sounds on and off.
-- **Sounds_Enabled**: The user's saved on/off choice (UserDefaults key `soundEnabled`), default on.
-- **Scrolling**: The list moves because of the user, either while the finger drags it or while it coasts after release. Programmatic changes (rows added or removed, sections expanding) are not Scrolling.
-- **Splash_Screen**, **Markets_Tab**, **Map_Tab**, **Favorites_Tab**, **Detail_Sheet**: As in `.kiro/specs/nyc-farmer-markets/requirements.md`.
-- **Single_Market_Map**: The in-app map pushed from the Detail_Sheet by "Go to Map" (`MarketLocationMapView`).
+Add interaction sounds to Spooky Markets using five recordings made by the owner. Footsteps loop while the Markets list (human) and the Favorites list (cat) scroll. A short hiss plays on button presses. A door-and-hit plays when the detail sheet or the single-market map opens. A door plays when the tabs first appear and on tab change. A speaker toggle in the Markets toolbar turns sounds on and off. Sounds are muted while VoiceOver runs. Only Apple frameworks (AVFoundation, SwiftUI) are used.
 
 ## Assumptions
 
-1. The owner recorded the Sound_Files and they may be published in the public repository.
-2. "Button" means any tappable control that performs an action: themed buttons (Retry, More info, Go to Map, Directions), market rows in the Markets and Favorites lists, borough section headers, the Close button, the favorite toggle, the swipe-to-remove action and the Sound_Toggle. Tab bar items are not buttons for this feature; they get the Door.
-3. When a button opens a view, both sounds play: the Hiss on press, then the Door_And_Hit as the view opens (owner answer).
-4. Closing the Detail_Sheet or going back from the Single_Market_Map plays no door sound; only the Hiss of the pressed button, if a button was pressed.
-5. Swipe-down dismissal of the Detail_Sheet presses no button, so it is silent.
-6. The Door plays once when the tabs first appear after the Splash_Screen, and on every tab change by the user (owner answer).
-7. Sounds are muted while VoiceOver runs, regardless of Sounds_Enabled (owner answer).
-8. The Sound_Files are used as recorded. If a Step_Loop has silence at its start or end, the loop has a gap; trimming is the owner's task.
+1. The recordings are the owner's and may be public.
+2. "Button" means any tappable action control: themed buttons (Retry, More info, Go to Map, Directions), Markets and Favorites rows, borough section headers, Close, the favorite toggle, swipe-to-remove, and the sound toggle. Tab bar items are not buttons; they get the door.
+3. When a button opens a view, the hiss plays on press and the door-and-hit plays as the view opens (owner answer).
+4. Closing the sheet, going back from the map, and swipe-down dismissal play no door sound. Only a pressed button's hiss plays.
+5. The door plays on first tab appearance and on every tab change (owner answer).
+6. VoiceOver mutes all sounds regardless of the toggle (owner answer).
+7. Files are used as recorded. Any gap in a loop from silence in the recording is the owner's to trim.
+8. "Scrolling" means user-driven movement (drag plus coasting). Programmatic changes such as expanding sections are not scrolling.
 
-## Requirements
+## Functional Requirements
 
-### Requirement 1: Sound files are bundled
-**User Story:** As the owner of the App, I want my recordings to ship inside the App, so that they play on a real install.
+### R1. Bundled sound files
+1. The files are tracked at `NYCFarmerMarkets/Sounds/` as `human-steps.m4a`, `cat-steps.m4a`, `door.m4a`, `door-and-hit.m4a`, `short-hiss.m4a`. The originals under `Sounds/` are removed (moved).
+2. The files are in the built iOS and macOS bundles, with no `project.pbxproj` edit.
+3. One `AppSound` registry in `Theme/` holds all file names. No code outside `Theme/` contains a sound file name.
 
-#### Acceptance Criteria
-1. THE Sound_Files SHALL be tracked in git under `NYCFarmerMarkets/Sounds/` with the kebab-case names in the Glossary, and the original files under `Sounds/` SHALL no longer exist.
-2. THE Sound_Files SHALL be present in the built iOS and macOS app bundles.
-3. THE App_Sound registry SHALL define one case per Sound_File with its file name, and no code outside `Theme/` SHALL contain a sound file name.
-4. THE file move SHALL need no `project.pbxproj` edits (synchronized groups).
+### R2. Step loops while scrolling
+1. When the Markets list starts scrolling, human steps start looping. When Favorites starts scrolling, cat steps start looping.
+2. While scrolling continues, including coasting, the loop keeps playing without restarting.
+3. When scrolling stops, the loop fades out in about 0.3 s.
+4. When the user leaves the screen while scrolling (tab change, sheet opens, app backgrounds), the loop stops.
+5. At most one loop plays at a time.
 
-### Requirement 2: Step loops while scrolling
-**User Story:** As a user, I want to hear footsteps while I scroll, so that browsing feels like walking through the market.
+### R3. Hiss on button presses
+1. Each press of a button (Assumption 2) plays the hiss once.
+2. Turning sounds on with the toggle plays the hiss. Turning sounds off plays nothing.
+3. A hiss triggered while a hiss is playing restarts it and does not stack.
 
-#### Acceptance Criteria
-1. WHEN the Markets_Tab list starts Scrolling, THE App SHALL start Human_Steps looping.
-2. WHEN the Favorites_Tab list starts Scrolling, THE App SHALL start Cat_Steps looping.
-3. WHILE the list keeps Scrolling, including while it coasts after the finger lifts, THE Step_Loop SHALL keep playing without restarting from the beginning.
-4. WHEN the list stops Scrolling, THE App SHALL stop the Step_Loop with a short fade-out (about 0.3 s).
-5. WHEN the user leaves the screen while it is Scrolling (tab change, Detail_Sheet opens, App goes to the background), THE App SHALL stop its Step_Loop.
-6. THE App SHALL play at most one Step_Loop at a time.
+### R4. Door and hit on detail views
+1. Opening the detail sheet from any tab (Markets row, Favorites row, Map "More info") plays door-and-hit once.
+2. Pushing the single-market map from the sheet plays door-and-hit once.
+3. Going back from the map to the sheet does not replay it. Closing or going back plays no door sound.
 
-### Requirement 3: Hiss on button presses
-**User Story:** As a user, I want a hiss when I press a button, so that my taps feel spooky.
+### R5. Door on tabs
+1. The door plays once when the tabs first appear after the splash.
+2. The door plays once on each switch to a different tab.
+3. Reselecting the shown tab plays nothing.
+4. A door triggered while a door is playing restarts it and does not stack.
 
-#### Acceptance Criteria
-1. WHEN the user presses a button listed in Assumption 2, THE App SHALL play the Hiss once per press.
-2. WHEN the user presses the Sound_Toggle to turn sounds on, THE App SHALL play the Hiss; WHEN the user turns sounds off, THE App SHALL play nothing.
-3. WHEN the Hiss is triggered again before the previous Hiss ends, THE App SHALL restart it instead of stacking copies.
+### R6. Sound toggle
+1. The Markets toolbar shows a speaker button (`AppIcon.soundOn` or `AppIcon.soundOff`) with identifier `sound-toggle`, label "Sounds", value "On" or "Off".
+2. Pressing it flips the setting and saves it in UserDefaults key `soundEnabled`. The default is on.
+3. Turning sounds off stops any playing sound and blocks new ones.
 
-### Requirement 4: Door and hit when a detail view opens
-**User Story:** As a user, I want a door to slide and hit when a market's details open, so that opening feels like entering a room.
+### R7. VoiceOver
+1. No sound plays while VoiceOver runs, whatever the toggle says.
+2. When VoiceOver starts, any playing sound stops. When it stops, sounds resume if the toggle is on, with no relaunch.
+3. The toggle stays usable with VoiceOver and its choice is saved.
 
-#### Acceptance Criteria
-1. WHEN the Detail_Sheet opens from any tab (Markets row, Favorites row, Map "More info"), THE App SHALL play the Door_And_Hit once.
-2. WHEN the Single_Market_Map is pushed from the Detail_Sheet, THE App SHALL play the Door_And_Hit once.
-3. WHEN a button opens one of these views, THE App SHALL play the Hiss on press and then the Door_And_Hit as the view opens.
-4. WHEN the user goes back from the Single_Market_Map to the Detail_Sheet, THE App SHALL NOT play the Door_And_Hit again.
-5. WHEN the Detail_Sheet closes or the user goes back from the Single_Market_Map, THE App SHALL NOT play a door sound.
-
-### Requirement 5: Door when a tab appears
-**User Story:** As a user, I want a sliding door when I change rooms (tabs), so that each tab feels like a new room.
-
-#### Acceptance Criteria
-1. WHEN the tabs first appear after the Splash_Screen, THE App SHALL play the Door once.
-2. WHEN the user switches to a different tab, THE App SHALL play the Door once.
-3. WHEN the user selects the tab that is already shown, THE App SHALL NOT play the Door.
-4. WHEN the Door is triggered again before the previous Door ends, THE App SHALL restart it instead of stacking copies.
-
-### Requirement 6: Sound toggle
-**User Story:** As a user, I want to turn the sounds off, so that I can use the App quietly.
-
-#### Acceptance Criteria
-1. THE Markets_Tab toolbar SHALL show the Sound_Toggle with a speaker icon (`AppIcon.soundOn` when on, `AppIcon.soundOff` when off).
-2. WHEN the user presses the Sound_Toggle, THE App SHALL flip Sounds_Enabled and save it in UserDefaults key `soundEnabled`.
-3. WHEN the App starts, THE App SHALL read Sounds_Enabled; IF no value is saved, THEN sounds SHALL be on.
-4. WHEN Sounds_Enabled turns off, THE App SHALL stop any playing sound and play no new sound.
-5. THE Sound_Toggle SHALL have the accessibility label "Sounds", the value "On" or "Off", and the identifier `sound-toggle`.
-
-### Requirement 7: Silent while VoiceOver runs
-**User Story:** As a VoiceOver user, I want no sound effects over speech, so that I can hear VoiceOver clearly.
-
-#### Acceptance Criteria
-1. WHILE VoiceOver is running, THE App SHALL play no sound, regardless of Sounds_Enabled.
-2. WHEN VoiceOver starts while a sound plays, THE App SHALL stop it.
-3. WHEN VoiceOver stops, THE App SHALL play sounds again if Sounds_Enabled is on, without restarting the App.
-4. THE Sound_Toggle SHALL stay usable with VoiceOver and SHALL save the choice for when VoiceOver is off.
-
-### Requirement 8: Audio behavior with the system
-**User Story:** As a user, I want the sounds to respect my device, so that they never interrupt my music or ignore my silent switch.
-
-#### Acceptance Criteria
-1. ON iOS and visionOS, THE App SHALL use the ambient audio session category, so that sounds are silenced by the silent switch and mix with audio from other apps.
-2. THE App SHALL NOT pause or duck audio from other apps.
-3. ON macOS, THE App SHALL play sounds at the system volume with no session setup.
-4. IF a Sound_File cannot be loaded, THEN THE App SHALL log the failure with `Logger` once and continue silently, with no crash and no message to the user. IF playback fails, THEN THE App SHALL continue silently without logging.
-
-### Requirement 9: Tests and verification
-**User Story:** As the owner of the App, I want automated checks, so that the sound rules do not regress and test runs stay quiet.
-
-#### Acceptance Criteria
-1. THE unit tests (Swift Testing) SHALL verify that every App_Sound file is in the app bundle.
-2. THE unit tests SHALL verify the play decision for every combination of Sounds_Enabled, VoiceOver and the test mute.
-3. THE unit tests SHALL verify the Step_Loop decisions for sequences of scroll events (start, repeated start, stop, leaving the screen while scrolling).
-4. THE unit tests SHALL verify, with a fake player and a temporary UserDefaults, that Sounds_Enabled defaults to on, is saved, blocks playback when off, and stops loops when turned off.
-5. THE App SHALL accept the launch argument `-uiTestingMuteSounds`, which silences all sounds; every UI test SHALL pass it.
-6. A UI test SHALL verify that the Sound_Toggle value changes and survives a relaunch.
-7. THE existing unit and UI tests SHALL pass, and the iOS and macOS builds SHALL succeed.
-8. THE convention checks in `.kiro/steering/theme-conventions.md` SHALL print zero lines.
-9. THE pull request SHALL state what was not verified, expected to include the listening checks done by hand, visionOS and macOS audio.
+### R8. System audio behavior
+1. On iOS and visionOS the app uses the ambient audio session: the silent switch silences it and other apps' audio mixes.
+2. The app never pauses or ducks other apps' audio.
+3. On macOS sounds play at system volume with no session setup.
+4. If a file cannot be loaded, the failure is logged once with `Logger` (explicit privacy, no `print`) and the app continues silently with no user message. A playback failure continues silently without logging.
 
 ## Non-Functional Requirements
 
-1. THE feature SHALL use only Apple frameworks (AVFoundation, SwiftUI); no third-party dependencies.
-2. THE feature SHALL follow the steering conventions: pure logic `nonisolated` in `Models/`, stores in `Stores/`, services in `Services/`, registries in `Theme/`, icons only through `AppIcon`, no `project.pbxproj` edits.
-3. Sounds SHALL be preloaded so that a press plays without a noticeable delay, and loading SHALL NOT noticeably slow down app start.
-4. Running the UI test suite SHALL produce no sound.
-5. Specs for this feature live in `.kiro/specs/interaction-sounds/` as `requirements.md`, `design.md` and `tasks.md`.
+1. No third-party dependencies. Follow steering: pure logic `nonisolated` in `Models/`, stores in `Stores/`, services in `Services/`, registries in `Theme/`, icons only via `AppIcon`, colors only via `AppPalette`.
+2. Sounds are preloaded so a press plays without noticeable delay. App start is not noticeably slower.
+3. The UI test suite produces no sound.
+4. New test hook follows `LaunchOptions` conventions: inert unless passed, no build-time switch.
+
+## Acceptance Criteria
+
+1. The five files exist under `NYCFarmerMarkets/Sounds/` with the names above, `Sounds/` originals are gone, and the files are in the iOS and macOS app bundles. (R1)
+2. `grep` finds no `.m4a` sound file name outside `NYCFarmerMarkets/Theme/`. (R1.3)
+3. Scrolling the Markets list loops human steps and scrolling Favorites loops cat steps. The loop continues through coasting without restarting. (R2.1, R2.2)
+4. Stopping the scroll fades the loop out over about 0.3 s. Leaving the screen stops it. Never two loops at once. (R2.3 to R2.5)
+5. Each listed button press plays one hiss. A second press during playback restarts it. (R3)
+6. Opening the sheet from each of the three entry points, and pushing the map, plays door-and-hit once. Closing or going back plays no door sound. (R4)
+7. The door plays on first tab appearance and on a tab change, and not on reselecting the current tab. (R5)
+8. The `sound-toggle` exists in the Markets toolbar with the label, value and identifier above. Its value changes on press and survives a relaunch. Default is on. (R6)
+9. With the toggle off, no sound plays and playing sounds stop. (R6.3)
+10. With VoiceOver on, no sound plays. When VoiceOver turns off, sounds resume if the toggle is on. (R7)
+11. iOS and visionOS use the ambient session. Other apps' audio is not paused or ducked. (R8.1, R8.2)
+12. A missing file is logged once and the app does not crash or show a message. (R8.4)
+13. Swift Testing unit tests cover: every `AppSound` file in the bundle; the play decision for every combination of enabled, VoiceOver and test mute; step-loop decisions for scroll event sequences (start, repeated start, stop, leave while scrolling); the store with a fake player and temporary UserDefaults (default on, saved, blocks when off, stops loops when turned off).
+14. The launch argument `-uiTestingMuteSounds` silences all sounds. Every UI test passes it. A UI test checks the toggle value change and relaunch persistence.
+15. Existing unit and UI tests pass. iOS and macOS builds succeed. The convention checks in `.kiro/steering/theme-conventions.md` print zero lines.
+16. The PR lists what was not verified: hand listening checks, visionOS and macOS audio.
 
 ## Out of Scope
 
-- A volume setting or per-sound settings.
-- New or edited recordings (trimming, normalizing).
-- Changes to haptics (the favorite toggle keeps its `sensoryFeedback`).
-- Sounds for the Map tab's pan and zoom, pin taps, search typing or pull-to-refresh beyond the Step_Loop.
+- Volume or per-sound settings.
+- New, trimmed or normalized recordings.
+- Haptics changes (the favorite toggle keeps `sensoryFeedback`).
+- Sounds for map pan and zoom, pin taps, search typing, or pull-to-refresh beyond the step loop.
 - Localization of the toggle label.
