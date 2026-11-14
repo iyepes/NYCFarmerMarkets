@@ -81,7 +81,7 @@ Add interaction sounds to Spooky Markets using five recordings made by the owner
 7. The door plays on first tab appearance and on a tab change, and not on reselecting the current tab. (R5)
 8. The `sound-toggle` exists in the Markets toolbar with the label, value and identifier above. Its value changes on press and survives a relaunch. Default is on. (R6)
 9. With the toggle off, no sound plays and playing sounds stop. (R6.3)
-10. With VoiceOver on, no sound plays. When VoiceOver turns off, sounds resume if the toggle is on. (R7)
+10. With VoiceOver on, no sound plays. When VoiceOver turns off, the next sound cue plays if the toggle is on; a step loop stopped by VoiceOver restarts on the next scroll. (R7)
 11. iOS and visionOS use the ambient session. Other apps' audio is not paused or ducked. (R8.1, R8.2)
 12. A missing file is logged once and the app does not crash or show a message. (R8.4)
 13. Swift Testing unit tests cover: every `AppSound` file in the bundle; the play decision for every combination of enabled, VoiceOver and test mute; step-loop decisions for scroll event sequences (start, repeated start, stop, leave while scrolling); the store with a fake player and temporary UserDefaults (default on, saved, blocks when off, stops loops when turned off).
