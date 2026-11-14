@@ -10,7 +10,7 @@ Commands (from `.kiro/steering/tech.md`):
 
 # Implementation Plan
 
-- [ ] 1. Move and rename the sound files, add the `AppSound` registry
+- [x] 1. Move and rename the sound files, add the `AppSound` registry
   - `Sounds/` files are untracked today (git status shows none tracked there; verify with `git ls-files Sounds`). Create `NYCFarmerMarkets/Sounds/`, `mv` each file (`Human steps.m4a` → `human-steps.m4a`, `Cat steps.m4a` → `cat-steps.m4a`, `Door.m4a` → `door.m4a`, `Door and hit.m4a` → `door-and-hit.m4a`, `Short hiss.m4a` → `short-hiss.m4a`; use `git mv` if tracked), then stage the new paths by name. The old empty `Sounds/` folder must be gone (`rmdir` with the literal path `/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/Sounds` once empty).
   - Create `NYCFarmerMarkets/Theme/AppSound.swift`: `nonisolated enum AppSound: String, CaseIterable, Sendable` with cases `humanSteps, catSteps, door, doorAndHit, hiss`, and `fileName`, `fileExtension` ("m4a"), `loops` (true for the two step sounds).
   - Create `NYCFarmerMarketsTests/AppSoundTests.swift` (Swift Testing): every case's file exists in `Bundle.main` (the test host app bundle; use `Bundle(for:)`-free lookup consistent with `AppTypographyTests`), file names unique, exactly `humanSteps` and `catSteps` loop.
