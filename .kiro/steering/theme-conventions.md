@@ -9,7 +9,7 @@ Everything visual comes from `NYCFarmerMarkets/Theme/`. Views use semantic names
 
 ## Colors: `AppPalette`
 
-- Hex literals live only in `AppPalette.Base`. Views use semantic tokens (`AppPalette.background`, `.card`, `.cardSelected`, `.textPrimary`, `.textSecondary`, `.accent`, `.accentFill`, `.onAccentFill`, `.accentSecondary`, `.sectionHeader`, `.separator`, `.appIconBackground`, `.onAppIconBackground`) via `.color` (SwiftUI) or `.platformColor` (UIKit/AppKit).
+- Hex literals live in `AppPalette.Base`, except for the `0x000000` blend input in `AppPalette.background`. Views use semantic tokens (`AppPalette.background`, `.card`, `.cardSelected`, `.textPrimary`, `.textSecondary`, `.accent`, `.accentFill`, `.onAccentFill`, `.accentSecondary`, `.sectionHeader`, `.separator`, `.appIconBackground`, `.onAppIconBackground`) via `.color` (SwiftUI) or `.platformColor` (UIKit/AppKit).
 - Current palette is purple/orange: primary `0xAC84D6` lavender, secondary `0xC56B23` pumpkin orange, deep `0x31078C` deep purple, highlight `0xCA881E` amber, surface `0xCBC7D9` lavender gray. `appIconOlive` is a legacy name that now holds orange.
 - Need a new color role? Add a token derived from `Base` (use `AppPalette.mix`), and check text contrast with `AppPalette.contrast`.
 - Reusable styling: `.themedBackground()`, `.themedCard(selected:)`, `ThemedButtonStyle()`.
