@@ -66,7 +66,7 @@ Commands (from `.kiro/steering/tech.md`):
   - Requirements: R3.1, R3.3, AC5
   - Verify: iOS and macOS builds succeed; full tests pass (muted). Manual: each listed control hisses once per press on the simulator.
 
-- [ ] 8. Door sounds for tabs and detail views
+- [x] 8. Door sounds for tabs and detail views
   - `Views/RootTabView.swift`: add `private enum Tab: Hashable { case markets, map, favorites }`, `@State private var selection: Tab = .markets`, `TabView(selection: $selection)`, `.tag(Tab.…)` on each tab (labels and identifiers unchanged). `.onChange(of: selection)` → `sounds.stopAllLoops()` then `sounds.play(.door)`. `.onAppear` with a `@State private var hasAppeared` latch → `sounds.play(.door)` once. `.onChange(of: store.selectedMarket?.id)` nil → non-nil → `sounds.stopAllLoops()` then `sounds.play(.doorAndHit)`.
   - `Views/MarketDetailView.swift`: `.onChange(of: showsMap)` false → true → `sounds.play(.doorAndHit)`. Back, Close and swipe-down play nothing extra.
   - Files: `Views/RootTabView.swift`, `Views/MarketDetailView.swift`
