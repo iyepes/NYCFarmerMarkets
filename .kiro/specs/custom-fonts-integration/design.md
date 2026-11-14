@@ -1,5 +1,7 @@
 # Design: Custom fonts integration (issue #7)
 
+> **Current state:** the body font is now **Breath of the House** and `sectionHeader` is a display role. The sections below are the original design (N8ghtmare), then "Amendment after visual review" (Dr. Caligari, PR #8), then "Amendment 2" (manual changes after PR #8). Later sections win where they conflict.
+
 ## Overview
 
 Grim Creeper (display) and N8ghtmare (body) are applied through one new type, `AppTypography`, in `NYCFarmerMarkets/Theme/`, in the same spirit as `AppPalette` and `AppIcon`. The type holds the two font families, a semantic `Role` enum, and a `View.appFont(_:)` modifier. Views stop calling `.font(.headline)` and similar, and call `.appFont(.role)` instead. Fonts are registered at launch at runtime with CoreText, which works the same on iOS, macOS and visionOS. System-rendered bars (tab bar, navigation bar, search field) are styled in `ThemeAppearance` with UIKit appearance on iOS. No Xcode project file edits are needed.
@@ -246,3 +248,55 @@ After the first implementation was reviewed on the iOS simulator, the owner made
 - **Letter shapes.** Dr. Caligari is a calligraphic face: "t" can look like "r" or a cross and "h" has a flourish, so some words ("Street", "Greenmarket") need a second look. Digits are clear. This comes from the font, not the size.
 - **Licenses.** Dr. Caligari's file has a placeholder copyright ("(your company)") and no license text, so its author and terms are unknown. It now covers most of the UI text, so this is the main distribution risk. N8ghtmare (copyright "LionelPailloncy", no license text) is no longer used but is still in the repository. Grim Creeper states "Free to use for personal & commercial purposes" (sinisterfonts.com). Confirm the terms before distributing.
 - **Not verified:** visionOS; macOS at runtime; the live text-size change was checked on the Markets screen only.
+
+## Amendment 2: manual design changes after PR #8 (owner commits)
+
+The owner changed the typography by hand on `main` after PR #8 was merged (`d74e03e` "Replace fonts for readability, correct section header size", `40dd19c` "Correct Section headers size", `a3ad360` "update test to match change in Family Font role"). Where this section conflicts with earlier text, including the first amendment, this section wins. This is the current state of `Theme/AppTypography.swift`.
+
+### Changes
+
+1. **The body font is Breath of the House** (`Breath of the House.ttf`, by BlackFridayFont), chosen for readability. `Family.body.postScriptName` is `"Breath-of-the-House"` and `fileName` is `"Breath of the House.ttf"`. Grim Creeper is unchanged for the display family.
+2. **Unused fonts removed.** `DrCaligari.ttf` and `N8ghtmare.ttf` were deleted from `NYCFarmerMarkets/fonts/`. `Info.plist` `UIAppFonts` lists exactly `Grim Creeper.ttf` and `Breath of the House.ttf`. Earlier statements that Dr. Caligari or N8ghtmare stay bundled are superseded.
+3. **`sectionHeader` is a display role.** It moved from the body family to Grim Creeper so the borough headers read as headers. `Role` still has 13 cases; the display family now has 8 roles.
+4. **Sizes changed:** `sectionHeader` 15 → 30 pt; `splash` 26 → 40 pt. The display family has scale 1 and no floor, so both draw at their design size.
+5. **Borough header row (`Views/MarketListView.swift`):** the market count uses `.appFont(.sectionHeader)` (was `.caption`) and the chevron `IconView` is 30 pt (was 12), so the whole row matches the header size.
+6. **Unchanged from the first amendment:** body `sizeScale` 1.15 and `minimumSize` 14 pt; tab bar label cap 15 pt (`maximumPointSize`); `.id(dynamicTypeSize)` on the Markets screen; ", " as the row separator.
+7. **Tests:** `AppTypographyTests` expects the new body PostScript name and `sectionHeader` in `.display`. All 10 typography tests pass on the iOS simulator (checked 2026-11-14).
+
+### Current size table
+
+| Role | Family | Size | relativeTo | Drawn at (custom font) |
+|---|---|---|---|---|
+| splash | display | 40 | .title2 | 40 |
+| splashHint | display | 22 | .title3 | 22 |
+| tabTitle | display | 34 | .largeTitle | 34 |
+| tabBarLabel | display | 12 | .caption2 | 12 (cap 15 in the UIKit bar) |
+| navigationTitle | display | 20 | .headline | 20 |
+| detailTitle | display | 30 | .title | 30 |
+| sectionHeader | display | 30 | .subheadline | 30 |
+| favoriteItemTitle | display | 20 | .headline | 20 |
+| body | body | 17 | .body | 19.55 |
+| bodyEmphasis | body | 17 | .headline | 19.55 |
+| subheadline | body | 15 | .subheadline | 17.25 |
+| caption | body | 12 | .caption | 14 (floor) |
+| footnote | body | 13 | .footnote | 14.95 |
+
+### Notes and open points
+
+- **PostScript name.** The font file stores its PostScript name as `Breath of the House` (with spaces) in both name records. The code uses `Breath-of-the-House`, and CoreText resolves it: `bothFamiliesResolveAfterRegistration` passes. No change needed, but if a future CoreText version stops matching, the body text would fall back to the system font silently (logged as "Font not available").
+- **Scale and floor not re-checked.** The 1.15 scale, the 14 pt floor and the comment "small x-height and thin strokes" were tuned for Dr. Caligari. They were kept as is for Breath of the House and have not been reviewed on screen for the new font.
+- **Separator glyph not re-checked.** The ", " separator replaced "·" because Dr. Caligari does not draw it. Whether Breath of the House draws "·" has not been checked.
+- **Section header and Dynamic Type.** `sectionHeader` draws at 30 pt but scales relative to `.subheadline`, so at accessibility sizes it grows by the subheadline curve to well above 30 pt. Not checked at `.xxxLarge` with the 30 pt chevron.
+- **Convention gate.** The font-name pattern in the workflow gate is `Grim|N8ghtmare|Caligari|\.ttf`. It does not match `Breath`, so a hard-coded "Breath of the House" string outside `Theme/` would not be caught by the name part (the `.custom(` pattern still catches the call itself).
+
+### Licensing (supersedes the license notes above)
+
+- **Breath of the House:** embedded copyright "Copyright (c) 2026 by BlackFridayFont. All rights reserved."; the license field asks for a €2 payment, after which the font may be used for one project; OS/2 `fsType` 0x0004 (preview & print). The [dafont page](https://www.dafont.com/breath-of-the-house.font) states the same €2 terms. Some mirror sites list it as donationware or personal use only. No license file is in the repository, and the `.ttf` is published in this public GitHub repository, which the license text does not mention. Confirm the €2 payment and ask the author about redistribution before distributing the app.
+- **Grim Creeper:** "Free to use for personal & commercial purposes" (sinisterfonts.com), as before.
+- Dr. Caligari and N8ghtmare are no longer in the repository; their licensing open points no longer apply to new builds (they remain in git history).
+
+### Known limitations (still current)
+
+- Map tab tab-bar labels use the system font (cause not confirmed).
+- macOS tab and navigation titles stay in the system font (owner's decision).
+- Not verified: visionOS; macOS at runtime; the new font at large Dynamic Type sizes.
