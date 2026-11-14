@@ -1,12 +1,1 @@
-{
-  "verdict": "CHANGES_REQUESTED",
-  "findings": [
-    {"id": 1, "severity": "MEDIUM", "title": "Dynamic Type not preserved for UIKit-rendered bars set once at launch (req 6.1)"},
-    {"id": 2, "severity": "MEDIUM", "title": "macOS Title_Roles left unstyled; 'no supported hook' claim is wrong (.principal toolbar works); deviation from 4.2/4.3/4.5 not named"},
-    {"id": 3, "severity": "NIT", "title": "Availability/Registration naming and signatures drift between sections"},
-    {"id": 4, "severity": "NIT", "title": "Non-compilable or mismatched snippets (uiFont signature, optional urls concat, Resolved Equatable)"},
-    {"id": 5, "severity": "NIT", "title": "Borough and splash caption size changes unstated"},
-    {"id": 6, "severity": "NIT", "title": "Garbled Favorites rows lineLimit sentence"}
-  ],
-  "reviewDoc": "/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/.agents/tasks/feature-to-pr/03-design-review.md"
-}
+{"verdict": "APPROVED", "findings": [{"id": 1, "severity": "NIT", "summary": "Embedded responses section says 'table below' but the table is above"}, {"id": 2, "severity": "NIT", "summary": "Redundant 'removal is never .hiss' test assertion"}, {"id": 3, "severity": "NIT", "summary": "theme-conventions.md line 42 plain-button hiss rule needs the removal exception"}], "reviewDoc": "/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/.agents/tasks/feature-to-pr/03-design-review.md"}

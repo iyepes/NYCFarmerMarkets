@@ -1,16 +1,11 @@
-# Merged code review: feature/7-custom-fonts-integration
+# Code review summary: #18 ay-sound-on-favorite-removal
 
-Verdict: APPROVED. No blocking findings. All tasks in .kiro/specs/custom-fonts-integration/tasks.md are checked `[x]` (1, 2.1, 2.2, 3, 4.1-4.3, 5.1-5.4, 6, 7, 8, 9); no unchecked tasks.
+Verdict: APPROVED
 
-Both reviewers (agent and semantic) approved independently.
+Both reviewers (code-review-agent, code-review-semantic) approve with no blocking findings. They agree on every checked point: all three removal paths play Ay once, the toolbar reads `isFavorite` before the toggle, adding keeps the hiss, `.ay` goes through `SoundController` so the VoiceOver mute and test mute are unchanged, and the registry, tests, steering and dated spec amendment are in place.
 
-## Findings (all non-blocking)
+Tasks: `.kiro/specs/interaction-sounds/tasks.md` has no unchecked `- [ ]` items, and the amendment is present in requirements, design and tasks.
 
-1. Font licensing (both reviewers, high confidence): N8ghtmare and DrCaligari have no license text in their metadata; DrCaligari has a placeholder copyright. All fonts are tracked in a public repo. Flag in the PR and confirm terms before release.
-2. Tab bar fonts do not rescale on a live text size change (both reviewers): tab appearance is built once at launch. Known limitation; note in the PR.
-3. Unverified items (both reviewers): macOS visual check, visionOS, and screenshots of the detail sheet, Favorites with items, Map tab and long names. State in the PR.
-4. macOS navigation and tab titles keep the system font (semantic reviewer): owner-approved deviation, list under "Deviations" in the PR.
-5. `.appFont(.tabBarLabel)` inside SwiftUI `.tabItem` is likely ignored by the system tab bar (semantic reviewer, low): harmless, real styling comes from UITabBarAppearance.
-6. Weights dropped (section count, footnote) because N8ghtmare is single-weight (semantic reviewer, low): expected.
-7. Workflow JSON change (semantic reviewer, info): three font greps were added to `feature-to-pr.workflow.json`, which affects future runs. It is part of the spec.
-8. Test gap (semantic reviewer, low): no tests for ThemeAppearance configuration or MarketRow titleRole selection.
+## Non-blocking notes (include in the PR "not verified" section)
+1. The view wiring of the three call sites has no automated test. A device check is the cover (the owner confirmed device sound earlier). Confidence: both reviewers.
+2. `testDetailToggleAddsThenRemovesFavorite` cannot hear audio. It only proves that add, remove and label changes still work. Confidence: semantic reviewer.

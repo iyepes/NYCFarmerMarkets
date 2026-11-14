@@ -1,27 +1,25 @@
-## Plan recorded
+## Plan for #18: Ay sound on favorite removal
 
-Spec: `.kiro/specs/custom-fonts-integration/` (requirements.md, design.md, tasks.md) on branch `feature/7-custom-fonts-integration`.
+Spec: amendment "Ay on favorite removal" in `.kiro/specs/interaction-sounds/` (requirements, design, tasks) on branch `feature/18-ay-sound-on-favorite-removal`.
 
-### Key requirements
-- Fonts ship in the app bundle and resolve by their real PostScript names on iOS and macOS (`Grim-Creeper-Regular`, `N8ghtmare`). `DrCaligari.ttf` stays tracked and bundled, unused in the UI.
-- Grim Creeper on the splash, tab titles, detail title and Favorites item titles. N8ghtmare on all other text.
-- One typography type in `Theme/`; no font names or `.custom(` in views. Dynamic Type keeps working, with a system-font fallback.
-- Font license metadata is reported in the PR. Colors, icons, copy and accessibility labels do not change.
-- Owner decision: macOS tab and navigation titles stay in the system font (listed as a deviation in the PR).
+**Key requirements**
+- Removing a favorite plays `ay.m4a` instead of the hiss, exactly one sound per removal, on three paths: swipe "Remove", the "Remove from favorites" accessibility action, and the detail toolbar toggle when it turns a favorite off.
+- Adding a favorite with the toggle keeps the hiss. All other cues are unchanged.
+- The VoiceOver mute rule is unchanged: Ay is silent under VoiceOver, and can play when the action comes from Switch Control or Voice Control.
 
-### Design approach
-- New `nonisolated enum AppTypography` (families, 13 semantic roles, `appFont(_:)` modifier) with CoreText runtime registration, which works the same on every platform. `UIAppFonts` stays.
-- Pure `resolvedFont(for:isAvailable:)` so the fallback and role-to-family mapping are unit tested.
-- iOS tab bar, navigation bar and search field are styled in `ThemeAppearance` (minimal `UINavigationBarAppearance`, re-applied on content size changes), with screenshot checks and a SwiftUI `.principal` fallback.
-- Convention gate gets three new grep patterns.
+**Design**
+- Add `AppSound.ay` (file `ay`, not a loop) in `Theme/`.
+- Add a pure `nonisolated` helper `FavoriteCue` in `Models/` (`removal` is `.ay`; `toggle(wasFavorite:)` picks Ay or hiss) so the cue choice is unit tested.
+- The three call sites send the cue through `SoundController.play(_:)`. Policy, controller and player are not modified.
+- Update `theme-conventions.md` and `tech.md` to list `ay`.
 
-### Tasks
-- [ ] 1. Baseline and bundle layout check
-- [ ] 2. Create `AppTypography` with pure logic and unit tests
-- [ ] 3. Register fonts at launch and set the root font
-- [ ] 4. Apply roles in the views
-- [ ] 5. Style system-rendered bars (iOS only)
-- [ ] 6. Extend the convention gate
-- [ ] 7. Licensing report
-- [ ] 8. Full verification and visual evidence
-- [ ] 9. Specs and PR notes
+**Tasks**
+- [ ] 1. Register `ay` in `AppSound` and add `ayIsABundledOneShot`.
+- [ ] 2. Add `FavoriteCue` and `FavoriteCueTests`.
+- [ ] 3. Add `.ay` gating tests to `SoundControllerTests`.
+- [ ] 4. Switch the three removal paths to `FavoriteCue`.
+- [ ] 5. Add UI test `testDetailToggleAddsThenRemovesFavorite`.
+- [ ] 6. Update the steering files.
+- [ ] 7. Final verification (iOS and macOS builds, unit and full tests).
+
+Not verifiable by automated tests: hearing Ay on a device, silence under VoiceOver, and the view wiring (covered by code review and a manual device check).

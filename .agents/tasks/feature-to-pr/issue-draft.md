@@ -1,34 +1,40 @@
-Integrate custom fonts Grim Creeper and N8ghtmare
+Play the Ay sound when a market is removed from favorites
 
 ## Description
-The fonts `Grim Creeper.ttf`, `N8ghtmare.ttf` and `DrCaligari.ttf` were added under `NYCFarmerMarkets/fonts`. Make sure they are properly registered and bundled for distribution (iOS, macOS, visionOS) and apply them across the app through a single typography entry point.
 
-Usage:
-- Grim Creeper: splash screen text, tab titles (tab bar labels and large navigation titles of the three tabs), market detail title (name header and its navigation title), and item titles in the Favorites list.
-- N8ghtmare: all other visible text (body, hints, captions, buttons, banners, search field, section headers, detail field labels and values).
+The app already plays spooky sound cues (see the `interaction-sounds` spec). Removing a market from favorites currently plays the hiss. This issue replaces that sound with the owner's recording `Ay` (`NYCFarmerMarkets/Sounds/ay.m4a`, 1.0 s, stereo AAC), so removing a favorite is recognizable by ear.
 
-Question for the maintainer: `DrCaligari.ttf` is not requested for the UI. Keep it in the repo or remove it?
+## Behavior
 
-## Scope
-- Verify font files are tracked in git and included in the app target's resources (the project uses file-system-synchronized groups).
-- Choose one registration mechanism that works on all targets (supplemental Info.plist with UIAppFonts / ATSApplicationFontsPath, or runtime CTFontManagerRegisterFontsForURL).
-- Add `Theme/AppTypography.swift` next to AppPalette and AppIcon, with semantic roles, `Font.custom(_:size:relativeTo:)` for Dynamic Type, and a system font fallback.
-- Style system-rendered tab bar labels and navigation titles (e.g. via ThemeAppearance).
-- Out of scope: changing colors, icons or text wording.
+- Ay replaces the hiss on every removal path, so exactly one sound plays per removal:
+  - the swipe "Remove" action in `FavoritesView`,
+  - the "Remove from favorites" accessibility action in `FavoritesView`,
+  - the favorite toggle in `MarketDetailToolbar` when it turns a favorite off.
+- Adding a favorite with the toggle keeps the hiss.
+- Sounds stay muted while VoiceOver runs (unchanged). Ay is therefore silent under VoiceOver, but can still play when the accessibility action is triggered by Switch Control or Voice Control.
+- No other behavior changes.
+
+## Implementation notes
+
+- Add an `ay` case to the `AppSound` registry in `Theme/` (file name `ay`), cover it in `AppSoundTests` (bundled, not a loop).
+- Play it through `SoundController` like the other cues.
+- Update `.kiro/steering/theme-conventions.md` if it lists the sounds.
+- Add a dated "Amendment: Ay on favorite removal" to the existing `.kiro/specs/interaction-sounds/` spec (requirements, design, tasks).
 
 ## Acceptance criteria
-- [ ] Fonts are tracked in git and present in the built .app bundle on iOS and macOS, with no new build warnings
-- [ ] One registration mechanism is chosen and works on iOS and macOS (visionOS reviewed)
-- [ ] Real PostScript names are verified with a tool and used in code
-- [ ] Font license and copyright metadata from each font's name table is inspected and reported; missing, personal-use-only or unknown licenses are flagged clearly
-- [ ] `AppTypography` defines both families once, with semantic roles (splash, tab title, detail title, favorite item title, body, etc.)
-- [ ] Views use only typography roles; no `.custom(` or font-name literals outside `Theme/` (convention grep extended)
-- [ ] Grim Creeper is used for splash, tab titles, detail title and Favorites item titles; N8ghtmare for everything else
-- [ ] Tab bar labels and navigation titles pick up the fonts
-- [ ] Dynamic Type keeps working; fallback to the system font if a font fails to load
-- [ ] Readability of the decorative fonts reviewed and any hard-to-read text flagged with what was done; VoiceOver text unchanged
-- [ ] Long strings and large Dynamic Type checked for truncation on splash, tab labels, navigation titles, detail title and Favorites rows
-- [ ] Unit tests cover font loading (expected PostScript names), role-to-family mapping and fallback
-- [ ] Existing unit and UI tests still pass
-- [ ] iOS and macOS builds pass; iOS simulator screenshots of splash, each tab, detail and Favorites; unverified items (macOS visual check, visionOS) reported
-- [ ] Decision on `DrCaligari.ttf` recorded
+
+- [ ] `AppSound` has an `ay` case that resolves to the bundled `ay.m4a` and is not a loop.
+- [ ] `AppSoundTests` covers `ay` (file is bundled, not a loop).
+- [ ] Swipe "Remove" in `FavoritesView` plays Ay and not the hiss.
+- [ ] The "Remove from favorites" accessibility action in `FavoritesView` plays Ay and not the hiss.
+- [ ] Turning a favorite off with the `MarketDetailToolbar` toggle plays Ay and not the hiss.
+- [ ] Turning a favorite on with the toggle still plays the hiss.
+- [ ] Exactly one sound plays per removal.
+- [ ] Sounds remain muted while VoiceOver runs, and when sound is off in settings.
+- [ ] `theme-conventions.md` lists the new sound if it lists the others.
+- [ ] The `interaction-sounds` spec has a dated "Amendment: Ay on favorite removal" in requirements, design and tasks.
+- [ ] iOS and macOS builds succeed and unit tests pass.
+
+## Slug
+
+`ay-sound-on-favorite-removal`

@@ -1,125 +1,80 @@
-# Requirements Document
+# Requirements: Ay sound on favorite removal (issue #18)
 
-## Introduction
+Branch: `feature/18-ay-sound-on-favorite-removal`. Issue: https://github.com/iyepes/NYCFarmerMarkets/issues/18. Basis: the existing spec `.kiro/specs/interaction-sounds/`, which the record_spec step amends with a dated "Amendment: Ay on favorite removal" in requirements.md, design.md and tasks.md (no new spec folder).
 
-This feature integrates two custom display fonts, Grim Creeper and N8ghtmare, into the NYC Farmer Markets app (iOS, macOS and visionOS). It first verifies that the font files ship inside the app and are registered on every platform. It then applies Grim Creeper to title-level text and N8ghtmare to all other text, through one typography type in `Theme/`, in the same way `AppPalette` holds colors and `AppIcon` holds icons. Dynamic Type and VoiceOver keep working. Colors, icons and the wording of texts do not change. The fonts are in `NYCFarmerMarkets/fonts/`. Tracks GitHub issue #7.
+## Summary
 
-## Glossary
-
-- **App**: The NYC Farmer Markets application.
-- **App_Typography**: The single type in `NYCFarmerMarkets/Theme/` that defines both font families and the semantic text roles. The only place font names and `Font.custom` may appear.
-- **Display_Font**: Grim Creeper (`Grim Creeper.ttf`). The user wrote "Grim Crepper"; this is the file that exists.
-- **Body_Font**: N8ghtmare (`N8ghtmare.ttf`).
-- **Unused_Font**: `DrCaligari.ttf`. Not requested for the UI.
-- **Title_Role**: Splash text, tab titles, detail title, Favorites item titles.
-- **Splash_Screen**, **Markets_Tab**, **Map_Tab**, **Favorites_Tab**, **Detail_Sheet**: As in `.kiro/specs/nyc-farmer-markets/requirements.md`.
-- **Tab_Title**: The tab bar label of each tab and the large navigation title of each tab.
-- **Detail_Title**: The market name header in the Detail_Sheet and its navigation title.
-- **Favorite_Item_Title**: The market name in each Favorites_Tab row.
-- **Other_Text**: All visible text that is not a Title_Role (body text, hints, captions, buttons, banners, search field and prompt, section headers, detail field labels and values, empty and error states).
+When a market is removed from favorites, Spooky Markets plays the owner's "Ay" recording (`NYCFarmerMarkets/Sounds/ay.m4a`, 1.0 s, stereo AAC, owner-recorded, OK to publish) instead of the button hiss. Exactly one sound plays per removal, on all three removal paths. Adding a favorite keeps the hiss. The rule that every sound is muted while VoiceOver runs is unchanged. No other behavior changes.
 
 ## Assumptions
 
-1. "Titles" means title-level text only. Section headers (for example borough headers) and detail field labels are Other_Text.
-2. Tab_Title covers both the tab bar labels and the navigation titles of the three tabs.
-3. Market names in Markets_Tab list rows are Other_Text, because the user listed only Favorites item titles. The design may flag this for confirmation.
-4. Per the issue decision, `DrCaligari.ttf` stays tracked and bundled, and is not used in the UI.
-5. The repository already has `NYCFarmerMarkets/Info.plist` with a `UIAppFonts` array and `INFOPLIST_FILE` set alongside `GENERATE_INFOPLIST_FILE = YES`. Verification must confirm whether this works on every platform. It is not assumed to.
-6. The user's phrasing "Review that fonts are properly registered" means verify and fix, not only report.
+1. Current code: each of the three removal paths plays `.hiss` before calling `favorites.remove(market)` or `favorites.toggle(market)`. The change replaces that cue on removal and leaves everything else.
+2. "Removal" means a market that is a favorite becomes a non-favorite through a user action. Programmatic or stored-id cleanup does not exist and is not in scope.
+3. In the detail toolbar the toggle plays Ay when the market is a favorite at the moment of the press, and hiss when it is not.
+4. Ay is a one-shot sound, like the hiss. A new Ay while one is playing restarts it and does not stack (same rule as R3.3 of the base spec).
+5. Ay obeys the existing `SoundPolicy` gates: sounds toggle off, VoiceOver running. It is silent under VoiceOver. It can play when the "Remove from favorites" accessibility action is triggered through Switch Control or Voice Control, because VoiceOver is not running then.
+6. Removing several favorites quickly plays Ay once per removal (restarting), which is the existing one-shot behavior.
 
-## Requirements
+## Functional Requirements
 
-### Requirement 1: Fonts are bundled and registered on every platform
-**User Story:** As the owner of the App, I want the fonts to ship with the App and load on iOS, macOS and visionOS, so that the typography appears on a real install and not only in my dev environment.
+### R1. Ay registered as a bundled sound
+1. `AppSound` has an `ay` case whose `fileName` is `ay` and `fileExtension` is `m4a`.
+2. `ay` does not loop (`loops` is false).
+3. `ay.m4a` is in the built iOS and macOS bundles with no `project.pbxproj` edit.
+4. No code outside `Theme/` contains the file name `ay`.
 
-#### Acceptance Criteria
-1. THE font files SHALL be tracked in git and present in the built app bundle of the iOS build and the macOS build.
-2. THE App SHALL use one registration mechanism that covers all three platforms, or a documented per-platform pair, and SHALL verify it works on the iOS simulator and on macOS.
-3. WHEN the iOS App starts, THE Display_Font and Body_Font SHALL be resolvable by their real PostScript names (`UIFont(name:size:)` returns non-nil).
-4. WHEN the macOS App starts, THE Display_Font and Body_Font SHALL be resolvable by their real PostScript names (`NSFont(name:size:)` returns non-nil).
-5. THE code SHALL use the PostScript names read from the font files with a tool, not the file names.
-6. THE iOS and macOS builds SHALL complete with no new warnings related to fonts or resources.
-7. THE Unused_Font SHALL remain tracked and bundled, and no view SHALL use it.
+### R2. Ay replaces the hiss on removal
+1. Swiping "Remove" on a Favorites row plays Ay once and does not play the hiss.
+2. Running the "Remove from favorites" accessibility action on a Favorites row plays Ay once and does not play the hiss.
+3. Pressing the favorite toggle in the detail toolbar when the market is a favorite plays Ay once and does not play the hiss.
+4. Exactly one sound plays per removal on each path.
+5. The market is still removed from favorites on each path, as before.
 
-### Requirement 2: Font licensing is reported
-**User Story:** As the owner of a public repository and a possibly distributed App, I want to know the fonts' licenses, so that I do not ship something I may not embed.
+### R3. Hiss stays elsewhere
+1. Pressing the favorite toggle when the market is not a favorite (adding) plays the hiss, not Ay.
+2. All other hiss cues (rows, Close, section headers, sound toggle, themed buttons) are unchanged.
 
-#### Acceptance Criteria
-1. THE feature SHALL report the license and copyright metadata found in the name tables of all three font files, quoting what the metadata says.
-2. IF the metadata is missing, personal-use-only or unclear, THEN THE report SHALL flag it clearly and SHALL NOT guess the license terms.
-3. THE report SHALL be included in the pull request description.
+### R4. Sound architecture and muting
+1. Views send the cue through `SoundController.play(_:)`; views do not touch audio.
+2. With the Sounds toggle off, Ay does not play.
+3. While VoiceOver runs, Ay does not play, whatever the toggle says. The VoiceOver mute rule (R7 of the base spec) is unchanged.
+4. When VoiceOver is off and the toggle is on, Ay plays, including when the accessibility action is triggered by Switch Control or Voice Control.
+5. Under `-uiTestingMuteSounds`, Ay goes through `SilentSoundPlayer` like every other sound.
 
-### Requirement 3: Central typography type
-**User Story:** As the owner of the App, I want fonts defined in one place, so that changing a font is a one-file change.
-
-#### Acceptance Criteria
-1. THE App SHALL define App_Typography in `NYCFarmerMarkets/Theme/`, `nonisolated` where the type holds only pure data.
-2. THE App_Typography SHALL define semantic roles, at least: splash, tab title, detail title, favorite item title, and body-level roles for the rest of the text.
-3. THE roles SHALL use `Font.custom(_:size:relativeTo:)` so that text scales with Dynamic Type.
-4. IF a font cannot be loaded, THEN THE role SHALL fall back to the system font with the same text style, so that text is never empty or broken.
-5. THE views SHALL use only App_Typography roles. No view outside `Theme/` SHALL contain a font-name string literal or `.custom(` call.
-6. THE existing convention check SHALL be extended to fail on font-name literals and `.custom(` outside `Theme/`.
-
-### Requirement 4: Display font on Title_Roles
-**User Story:** As a user, I want the headline text to use the spooky display font, so that the App has a distinct look.
-
-#### Acceptance Criteria
-1. THE Splash_Screen text SHALL use the Display_Font.
-2. THE Tab_Title of Markets_Tab, Map_Tab and Favorites_Tab, both the tab bar label and the navigation title, SHALL use the Display_Font.
-3. THE Detail_Title SHALL use the Display_Font.
-4. THE Favorite_Item_Title in each Favorites_Tab row SHALL use the Display_Font.
-5. WHERE a system-rendered element (tab bar, navigation bar) does not pick up SwiftUI font modifiers, THE App SHALL set the font through appearance configuration in `ThemeAppearance` (UIKit appearance on iOS, and the equivalent on macOS where applicable).
-6. THE appearance fix SHALL be verified with simulator screenshots, because unit tests cannot observe it.
-
-### Requirement 5: Body font on everything else
-**User Story:** As a user, I want all other text to use the body font, so that the look is consistent.
-
-#### Acceptance Criteria
-1. THE Other_Text SHALL use the Body_Font through App_Typography roles.
-2. THE search field text and prompt, offline banner, empty and error states, buttons, swipe actions, section headers, and detail field labels and values SHALL use the Body_Font.
-3. THE App SHALL NOT leave any visible text in the default system font, unless it is a documented fallback or a system-owned element that cannot be styled (to be listed in the PR).
-
-### Requirement 6: Accessibility and readability
-**User Story:** As a user with accessibility needs, I want the new fonts to stay usable, so that the theme does not block me.
-
-#### Acceptance Criteria
-1. THE text SHALL scale with the user's Dynamic Type setting.
-2. VoiceOver labels, values and hints SHALL be unchanged by this feature.
-3. THE feature SHALL review the readability of both decorative fonts at small sizes and flag any text that is hard to read, and SHALL state what was done (for example size adjustment or use of the other font).
-4. THE feature SHALL NOT claim full accessibility compliance. Manual VoiceOver and expert review remain outside this feature.
-
-### Requirement 7: Layout stays intact
-**User Story:** As a user, I want long names and large text sizes to remain readable, so that the new fonts do not break screens.
-
-#### Acceptance Criteria
-1. THE Splash_Screen, tab bar labels, navigation titles, Detail_Title and Favorites rows SHALL be checked with long market names and the largest standard Dynamic Type sizes.
-2. IF text is truncated or clipped, THEN THE App SHALL show it with wrapping, line limits or scaling that keeps the content reachable, and SHALL NOT hide information that was visible before.
-3. THE accessibility identifiers used by existing UI tests SHALL be unchanged.
-
-### Requirement 8: Tests and verification
-**User Story:** As the owner of the App, I want automated checks and recorded evidence, so that regressions are caught.
-
-#### Acceptance Criteria
-1. THE unit tests (Swift Testing) SHALL verify that both families resolve to the expected PostScript names.
-2. THE unit tests SHALL verify that each Title_Role maps to the Display_Font family and each body role maps to the Body_Font family.
-3. THE unit tests SHALL verify the fallback to the system font when a font name does not resolve.
-4. THE existing unit tests and UI tests (XCTest) SHALL pass.
-5. THE iOS and macOS builds SHALL succeed.
-6. THE convention grep (no color literals, hex literals, raw SF Symbol names, font-name literals or `.custom(` outside `Theme/`) SHALL pass.
-7. THE feature SHALL include iOS simulator screenshots of the Splash_Screen, each tab, the Detail_Sheet and Favorites_Tab with at least one favorite.
-8. THE pull request SHALL state what was not verified, expected to include the macOS visual check and visionOS.
+### R5. Documentation
+1. `.kiro/steering/theme-conventions.md` lists `ay` among the `AppSound` cases and states that removing a favorite plays Ay instead of the hiss.
+2. `.kiro/specs/interaction-sounds/requirements.md`, `design.md` and `tasks.md` each get a dated "Amendment: Ay on favorite removal" section; earlier text is not rewritten.
 
 ## Non-Functional Requirements
 
-1. THE change SHALL follow project conventions: no project file edits for new source files (synchronized groups), colors only from `AppPalette`, icons only from `AppIcon`.
-2. Adding the fonts SHALL NOT noticeably slow down app start.
-3. Specs for this feature live in `.kiro/specs/custom-fonts-integration/` as `requirements.md`, `design.md` and `tasks.md`.
+1. Only Apple frameworks; no new dependencies.
+2. No new colors or icons are needed. No new accessibility identifiers; existing ones (`favorite-row`, `favorite-toggle`, `favorites-list`) are not renamed.
+3. Pure logic added to `Models/` (if any) is `nonisolated` and unit tested with Swift Testing.
+
+## Acceptance Criteria
+
+1. `AppSound.ay.fileName == "ay"`, `fileExtension == "m4a"`, `loops == false`.
+2. `AppSound.allCases` includes `ay`, and `AppSoundTests` verifies that `ay.m4a` is in the app bundle and that `ay` is not a loop.
+3. Swipe "Remove" on a favorite plays only Ay (one play call, `.ay`, no `.hiss`) and removes the market.
+4. The "Remove from favorites" accessibility action plays only Ay and removes the market.
+5. The detail favorite toggle on a favorite plays only Ay and removes the market.
+6. The detail favorite toggle on a non-favorite plays only the hiss and adds the market.
+7. With sounds off, or with VoiceOver running, a removal plays no sound (policy test with `.ay`).
+8. With VoiceOver off and sounds on, `.ay` is allowed to play.
+9. Grep for `ay.m4a` or `"ay"` outside `NYCFarmerMarkets/Theme/` finds nothing in Swift sources (the steering grep check still passes).
+10. `theme-conventions.md` and the three `interaction-sounds` spec files carry the amendment text described in R5.
+11. iOS and macOS builds succeed and the unit tests pass. Existing UI tests still pass (they run with `-uiTestingMuteSounds`).
+
+## Verification notes
+
+- Unit-testable: `AppSound` registry, `SoundController`/`SoundPolicy` behavior with a recording fake `SoundPlaying`, which cue each removal path sends if the cue choice is extracted to a pure helper (design decision).
+- UI tests can confirm removal still works via `favorite-row` swipe and `favorite-toggle`; they cannot hear audio. Actual audio and the Switch Control or Voice Control case are manual checks on a device and are not verified by automated tests.
 
 ## Out of Scope
 
-- Changing colors, icons or the wording of texts.
-- Using the Unused_Font anywhere in the UI.
-- Removing `DrCaligari.ttf` (decided: keep).
-- Adding a user setting to switch fonts.
-- Localization and non-Latin glyph coverage, beyond noting missing glyphs found in the market data.
-- Full accessibility audit with assistive technologies.
+1. Changing the VoiceOver muting rule or adding a VoiceOver-specific sound.
+2. Changing the hiss on adding a favorite or any other cue.
+3. Re-recording, trimming or editing `ay.m4a`.
+4. New settings, per-sound toggles or volume controls.
+5. Haptic changes (`.sensoryFeedback(.selection)` stays).
+6. Sound on removal paths that do not exist today (undo, bulk removal).

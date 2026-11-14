@@ -1,45 +1,36 @@
 ## Summary
-- The "Go to Map" button in the market detail view now pushes the app's internal map showing only the selected market.
-- New "Directions" button performs the previous action: opens the market in the external Apple Maps app.
-- Extracted a shared `MarketDetailToolbar`, moved `MarketPin` to a shared file, added `MarketLocationMapView` and `SingleMarketMap` logic, and a directions icon in the AppIcon registry.
-- Spec added under the issue's docs; requirement 5.4 amended.
 
-## Test report
+Plays the owner's `ay` sound (`NYCFarmerMarkets/Sounds/ay.m4a`) when a market is removed from favorites.
 
-All commands were run from /Users/isabelyepes/Documents/XCode/NYCFarmerMarkets (project NYCFarmerMarkets.xcodeproj, scheme NYCFarmerMarkets). No code was changed in this step.
+- `ay` is registered in `AppSound` (Theme/) and played through `SoundController` like the other cues, via a new `FavoriteCue` helper.
+- Ay replaces the hiss on every removal path, so exactly one sound plays per removal: the swipe Remove action and the "Remove from favorites" accessibility action in `FavoritesView`, and the favorite toggle in `MarketDetailToolbar` when it turns a favorite off.
+- Adding a favorite with the toggle keeps the hiss.
+- The rule that all sounds are muted while VoiceOver runs is unchanged. Ay is silent under VoiceOver and can still play when the accessibility action is triggered by Switch Control or Voice Control.
+- Tests: `AppSoundTests` (bundled, not a loop), `SoundController` gating, and a UI test for the detail favorite toggle (add and remove).
+- Docs: `.kiro/steering/theme-conventions.md` updated, and a dated "Amendment: Ay on favorite removal" added to requirements, design and tasks in `.kiro/specs/interaction-sounds/`.
+
+## Tested
+
+Run from the repo root.
 
 | # | Command | Result |
-|---|---------|--------|
-| 1 | `xcodebuild ... -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath /tmp/dd build` | BUILD SUCCEEDED (exit 0) |
-| 2 | `xcodebuild ... -destination 'platform=macOS' -derivedDataPath /tmp/ddmac build` | BUILD SUCCEEDED (exit 0) |
-| 3 | iOS `test -only-testing:NYCFarmerMarketsTests` | TEST SUCCEEDED (exit 0): 68 passed, 0 failed |
-| 4 | iOS `test -skip-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITestsLaunchTests -skip-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITests/testLaunchPerformance` | TEST SUCCEEDED (exit 0): 79 test cases passed, 0 failed (68 unit + 11 UI). No xctrunner launch error occurred, so no re-run was needed. |
+|---|---|---|
+| 1 | iOS build (`-destination 'platform=iOS Simulator,name=iPhone 17'`) | BUILD SUCCEEDED |
+| 2 | macOS build (`-destination 'platform=macOS'`) | BUILD SUCCEEDED |
+| 3 | Unit tests (iOS `test -only-testing:NYCFarmerMarketsTests`) | TEST SUCCEEDED, 0 failures |
+| 4 | Full iOS `test`, skipping `NYCFarmerMarketsUITestsLaunchTests` and `testLaunchPerformance` | TEST SUCCEEDED. 129 total, 129 passed, 0 failed, 0 skipped (114 unit, 15 UI) |
 
-UI tests that passed (live NYC Open Data API): testRetryAndErrorShownWhenDownloadFailsWithoutCache, testCloseFromPushedMapDismissesSheet, testFavoriteAppearsInFavoritesTabAndSwipeRemoves, testMapPinMoreInfoAndClose, testOpenDetailFromListAndClose, testOpenInMapsPushesSingleMarketMap (covers the new feature), testSearchAutoExpandsMatchingBoroughs, testSearchFiltersList, testSectionsStartCollapsed, testSplashAppearsAtLaunch, testTappingHeaderExpandsAndCollapses.
-
-## Convention grep (outside NYCFarmerMarkets/Theme/)
-
-Pattern: `grep -rnE '<pattern>' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'`
-
-Patterns, each with 0 matches:
-- `Color\((red|white|hue|"|[a-z]+:)`
-- `(UIColor|NSColor)\(`
-- `Color\.(red|blue|green|orange|yellow|purple|pink|gray|black|white|brown|cyan|mint|teal|indigo)\b`
-- `0x[0-9A-Fa-f]{6}`
-- `"#[0-9A-Fa-f]{6}"`
-- `systemName:|systemImage:`
-- `Image\(systemName`
-
-Violations: none.
-
-## Test report: not verified items
-
-- testLaunchPerformance and NYCFarmerMarketsUITestsLaunchTests were skipped as instructed, so launch performance and launch screenshots are unchecked.
-- Opening Apple Maps from the "Directions" button was not verified. The simulator cannot confirm an external app handoff; only the in-app pushed map is covered by UI test.
-- The macOS build was compiled only; no tests were run on macOS.
-- The convention grep is regex-based. Colors or icons built through indirect helper code would not be detected.
+Convention greps for colors, symbols and fonts outside `Theme/` found no matches.
 
 ## Anything not verified
-See the list above: launch performance/screenshots tests skipped, Apple Maps handoff from "Directions" not confirmed in the simulator, macOS only compiled (no tests), and the convention grep is regex-based.
 
-Closes #1
+- Audio output was not checked in this run. Tests use the muted or silent sound player, so Ay was not heard on a device here.
+- VoiceOver mute behavior and Switch Control / Voice Control playback were not exercised.
+- visionOS was not built.
+- `NYCFarmerMarketsUITestsLaunchTests` and `testLaunchPerformance` were excluded by instruction.
+
+## Agent run traces
+
+The commit `chore(agents): archive run traces for #18` adds this run's traces under `.agents/runs/18-ay-sound-on-favorite-removal/` (14 files, commit 34e1416). Reviewers can collapse that folder: the real change is in the other commits.
+
+Closes #18
