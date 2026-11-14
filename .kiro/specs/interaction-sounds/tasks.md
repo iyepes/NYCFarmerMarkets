@@ -80,7 +80,7 @@ Commands (from `.kiro/steering/tech.md`):
   - Requirements: R2.1-R2.5, AC3, AC4
   - Verify: iOS and macOS builds succeed; unit and full tests pass. Manual on the simulator: steps loop while dragging and coasting, fade out after the list settles, stop on tab switch, sheet open and backgrounding, never two loops; section expand does not start a loop. Note the loop seams of `cat-steps.m4a` (1.37 s) and `human-steps.m4a` (6.74 s) for the PR (trimming is the owner's task).
 
-- [ ] 10. Steering, spec amendment inputs, full verification
+- [x] 10. Steering, spec amendment inputs, full verification
   - Update `.kiro/steering/theme-conventions.md` (an `AppSound` section, the two new icons, and a convention check that no `.m4a` or sound file name appears outside `Theme/`), `.kiro/steering/tech.md` (`SoundController` in Stores, `SoundPlayer` in Services, `Sounds/` folder, `-uiTestingMuteSounds`, `-uiTestingReset` also clears `soundEnabled`), `.kiro/steering/known-limits.md` (not verified: visionOS and macOS audio, device silent switch, VoiceOver on a device, real audio fade and loop gaps).
   - Run: iOS build, macOS build, unit tests, full UI suite, the four convention greps in `theme-conventions.md` (zero lines each) and `grep -rnE 'human-steps|cat-steps|door-and-hit|short-hiss|\.m4a' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'` (zero lines).
   - Manual listening pass (report in the PR, mark unverified items): VoiceOver on → silent, then off → sounds resume; toggle off → silent and playing sounds stop; music in another app mixes and is not paused; `git status` shows no stray temporary files.

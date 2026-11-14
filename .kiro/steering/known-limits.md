@@ -18,6 +18,8 @@ Reference this file with `#known-limits` when working on typography, theming or 
 ## Not verified
 
 - visionOS at runtime; macOS visually.
+- Sounds: audio on macOS and visionOS; the device silent switch; mixing with other apps' audio; VoiceOver on a device; the real fade and the loop seams (`cat-steps` 1.37 s, `human-steps` 6.74 s; trimming is the owner's task). Tests run muted, so only the logic is covered.
+- `SoundPlayer` loads files and the audio session about 300 ms after launch (about 545 ms in a Debug build on the simulator); cues before that are ignored.
 - Breath of the House on screen with the inherited body `sizeScale` 1.15 and 14 pt floor (tuned for the previous font).
 - Whether Breath of the House draws "·" (rows use ", ").
 - Borough headers (30 pt text and chevron) at `.xxxLarge`; `sectionHeader` scales with `.subheadline`.

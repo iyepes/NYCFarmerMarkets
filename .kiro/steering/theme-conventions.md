@@ -35,6 +35,12 @@ Everything visual comes from `NYCFarmerMarkets/Theme/`. Views use semantic names
 - Spooky user-facing text (splash caption, offline banner, search prompt and empty state, map filter summary, missing values) lives in `AppCopy`, each with a plain `...Accessibility` counterpart where VoiceOver needs one. Add new spooky strings there; keep the tone light, never alarming.
 - Accessibility labels, hints and identifiers stay plain and are not themed.
 
+## Sounds: `AppSound`
+
+- Every sound is an `AppSound` case (`humanSteps`, `catSteps`, `door`, `doorAndHit`, `hiss`) with `fileName`, `fileExtension` and `loops`. File names live only in `Theme/AppSound.swift`; views never touch audio and send cues to `SoundController` (`play(_:)`, `handle(_:loop:)`).
+- Sound toggle icons: `AppIcon.soundOn` ("Sounds on") and `soundOff` ("Sounds off"), used by `SoundToggleButton` (identifier `sound-toggle`, label "Sounds", value "On"/"Off").
+- New buttons that use `ThemedButtonStyle` hiss on press automatically. Plain-style buttons call `sounds.play(.hiss)` in their action.
+
 ## Accessibility
 
 - Every interactive control has a plain `accessibilityLabel`; decorative icons are hidden (`IconView` does this).
@@ -50,6 +56,7 @@ grep -rnE '\.custom\(|\bFont\.(system|custom)\(' NYCFarmerMarkets --include='*.s
 grep -rnE 'Grim|Breath|\.ttf' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
 grep -rnE '\.font\(\s*(\.|Font\.)' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
 grep -rnE 'Image\(systemName:|systemImage: *"|0x[0-9A-Fa-f]{6}|"#[0-9A-Fa-f]{6}"|Color\.(red|blue|green|orange|yellow|purple|pink|gray|black|white)\b' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
+grep -rnE 'human-steps|cat-steps|door-and-hit|short-hiss|\.m4a' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
 ```
 
 Use judgment on matches (for example `Image(systemName:` inside `Theme/AppIcon.swift` is the registry itself).
