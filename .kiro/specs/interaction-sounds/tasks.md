@@ -148,7 +148,7 @@ Earlier text above is unchanged. Run git as `git -C /Users/isabelyepes/Documents
 - [x] 6. Update the steering files.
   - Files: `.kiro/steering/theme-conventions.md` (add `ay` to the `AppSound` case list and one bullet: removing a favorite by swipe, the accessibility action, or the detail toggle turning it off plays `.ay` through `FavoriteCue`; adding keeps the hiss); `.kiro/steering/tech.md` (add `ay` to the `Sounds/` recordings list).
   - Requirements: A5. Verify: re-read the edited lines; the steering grep check (no sound file names outside `Theme/`) finds nothing new.
-- [ ] 7. Final verification.
+- [x] 7. Final verification.
   - Run iOS build, macOS build, unit tests and full tests. `git status --short` shows only the files from tasks 1 to 6 (plus `ay.m4a` if untracked) and nothing under `.agents/tasks/`.
   - Requirements: acceptance criteria 1 to 11. Report as not verified by tests: hearing Ay on a device (swipe, toggle off, accessibility action through Voice Control or Switch Control), silence under VoiceOver, and the hiss on toggle-on.
 - [x] 8. Spec amendment (record_spec step): this section, `requirements.md` and `design.md` amended with dated sections; earlier text not edited.
