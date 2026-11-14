@@ -50,6 +50,13 @@ Only `AppPalette.Base` changed; the semantic tokens and their mixes are the same
 
 The old values are kept as trailing comments in the code.
 
+### 2026-11-14: splash contrast fix
+
+Commit `9b16611`, issue #14 (owner-approved, separate from the sound feature).
+`onAppIconBackground` changed from `Base.surface` (`0xCBC7D9`, 2.31:1 on orange) to
+`Base.deep` (`0x31078C`, 3.57:1), so the splash logo, dots and text pass the 3.0 contrast test.
+`basePaletteMatchesDesign()` was updated to the current palette.
+
 ## App icon, logo and name
 
 Commits: `243862a` "Icon and name changes", `e247b5d` "Gradient icon".

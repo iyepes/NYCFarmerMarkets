@@ -227,3 +227,7 @@ These notes override anything earlier in this document that conflicts with them.
 3. **Toolbar placement (NIT).** Attach the sound toggle's `.toolbar { ... }` to `content` next to `.navigationTitle("Markets")`, inside the `NavigationStack` (and so inside `.id(dynamicTypeSize)`), not outside it.
 4. **Reset order and key constant (NIT).** Remove `soundEnabled` in the existing `-uiTestingReset` block of `NYCFarmerMarketsApp.init`, before `SoundController` is created. Define the key once as `SoundController.defaultsKey = "soundEnabled"` and use it in the store, the reset block and the tests.
 5. **No `didSet` (NIT).** Use explicit methods: `isEnabled` is `private(set)`, changed through `setEnabled(_:)` (saves to UserDefaults, stops all sounds when turned off) and `setVoiceOverOn(_:)` (stops all sounds when VoiceOver turns on). The sound toggle and the views call these methods. The first `SoundControllerTests` cover each side effect.
+
+## Amendment: palette test fix (owner-approved)
+
+Date: 2026-11-14. Commit `9b16611` on this branch changed `AppPalette.onAppIconBackground` from `Base.surface` (`0xCBC7D9`, 2.31:1 on orange) to `Base.deep` (`0x31078C`, 3.57:1), so the splash logo, dots and text pass the 3.0 contrast test. `basePaletteMatchesDesign()` was updated to the current palette. This fixes two ThemeTests that fail on `main` since the "Spooky Colors" commit `e11636c`. It is outside the sound scope by the owner's choice. See `Design/design-changes.md`.
