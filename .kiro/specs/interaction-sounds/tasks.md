@@ -73,7 +73,7 @@ Commands (from `.kiro/steering/tech.md`):
   - Requirements: R4.1-R4.3, R5.1-R5.4, R2.4, AC6, AC7
   - Verify: iOS and macOS builds succeed; full tests pass (existing `app.tabBars.buttons[...]` lookups still work). Manual: tabs appear → door; switch → door; reselect → nothing; row → hiss then door-and-hit; Go to Map → hiss then door-and-hit; Back and Close → no door.
 
-- [ ] 9. Step loops while scrolling
+- [x] 9. Step loops while scrolling
   - `Views/MarketListView.swift`: on the `List`, `.onScrollPhaseChange { _, new in if let a = SoundPolicy.activity(for: new) { sounds.handle(a, loop: .humanSteps) } }`; `.onDisappear { sounds.handle(.left, loop: .humanSteps) }`; `.onChange(of: scenePhase) { _, p in if p != .active { sounds.handle(.left, loop: .humanSteps) } }`.
   - `Views/FavoritesView.swift`: the same with `.catSteps`.
   - Files: `Views/MarketListView.swift`, `Views/FavoritesView.swift`

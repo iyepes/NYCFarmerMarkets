@@ -10,6 +10,7 @@ struct FavoritesView: View {
     @Environment(MarketStore.self) private var store
     @Environment(FavoritesStore.self) private var favorites
     @Environment(SoundController.self) private var sounds
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -72,6 +73,13 @@ struct FavoritesView: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .accessibilityIdentifier("favorites-list")
+            .onScrollPhaseChange { _, newPhase in
+                if let activity = SoundPolicy.activity(for: newPhase) { sounds.handle(activity, loop: .catSteps) }
+            }
+            .onDisappear { sounds.handle(.left, loop: .catSteps) }
+            .onChange(of: scenePhase) { _, phase in
+                if phase != .active { sounds.handle(.left, loop: .catSteps) }
+            }
         }
     }
 }

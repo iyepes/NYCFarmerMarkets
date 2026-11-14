@@ -9,6 +9,7 @@ import SwiftUI
 struct MarketListView: View {
     @Environment(MarketStore.self) private var store
     @Environment(SoundController.self) private var sounds
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var expansion = SectionExpansionState()
@@ -87,6 +88,13 @@ struct MarketListView: View {
             .scrollContentBackground(.hidden)
             .refreshable { await store.refresh() }
             .accessibilityIdentifier("market-list")
+            .onScrollPhaseChange { _, newPhase in
+                if let activity = SoundPolicy.activity(for: newPhase) { sounds.handle(activity, loop: .humanSteps) }
+            }
+            .onDisappear { sounds.handle(.left, loop: .humanSteps) }
+            .onChange(of: scenePhase) { _, phase in
+                if phase != .active { sounds.handle(.left, loop: .humanSteps) }
+            }
         }
     }
 
