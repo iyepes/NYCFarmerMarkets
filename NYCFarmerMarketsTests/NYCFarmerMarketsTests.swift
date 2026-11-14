@@ -421,12 +421,12 @@ struct ThemeTests {
     }
 
     @Test func basePaletteMatchesDesign() {
-        #expect(AppPalette.Base.primary == 0xC7D93D)
-        #expect(AppPalette.Base.secondary == 0x98A62E)
-        #expect(AppPalette.Base.deep == 0x525919)
-        #expect(AppPalette.Base.highlight == 0xE6F28D)
-        #expect(AppPalette.Base.surface == 0xF2F2F2)
-        #expect(AppPalette.Base.appIconOlive == 0x78872B)
+        #expect(AppPalette.Base.primary == 0xAC84D6)
+        #expect(AppPalette.Base.secondary == 0xC56B23)
+        #expect(AppPalette.Base.deep == 0x31078C)
+        #expect(AppPalette.Base.highlight == 0xCA881E)
+        #expect(AppPalette.Base.surface == 0xCBC7D9)
+        #expect(AppPalette.Base.appIconOlive == 0xC56B23)
     }
 
     @Test func splashIconsAndLabels() {
@@ -440,8 +440,8 @@ struct ThemeTests {
         #expect(AppIcon.directions.accessibilityName == "Directions")
     }
 
-    /// Splash content (logo, dots, message) over the app icon olive.
-    /// Normal-size text would need 4.5:1, but the measured ratio is about 3.5:1.
+    /// Splash content (logo, dots, message) in deep purple over the orange app icon background.
+    /// Normal-size text would need 4.5:1, but the measured ratio is about 3.6:1.
     /// That is intentional: the splash message uses `.title3.weight(.semibold)`
     /// (large/bold text per WCAG) and the logo and dots are graphics, so 3.0 applies.
     /// Deliberately not part of the 4.5 list in `textContrastMeetsAA`.

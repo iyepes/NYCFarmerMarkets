@@ -34,6 +34,18 @@ extension View {
 /// Filled button in the accent color.
 struct ThemedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
+        HissOnPress(configuration: configuration)
+    }
+}
+
+/// Body of `ThemedButtonStyle`. A small view, because a style value cannot read the
+/// environment inside `makeBody`. Hisses when the press starts.
+private struct HissOnPress: View {
+    let configuration: ButtonStyleConfiguration
+    // Optional: previews and tests have no controller and stay silent.
+    @Environment(SoundController.self) private var sounds: SoundController?
+
+    var body: some View {
         configuration.label
             .appFont(.bodyEmphasis)
             .foregroundStyle(AppPalette.onAccentFill.color)
@@ -41,6 +53,9 @@ struct ThemedButtonStyle: ButtonStyle {
             .padding(.vertical, 10)
             .background(Capsule().fill(AppPalette.accentFill.color))
             .opacity(configuration.isPressed ? 0.7 : 1)
+            .onChange(of: configuration.isPressed) { _, pressed in
+                if pressed { sounds?.play(.hiss) }
+            }
     }
 }
 

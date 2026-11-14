@@ -15,7 +15,7 @@ final class NYCFarmerMarketsUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["-uiTestingReset"]
+        app.launchArguments = ["-uiTestingReset", "-uiTestingMuteSounds"]
         app.launch()
     }
 
@@ -63,6 +63,24 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         closeButton.tap()
         XCTAssertTrue(firstMarketRow.waitForExistence(timeout: 5), "Did not return to the list")
         XCTAssertFalse(closeButton.exists)
+    }
+
+    /// Sound toggle starts On, turns Off, and stays Off after a relaunch.
+    @MainActor
+    func testSoundToggleIsSaved() throws {
+        let toggle = app.buttons["sound-toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 30), "Sound toggle did not appear")
+        XCTAssertEqual(toggle.value as? String, "On")
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "Off")
+
+        // The next setUp resets the setting through -uiTestingReset, so there is no restore step.
+        app.terminate()
+        app.launchArguments = ["-uiTestingMuteSounds"]
+        app.launch()
+        let relaunched = app.buttons["sound-toggle"]
+        XCTAssertTrue(relaunched.waitForExistence(timeout: 30), "Sound toggle did not appear after relaunch")
+        XCTAssertEqual(relaunched.value as? String, "Off")
     }
 
     /// Favorite in the sheet -> shows in Favorites tab -> swipe to remove -> empty state.
@@ -201,7 +219,7 @@ final class NYCFarmerMarketsUITests: XCTestCase {
         // launch() returns only once the app is idle (~3 s), which is after the default 1 s splash,
         // so relaunch with a longer minimum display time to observe the splash.
         app.terminate()
-        app.launchArguments = ["-uiTestingReset", "-uiTestingSplashMinimumSeconds", "6"]
+        app.launchArguments = ["-uiTestingReset", "-uiTestingMuteSounds", "-uiTestingSplashMinimumSeconds", "6"]
         app.launch()
         XCTAssertTrue(element("splash-screen").waitForExistence(timeout: 2), "Splash did not appear at launch")
         XCTAssertTrue(element("splash-loading").exists, "Splash should show the loading indicator")

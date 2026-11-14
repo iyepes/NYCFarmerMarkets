@@ -10,8 +10,11 @@ import Foundation
 /// These flags exist only so UI tests can put the app into a known state.
 /// They are inert unless the corresponding argument is passed at launch.
 nonisolated struct LaunchOptions: Equatable, Sendable {
-    /// Clears persisted favorites at launch. Argument: `-uiTestingReset`.
+    /// Clears persisted favorites and the sound setting at launch. Argument: `-uiTestingReset`.
     var resetFavorites = false
+
+    /// Silences all interaction sounds and skips audio setup. Argument: `-uiTestingMuteSounds`.
+    var muteSounds = false
 
     /// Forces the market download to fail. Argument: `-uiTestingFailDownload`.
     var failDownload = false
@@ -26,6 +29,7 @@ nonisolated struct LaunchOptions: Equatable, Sendable {
     init(arguments: [String]) {
         resetFavorites = arguments.contains("-uiTestingReset")
         failDownload = arguments.contains("-uiTestingFailDownload")
+        muteSounds = arguments.contains("-uiTestingMuteSounds")
         if let index = arguments.firstIndex(of: "-uiTestingSplashMinimumSeconds"),
            arguments.indices.contains(index + 1),
            let seconds = Double(arguments[index + 1]), seconds.isFinite, seconds > 0 {

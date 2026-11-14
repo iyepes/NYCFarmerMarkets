@@ -9,6 +9,8 @@ import SwiftUI
 struct FavoritesView: View {
     @Environment(MarketStore.self) private var store
     @Environment(FavoritesStore.self) private var favorites
+    @Environment(SoundController.self) private var sounds
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -41,6 +43,7 @@ struct FavoritesView: View {
             List {
                 ForEach(items) { market in
                     Button {
+                        sounds.play(.hiss)
                         store.selectedMarket = market
                     } label: {
                         MarketRow(market: market, showsBorough: true, titleRole: .favoriteItemTitle)
@@ -50,6 +53,7 @@ struct FavoritesView: View {
                     .listRowSeparatorTint(AppPalette.separator.color)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
+                            sounds.play(.hiss)
                             favorites.remove(market)
                         } label: {
                             Label {
@@ -60,6 +64,7 @@ struct FavoritesView: View {
                         }
                     }
                     .accessibilityAction(named: "Remove from favorites") {
+                        sounds.play(.hiss)
                         favorites.remove(market)
                     }
                     .accessibilityIdentifier("favorite-row")
@@ -68,6 +73,13 @@ struct FavoritesView: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .accessibilityIdentifier("favorites-list")
+            .onScrollPhaseChange { _, newPhase in
+                if let activity = SoundPolicy.activity(for: newPhase) { sounds.handle(activity, loop: .catSteps) }
+            }
+            .onDisappear { sounds.handle(.left, loop: .catSteps) }
+            .onChange(of: scenePhase) { _, phase in
+                if phase != .active { sounds.handle(.left, loop: .catSteps) }
+            }
         }
     }
 }

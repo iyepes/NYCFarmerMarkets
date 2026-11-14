@@ -1,90 +1,121 @@
-# Implementation Plan: Interaction sounds
+# Implementation Plan: Interaction sounds (issue #14)
 
-## Overview
+Branch `feature/14-interaction-sounds`. Built from `01-requirements.md` and `02-design.md` (including its "Implementation notes", which override earlier text). Run from the repo root `/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets`; use absolute paths. No `project.pbxproj` edit. No new dependencies. Colors only via `AppPalette`, icons only via `AppIcon`, sound file names only in `Theme/AppSound.swift`.
 
-Bundle the owner's five recordings under kebab-case names, add the `AppSound` registry, pure `SoundPolicy`, an AVFoundation `SoundPlayer` and a `SoundController` store, then wire the cues into the views: step loops while scrolling, hiss on presses, door and hit when the detail or single map opens, door on tab change, a saved sound toggle, and silence under VoiceOver. New files under `NYCFarmerMarkets/` and `NYCFarmerMarketsTests/` are picked up automatically; do not edit `project.pbxproj`. Follow `.kiro/steering/`.
-
-Commands (from `.kiro/steering/tech.md`, run from the repo root):
+Commands (from `.kiro/steering/tech.md`):
 - iOS build: `xcodebuild -project NYCFarmerMarkets.xcodeproj -scheme NYCFarmerMarkets -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath /tmp/dd-fonts build`
 - macOS build: `xcodebuild -project NYCFarmerMarkets.xcodeproj -scheme NYCFarmerMarkets -destination 'platform=macOS' -derivedDataPath /tmp/ddmac build`
-- Unit tests: the iOS command with `test -only-testing:NYCFarmerMarketsTests`
-- Full tests: the iOS command with `test -skip-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITestsLaunchTests -skip-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITests/testLaunchPerformance` (re-run once on a transient xctrunner launch error)
+- Unit tests: iOS command with `test -only-testing:NYCFarmerMarketsTests` (one suite: `-only-testing:NYCFarmerMarketsTests/<Suite>`)
+- Full tests: iOS command with `test -skip-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITestsLaunchTests -skip-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITests/testLaunchPerformance` (re-run once on a transient xctrunner launch error; `-resultBundlePath` must not exist yet)
 
-## Tasks
+# Implementation Plan
 
-- [ ] 1. Bundle the sounds and add the `AppSound` registry
-  - Move and rename with `git mv`: `Sounds/Human steps.m4a` → `NYCFarmerMarkets/Sounds/human-steps.m4a`, `Sounds/Cat steps.m4a` → `cat-steps.m4a`, `Sounds/Door.m4a` → `door.m4a`, `Sounds/Door and hit.m4a` → `door-and-hit.m4a`, `Sounds/Short hiss.m4a` → `short-hiss.m4a`. The files are untracked today, so `git add` them first or move them with `mv` and then `git add` the new paths; the empty `Sounds/` folder disappears.
-  - Create `NYCFarmerMarkets/Theme/AppSound.swift` per the design (`fileName`, `fileExtension`, `loops`).
-  - Record the durations (`afinfo`) in the PR: 6.74 s, 1.37 s, 2.90 s, 2.90 s, 1.02 s.
-  - Create `NYCFarmerMarketsTests/AppSoundTests.swift`.
-  - Files: the five `.m4a`, `Theme/AppSound.swift`, `AppSoundTests.swift`
-  - Requirements: 1.1-1.4, 9.1
-  - Verify: unit tests pass; `find /tmp/dd-fonts -name '*.m4a' -path '*NYCFarmerMarkets.app*'` lists five files.
+- [x] 1. Move and rename the sound files, add the `AppSound` registry
+  - `Sounds/` files are untracked today (git status shows none tracked there; verify with `git ls-files Sounds`). Create `NYCFarmerMarkets/Sounds/`, `mv` each file (`Human steps.m4a` → `human-steps.m4a`, `Cat steps.m4a` → `cat-steps.m4a`, `Door.m4a` → `door.m4a`, `Door and hit.m4a` → `door-and-hit.m4a`, `Short hiss.m4a` → `short-hiss.m4a`; use `git mv` if tracked), then stage the new paths by name. The old empty `Sounds/` folder must be gone (`rmdir` with the literal path `/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/Sounds` once empty).
+  - Create `NYCFarmerMarkets/Theme/AppSound.swift`: `nonisolated enum AppSound: String, CaseIterable, Sendable` with cases `humanSteps, catSteps, door, doorAndHit, hiss`, and `fileName`, `fileExtension` ("m4a"), `loops` (true for the two step sounds).
+  - Create `NYCFarmerMarketsTests/AppSoundTests.swift` (Swift Testing): every case's file exists in `Bundle.main` (the test host app bundle; use `Bundle(for:)`-free lookup consistent with `AppTypographyTests`), file names unique, exactly `humanSteps` and `catSteps` loop.
+  - Files: five `.m4a` under `NYCFarmerMarkets/Sounds/`, `Theme/AppSound.swift`, `NYCFarmerMarketsTests/AppSoundTests.swift`
+  - Requirements: R1.1, R1.2, R1.3, AC1, AC13
+  - Verify: unit tests `-only-testing:NYCFarmerMarketsTests/AppSoundTests` pass; `find /tmp/dd-fonts -name '*.m4a' -path '*NYCFarmerMarkets.app*'` lists five files; macOS build succeeds and its `.app` also contains them. Record `afinfo` durations for the PR notes.
 
-- [ ] 2. `SoundPolicy` pure logic
-  - Create `NYCFarmerMarkets/Models/SoundPolicy.swift` (`nonisolated`): `shouldPlay(enabled:voiceOverOn:testMuted:)`, `activity(for: ScrollPhase) -> ScrollActivity?`, `loopAction(isLooping:activity:)`. Decide whether the `ScrollPhase` mapping stays here (imports SwiftUI) or moves to the view layer; record the choice.
-  - Create `NYCFarmerMarketsTests/SoundPolicyTests.swift`: all 8 `shouldPlay` combinations; each `ScrollPhase`; sequences start → start → stop, stop when idle, left while looping.
-  - Requirements: 2.1-2.6, 7.1, 9.2, 9.3
-  - Verify: unit tests pass.
+- [x] 2. `SoundPolicy` pure logic
+  - Create `NYCFarmerMarkets/Models/SoundPolicy.swift` with `import SwiftUI` (the one `Models/` file that does; `ScrollPhase` is a plain enum). `nonisolated enum ScrollActivity { scrolling, stopped, left }`, `LoopAction: Equatable { start, stop, none }`, `SoundPolicy` with `shouldPlay(enabled:voiceOverOn:testMuted:)`, `activity(for: ScrollPhase) -> ScrollActivity?` (`.interacting`/`.decelerating` → `.scrolling`, `.idle` → `.stopped`, `.tracking`/`.animating` → `nil`, plus `@unknown default: return nil`), `loopAction(isLooping:activity:)` (start when scrolling and not looping; stop when stopped/left and looping; otherwise none).
+  - Create `NYCFarmerMarketsTests/SoundPolicyTests.swift`: all 8 `shouldPlay` combinations; each `ScrollPhase` case; `loopAction` sequences start, repeat (none), stop, stop when not looping (none), left while looping (stop).
+  - Files: `Models/SoundPolicy.swift`, `NYCFarmerMarketsTests/SoundPolicyTests.swift`
+  - Requirements: R2.1-R2.5, R7.1, R6.3, AC13
+  - Verify: `-only-testing:NYCFarmerMarketsTests/SoundPolicyTests` passes; iOS and macOS builds succeed.
 
-- [ ] 3. Player, controller and test mute
-  - Create `NYCFarmerMarkets/Services/SoundPlayer.swift`: `SoundPlaying` protocol and `SoundPlayer` (one preloaded `AVAudioPlayer` per `AppSound`; restart on repeat; `numberOfLoops = -1` for loops; ~0.3 s fade on `stopLoop`; ambient session under `#if os(iOS) || os(visionOS)`; `Logger` category `sound`; no force unwraps).
-  - Create `NYCFarmerMarkets/Stores/SoundController.swift` per the design (UserDefaults key `soundEnabled`, default on; `voiceOverOn`; `testMuted`; one current loop; `stopAll` when the policy turns false).
-  - `LaunchOptions`: `muteSounds` from `-uiTestingMuteSounds`. `NYCFarmerMarketsApp`: create `SoundController(testMuted: options.muteSounds)` and inject it with `.environment`.
-  - Add `-uiTestingMuteSounds` to every UI test launch argument list (`NYCFarmerMarketsUITests.setUp`, `testSplashAppearsAtLaunch`, `SplashFailureUITests.setUp`).
-  - Create `NYCFarmerMarketsTests/SoundControllerTests.swift` (fake player, temporary UserDefaults suite); add a `LaunchOptionsTests` case.
-  - Requirements: 6.2-6.4, 7.1-7.3, 8.1-8.4, 9.4, 9.5, NFR 1, NFR 3, NFR 4
-  - Verify: unit tests pass; iOS and macOS builds succeed; nothing plays yet.
+- [x] 3. `LaunchOptions.muteSounds` and test-mute plumbing in UI tests
+  - `Models/LaunchOptions.swift`: add `var muteSounds = false`, set by `arguments.contains("-uiTestingMuteSounds")`, with a doc comment in the existing style. Update the `resetFavorites` doc comment to "Clears persisted favorites and the sound setting".
+  - `NYCFarmerMarketsTests/LaunchOptionsTests.swift`: add tests that the argument sets `muteSounds`, absence leaves it false, and a similarly named argument does not match.
+  - Add `"-uiTestingMuteSounds"` to every UI launch list: `NYCFarmerMarketsUITests.swift` line 18 (`setUp`) and line 204 (`testSplashAppearsAtLaunch`), `SplashFailureUITests.swift` line 13, and in `NYCFarmerMarketsUITestsLaunchTests.testLaunch` set `app.launchArguments = ["-uiTestingMuteSounds"]` (read the file first; it has no list today).
+  - Files: `Models/LaunchOptions.swift`, `NYCFarmerMarketsTests/LaunchOptionsTests.swift`, `NYCFarmerMarketsUITests/{NYCFarmerMarketsUITests,SplashFailureUITests,NYCFarmerMarketsUITestsLaunchTests}.swift`
+  - Requirements: NFR3, NFR4, AC14
+  - Verify: `-only-testing:NYCFarmerMarketsTests/LaunchOptionsTests` passes; iOS build succeeds.
 
-- [ ] 4. Sound toggle in the Markets toolbar
-  - `AppIcon`: add `soundOn` (`speaker.wave.2.fill`, "Sounds on") and `soundOff` (`speaker.slash.fill`, "Sounds off").
-  - `MarketListView`: `ToolbarItem(placement: .primaryAction)` button flipping `SoundController.isEnabled`; label "Sounds", value "On"/"Off", identifier `sound-toggle`; hiss after turning on (requirement 3.2).
-  - UI test `testSoundToggleIsSaved` (toggle, relaunch, value kept, restore).
-  - Requirements: 6.1-6.5, 3.2, 7.4, 9.6
-  - Verify: full tests pass; on the simulator the icon switches and survives a relaunch.
+- [x] 4. Player service, `SoundController` store, and app wiring
+  - Create `Services/SoundPlayer.swift`: `protocol SoundPlaying: AnyObject { play(_:), startLoop(_:), stopLoop(_:), stop(_:), stopAll() }`; `SoundPlayer` (MainActor) with one preloaded `AVAudioPlayer` per `AppSound` (`prepareToPlay()`, `numberOfLoops = -1` for loops), `play` restarts (`currentTime = 0`, `setVolume(1, fadeDuration: 0)`, `play()`), `startLoop` cancels the fade task, `setVolume(1, fadeDuration: 0)`, plays if not playing, `stopLoop` fades with `setVolume(0, fadeDuration: 0.3)` and a per-sound `Task` (0.35 s, checks `Task.isCancelled`, then `stop()`, `currentTime = 0`, volume reset), `stop(_:)` hard-stops one sound (cancel fade, `stop()`, `currentTime = 0`, volume 1), `stopAll()` hard-stops all. Audio session `.ambient` + `setActive(true)` under `#if os(iOS) || os(visionOS)`. `Logger` (subsystem from bundle id, category `sound`): one `.error` per file that fails to load (file name `privacy: .public`, error `.private`) and one for the session error; no `print`, no force unwraps. Also `SilentSoundPlayer: SoundPlaying` with no-op methods.
+  - Create `Stores/SoundController.swift`: `@Observable final class` with `static let defaultsKey = "soundEnabled"`, `@ObservationIgnored private let` `defaults`, `key`, `testMuted`, `player`; `private(set) var isEnabled` (loaded via `object(forKey:) as? Bool`, default true); `private(set) var voiceOverOn`; `private(set) var currentLoop: AppSound?`; `init(defaults: UserDefaults = .standard, key: String = SoundController.defaultsKey, testMuted: Bool = false, player: any SoundPlaying)` (no default player). Methods (no `didSet`): `setEnabled(_:)` (saves; `player.stopAll()` and `currentLoop = nil` when turned off), `setVoiceOverOn(_:)` (same stop when it becomes true), `play(_:)` (only if `SoundPolicy.shouldPlay`), `handle(_ activity:, loop:)` (uses `SoundPolicy.loopAction(isLooping: currentLoop == sound, ...)`; on start with a different current loop calls `player.stop(previous)` then `player.startLoop(new)` and sets `currentLoop`; `.stop` calls `player.stopLoop(sound)` and clears `currentLoop`; ignores stop for a non-current loop; blocked when policy false), `stopAllLoops()` (fade-stops `currentLoop` only, never `stopAll()`).
+  - `NYCFarmerMarketsApp.swift`: in the `-uiTestingReset` block also `UserDefaults.standard.removeObject(forKey: SoundController.defaultsKey)` before creating the controller; add `@State private var soundController: SoundController`, built with `SilentSoundPlayer()` when `options.muteSounds` else `SoundPlayer()`, `testMuted: options.muteSounds`; inject `.environment(soundController)`.
+  - Create `NYCFarmerMarketsTests/SoundControllerTests.swift` with a `FakeSoundPlayer` (records calls in order) and a temporary `UserDefaults(suiteName:)` removed afterwards (`removePersistentDomain`): default on; `setEnabled` saved and reloaded by a new controller; non-boolean stored value gives on; `play` forwarded only when allowed; `setEnabled(false)` and `setVoiceOverOn(true)` call `stopAll`; second loop asserts `stop(.humanSteps)` recorded before `startLoop(.catSteps)` and `currentLoop == .catSteps`; `.left`/`.stopped` stop the current loop with `stopLoop`; stop for a non-current loop ignored; `stopAllLoops()` calls `stopLoop` and never `stopAll`; test mute blocks `play` and loops; repeated `.scrolling` starts once.
+  - Early check inside this task, before building views: add a temporary `Logger` line in `MarketListView`/`FavoritesView` `List` via `.onScrollPhaseChange` and `onDisappear`, run in the simulator, confirm `.interacting`, `.decelerating`, `.idle` arrive on both lists and `onDisappear` fires on tab switch, then remove the line. If `onScrollPhaseChange` does not fire on `List`, stop and report (send_message warning); do not pick the `onScrollGeometryChange` fallback silently.
+  - Time `SoundPlayer.init` with `ContinuousClock` in a temporary log line, record the value (bound: under 50 ms), remove the line.
+  - Files: `Services/SoundPlayer.swift`, `Stores/SoundController.swift`, `NYCFarmerMarketsApp.swift`, `NYCFarmerMarketsTests/SoundControllerTests.swift`
+  - Requirements: R2.5, R6.2, R6.3, R7.1, R7.2, R8.1-R8.4, NFR2, AC11-AC14
+  - Verify: `-only-testing:NYCFarmerMarketsTests/SoundControllerTests` passes; iOS and macOS builds succeed; no temporary log lines remain (`git diff` shows none).
 
-- [ ] 5. Hiss on button presses
-  - `ThemeStyling.swift`: `ThemedButtonStyle` hisses when `isPressed` turns true, through a private `HissOnPress` view that reads the controller from the environment (optional, silent in previews). Add `HissingPlainButtonStyle` with the `.plain` look.
-  - Use `HissingPlainButtonStyle` for Markets rows, Favorites rows and section headers.
-  - Hiss in the actions of Close and the favorite toggle (`MarketDetailToolbar`) and swipe-to-remove plus its accessibility action (`FavoritesView`).
-  - Listening check: if pressing a row at the start of a scroll hisses too often, switch rows to hiss in their action instead and note it.
-  - `AppRootView` and `RootTabView`: set `voiceOverOn` from `@Environment(\.accessibilityVoiceOverEnabled)` with `onChange(initial: true)`.
-  - Requirements: 3.1, 3.3, 4.3, 7.1-7.3
-  - Verify: unit and full tests pass (muted); each listed button hisses once per press on the simulator.
+- [x] 5. VoiceOver wiring
+  - `Views/AppRootView.swift`: read `@Environment(\.accessibilityVoiceOverEnabled)` and `@Environment(SoundController.self)`; `.onChange(of: voiceOverEnabled, initial: true) { _, on in sounds.setVoiceOverOn(on) }` on the root (parent of splash and tabs). Read the file first to place it on the outermost view.
+  - Files: `Views/AppRootView.swift`
+  - Requirements: R7.1-R7.3
+  - Verify: iOS and macOS builds succeed; unit tests still pass. On the simulator, enable VoiceOver via Settings and confirm silence (manual pass, report result).
 
-- [ ] 6. Door sounds for tabs and opening views
-  - `RootTabView`: private `Tab` enum and `@State selection`, `.tag` per tab; Door on `onChange(of: selection)`; Door once on first `onAppear` (state latch); Door_And_Hit on `onChange(of: store.selectedMarket?.id)` nil → id, and `stopAllLoops()` there.
-  - `MarketDetailView`: Door_And_Hit on `onChange(of: showsMap)` false → true.
-  - Closing and Back play no door sound. Tab labels and identifiers unchanged.
-  - Requirements: 4.1-4.5, 5.1-5.4, 2.5
-  - Verify: full tests pass; on the simulator: tabs appear → Door; switch tab → Door; reselect tab → nothing; row → Hiss then Door_And_Hit; Go to Map → Hiss then Door_And_Hit; Back → Hiss only; Close → Hiss only.
+- [x] 6. Sound toggle in the Markets toolbar
+  - `Theme/AppIcon.swift`: add `soundOn` (`speaker.wave.2.fill`, accessibility name "Sounds on") and `soundOff` (`speaker.slash.fill`, "Sounds off") in both the `source` and `accessibilityName` switches.
+  - `Views/MarketListView.swift`: attach `.toolbar { ToolbarItem(placement: .primaryAction) { SoundToggleButton() } }` next to `.navigationTitle("Markets")` inside the `NavigationStack` (and inside `.id(dynamicTypeSize)`). `SoundToggleButton` (private view in the same file, or `Views/Shared/SoundToggleButton.swift`): image `AppIcon.soundOn.image`/`soundOff.image`, `accessibilityIdentifier("sound-toggle")`, `accessibilityLabel("Sounds")`, `accessibilityValue(isEnabled ? "On" : "Off")`; action `sounds.setEnabled(!sounds.isEnabled)` then `sounds.play(.hiss)` (the policy blocks it when off).
+  - `NYCFarmerMarketsUITests.swift`: add `testSoundToggleIsSaved`: tap `sound-toggle`, assert value "Off", terminate, relaunch with only `["-uiTestingMuteSounds"]`, assert value still "Off". No restore (next `setUp` resets via `-uiTestingReset`). Also assert in `setUp` or the test that the initial value is "On".
+  - Files: `Theme/AppIcon.swift`, `Views/MarketListView.swift` (and optional `Views/Shared/SoundToggleButton.swift`), `NYCFarmerMarketsUITests/NYCFarmerMarketsUITests.swift`
+  - Requirements: R6.1-R6.3, R3.2, R7.3, AC8, AC9, AC14
+  - Verify: full tests pass including `testSoundToggleIsSaved`; the theme-conventions checks stay at zero lines; macOS build succeeds (`.primaryAction` toolbar compiles there).
 
-- [ ] 7. Step loops while scrolling
-  - `MarketListView`: `.onScrollPhaseChange` on the `List` → `controller.handle(activity, loop: .humanSteps)`; `.left` on `onDisappear` and when `scenePhase` leaves `.active`.
-  - `FavoritesView`: the same with `.catSteps`.
-  - Listening check: loop seam of `cat-steps.m4a` (1.37 s) and `human-steps.m4a`; fade-out on short flicks. Report audible gaps (trimming is the owner's task).
-  - Requirements: 2.1-2.6
-  - Verify: unit and full tests pass; steps loop while dragging and coasting and stop after the list settles; switching tabs or opening a detail mid-scroll stops them.
+- [x] 7. Hiss on button presses
+  - `Theme/ThemeStyling.swift`: `ThemedButtonStyle.makeBody` returns a private `HissOnPress` view that reads `@Environment(SoundController.self) private var sounds: SoundController?` (optional, silent in previews) and runs `.onChange(of: configuration.isPressed) { _, pressed in if pressed { sounds?.play(.hiss) } }`. Visual output unchanged.
+  - Rows, section headers (`Views/MarketListView.swift` lines ~70 and ~113) and Favorites rows (`Views/FavoritesView.swift` line ~48): keep `.buttonStyle(.plain)`; call `sounds.play(.hiss)` first in each button action.
+  - `Views/Shared/MarketDetailToolbar.swift`: hiss in the Close and favorite toggle actions. `Views/FavoritesView.swift`: hiss in the swipe-to-remove action and in the "Remove from favorites" accessibility action.
+  - Files: `Theme/ThemeStyling.swift`, `Views/MarketListView.swift`, `Views/FavoritesView.swift`, `Views/Shared/MarketDetailToolbar.swift`
+  - Requirements: R3.1, R3.3, AC5
+  - Verify: iOS and macOS builds succeed; full tests pass (muted). Manual: each listed control hisses once per press on the simulator.
 
-- [ ] 8. Full verification, steering and PR notes
-  - Run the iOS and macOS builds, the unit tests, the full UI suite, and the four convention checks from `.kiro/steering/theme-conventions.md` (zero lines each). Confirm no sound file name appears outside `Theme/`: `grep -rnE 'human-steps|cat-steps|door-and-hit|short-hiss|\.m4a' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'`.
-  - Manual listening pass (design "Testing"): VoiceOver on → silent; toggle off → silent; music playing in another app → mixes, not paused; device silent switch if a device is available.
-  - Update steering: `theme-conventions.md` (an `AppSound` section and the two icons), `tech.md` (`SoundController` in Stores, `SoundPlayer` in Services, `-uiTestingMuteSounds`), `known-limits.md` (anything not verified: visionOS, macOS audio, device silent switch).
-  - Tick the tasks in this file; PR text with tests run, durations, listening results and what was not verified.
-  - Requirements: 9.7-9.9, NFR 2, NFR 5
-  - Verify: all commands pass; PR lists what was not verified.
+- [x] 8. Door sounds for tabs and detail views
+  - `Views/RootTabView.swift`: add `private enum Tab: Hashable { case markets, map, favorites }`, `@State private var selection: Tab = .markets`, `TabView(selection: $selection)`, `.tag(Tab.…)` on each tab (labels and identifiers unchanged). `.onChange(of: selection)` → `sounds.stopAllLoops()` then `sounds.play(.door)`. `.onAppear` with a `@State private var hasAppeared` latch → `sounds.play(.door)` once. `.onChange(of: store.selectedMarket?.id)` nil → non-nil → `sounds.stopAllLoops()` then `sounds.play(.doorAndHit)`.
+  - `Views/MarketDetailView.swift`: `.onChange(of: showsMap)` false → true → `sounds.play(.doorAndHit)`. Back, Close and swipe-down play nothing extra.
+  - Files: `Views/RootTabView.swift`, `Views/MarketDetailView.swift`
+  - Requirements: R4.1-R4.3, R5.1-R5.4, R2.4, AC6, AC7
+  - Verify: iOS and macOS builds succeed; full tests pass (existing `app.tabBars.buttons[...]` lookups still work). Manual: tabs appear → door; switch → door; reselect → nothing; row → hiss then door-and-hit; Go to Map → hiss then door-and-hit; Back and Close → no door.
+
+- [x] 9. Step loops while scrolling
+  - `Views/MarketListView.swift`: on the `List`, `.onScrollPhaseChange { _, new in if let a = SoundPolicy.activity(for: new) { sounds.handle(a, loop: .humanSteps) } }`; `.onDisappear { sounds.handle(.left, loop: .humanSteps) }`; `.onChange(of: scenePhase) { _, p in if p != .active { sounds.handle(.left, loop: .humanSteps) } }`.
+  - `Views/FavoritesView.swift`: the same with `.catSteps`.
+  - Files: `Views/MarketListView.swift`, `Views/FavoritesView.swift`
+  - Requirements: R2.1-R2.5, AC3, AC4
+  - Verify: iOS and macOS builds succeed; unit and full tests pass. Manual on the simulator: steps loop while dragging and coasting, fade out after the list settles, stop on tab switch, sheet open and backgrounding, never two loops; section expand does not start a loop. Note the loop seams of `cat-steps.m4a` (1.37 s) and `human-steps.m4a` (6.74 s) for the PR (trimming is the owner's task).
+
+- [x] 10. Steering, spec amendment inputs, full verification
+  - Update `.kiro/steering/theme-conventions.md` (an `AppSound` section, the two new icons, and a convention check that no `.m4a` or sound file name appears outside `Theme/`), `.kiro/steering/tech.md` (`SoundController` in Stores, `SoundPlayer` in Services, `Sounds/` folder, `-uiTestingMuteSounds`, `-uiTestingReset` also clears `soundEnabled`), `.kiro/steering/known-limits.md` (not verified: visionOS and macOS audio, device silent switch, VoiceOver on a device, real audio fade and loop gaps).
+  - Run: iOS build, macOS build, unit tests, full UI suite, the four convention greps in `theme-conventions.md` (zero lines each) and `grep -rnE 'human-steps|cat-steps|door-and-hit|short-hiss|\.m4a' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/'` (zero lines).
+  - Manual listening pass (report in the PR, mark unverified items): VoiceOver on → silent, then off → sounds resume; toggle off → silent and playing sounds stop; music in another app mixes and is not paused; `git status` shows no stray temporary files.
+  - Files: `.kiro/steering/{theme-conventions,tech,known-limits}.md`
+  - Requirements: AC2, AC15, AC16, NFR1
+  - Verify: all commands above pass; PR notes list what was not verified (hand listening, visionOS, macOS audio, device silent switch).
 
 ## Requirement coverage
 
 | Requirement | Tasks |
 |---|---|
-| 1 Sound files bundled | 1 |
-| 2 Step loops | 2, 6 (2.5), 7 |
-| 3 Hiss | 4 (3.2), 5 |
-| 4 Door and hit | 5 (4.3), 6 |
-| 5 Door on tabs | 6 |
-| 6 Sound toggle | 3, 4 |
-| 7 VoiceOver | 2, 3, 4 (7.4), 5 |
-| 8 Audio behavior | 3 |
-| 9 Tests and verification | 1, 2, 3, 4, 8 |
-| NFR 1-5 | 3, 8 |
+| R1 Bundled files | 1 |
+| R2 Step loops | 2, 4, 8 (R2.4), 9 |
+| R3 Hiss | 6 (R3.2), 7 |
+| R4 Door and hit | 8 |
+| R5 Door on tabs | 8 |
+| R6 Sound toggle | 4, 6 |
+| R7 VoiceOver | 2, 4, 5, 6 |
+| R8 Audio behavior | 4 |
+| NFR 1-4 | 3, 4, 10 |
+| AC13-AC16 | 1-4, 6, 10 |
+
+## Digest
+
+Verified by reading (no code changed in this step):
+
+| File | Block to change | Covering test | Notes |
+|---|---|---|---|
+| `NYCFarmerMarkets/Models/LaunchOptions.swift` | `struct LaunchOptions`, `init(arguments:)` (adds `muteSounds`; doc of `resetFavorites`) | `LaunchOptionsTests` (existing file, `Self.reset`/`Self.fail` constants, `@Test` style) | Existing tests pass today per the repo's last merge; confirm by running the suite first |
+| `NYCFarmerMarkets/NYCFarmerMarketsApp.swift` | `init()` reset block (`UserDefaults.standard.removeObject(forKey: "favoriteMarketIDs")`), `body` `.environment(...)` chain | UI tests (muted) | Stores are `@State` built in `init`; add the controller the same way |
+| `NYCFarmerMarkets/Theme/AppIcon.swift`, `ThemeStyling.swift` | exhaustive `source` and `accessibilityName` switches; `ThemedButtonStyle` | build, full UI tests | Not read in full in this step; the coder opens them to edit |
+| `Views/RootTabView.swift`, `AppRootView.swift`, `MarketListView.swift`, `FavoritesView.swift`, `MarketDetailView.swift`, `Shared/MarketDetailToolbar.swift` | per tasks 5-9 | UI tests + manual pass | Line numbers (70, 113, 48) come from the design; confirm when editing |
+| `NYCFarmerMarketsUITests/*.swift` | `launchArguments` at `NYCFarmerMarketsUITests.swift:18` and `:204`, `SplashFailureUITests.swift:13`; `LaunchTests.testLaunch` has none | full UI run | |
+| New files | `Theme/AppSound.swift`, `Models/SoundPolicy.swift`, `Services/SoundPlayer.swift`, `Stores/SoundController.swift`, three new test files | `AppSoundTests`, `SoundPolicyTests`, `SoundControllerTests` | Synchronized groups pick them up |
+
+Verified today: the five recordings exist at `Sounds/` with spaces and capitals in their names (`Cat steps.m4a`, `Door and hit.m4a`, `Door.m4a`, `Human steps.m4a`, `Short hiss.m4a`); `NYCFarmerMarkets/` has no `Sounds/` folder yet; `.kiro/steering/` has `git-and-workflow.md`, `known-limits.md`, `product.md`, `tech.md`, `theme-conventions.md`; the convention greps are at `theme-conventions.md` lines 49-52. Not run in this step: builds and tests (planning only).
+
+Rules for the coder: commit locally on the branch when the owner or workflow asks, stage files by name, never stage anything under `.agents/tasks/`; `rm` only with full literal paths; remove temporary log lines and temp files.

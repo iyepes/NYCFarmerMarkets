@@ -11,6 +11,7 @@ struct MarketDetailView: View {
     let market: Market
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(SoundController.self) private var sounds
     @State private var showsMap = false
 
     var body: some View {
@@ -61,6 +62,10 @@ struct MarketDetailView: View {
             .themedBackground()
             .navigationDestination(isPresented: $showsMap) {
                 MarketLocationMapView(market: market, onClose: { dismiss() })
+            }
+            .onChange(of: showsMap) { _, shown in
+                // Push only: Back, Close and swipe-down stay silent.
+                if shown { sounds.play(.doorAndHit) }
             }
             .navigationTitle("Market details")
             #if !os(macOS)

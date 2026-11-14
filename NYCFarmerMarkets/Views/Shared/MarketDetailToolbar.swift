@@ -11,12 +11,14 @@ struct MarketDetailToolbar: ToolbarContent {
     let onClose: () -> Void
 
     @Environment(FavoritesStore.self) private var favorites
+    @Environment(SoundController.self) private var sounds
 
     private var isFavorite: Bool { favorites.isFavorite(market) }
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
             Button {
+                sounds.play(.hiss)
                 onClose()
             } label: {
                 IconView(.close, size: 24)
@@ -26,6 +28,7 @@ struct MarketDetailToolbar: ToolbarContent {
         }
         ToolbarItem(placement: .primaryAction) {
             Button {
+                sounds.play(.hiss)
                 favorites.toggle(market)
             } label: {
                 IconView(isFavorite ? .favoriteOn : .favoriteOff, size: 26)
