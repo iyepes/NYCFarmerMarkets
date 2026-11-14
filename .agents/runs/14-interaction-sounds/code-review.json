@@ -1,5 +1,36 @@
 {
   "verdict": "APPROVED",
-  "findings": [],
-  "reviewDoc": "<repo>/.agents/tasks/feature-to-pr/code-review-summary.md"
+  "findings": [
+    {
+      "severity": "non-blocking",
+      "confidence": "high",
+      "summary": "SoundPlayer prepares files about 300 ms after init on the main actor; cues in that window are dropped."
+    },
+    {
+      "severity": "non-blocking",
+      "confidence": "medium",
+      "summary": "currentLoop can stay set after a system audio interruption, so a loop may not restart until the list goes idle."
+    },
+    {
+      "severity": "non-blocking",
+      "confidence": "medium",
+      "summary": "Hiss and door-and-hit start together on a row tap and on Go to Map; confirm by ear."
+    },
+    {
+      "severity": "non-blocking",
+      "confidence": "low",
+      "summary": "ThemedButtonStyle plays hiss on press; plain buttons play it on release."
+    },
+    {
+      "severity": "non-blocking",
+      "confidence": "high",
+      "summary": "AppPalette.onAppIconBackground and ThemeTests change (9b16611) is outside the sound feature; owner-approved."
+    },
+    {
+      "severity": "non-blocking",
+      "confidence": "high",
+      "summary": "Not verified: audible playback, fades, loop seams, VoiceOver on a device, macOS and visionOS audio, silent switch, mixing."
+    }
+  ],
+  "reviewDoc": "<repo>/.agents/runs/14-interaction-sounds/code-review-summary.md"
 }

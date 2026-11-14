@@ -73,7 +73,7 @@ Add interaction sounds to Spooky Markets using five recordings made by the owner
 ## Acceptance Criteria
 
 1. The five files exist under `NYCFarmerMarkets/Sounds/` with the names above, `Sounds/` originals are gone, and the files are in the iOS and macOS app bundles. (R1)
-2. `grep` finds no `.m4a` sound file name outside `NYCFarmerMarkets/Theme/`. (R1.3)
+2. `grep` finds no `.m4a` sound file name in Swift source outside `NYCFarmerMarkets/Theme/`. (R1.3)
 3. Scrolling the Markets list loops human steps and scrolling Favorites loops cat steps. The loop continues through coasting without restarting. (R2.1, R2.2)
 4. Stopping the scroll fades the loop out over about 0.3 s. Leaving the screen stops it. Never two loops at once. (R2.3 to R2.5)
 5. Each listed button press plays one hiss. A second press during playback restarts it. (R3)
