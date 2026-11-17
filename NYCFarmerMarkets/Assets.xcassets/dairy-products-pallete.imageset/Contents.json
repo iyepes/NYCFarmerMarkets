@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "dairy-products-pallete.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

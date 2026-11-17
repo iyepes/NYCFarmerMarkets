@@ -72,4 +72,87 @@ struct LaunchOptionsTests {
             #expect(LaunchOptions(arguments: args).splashMinimumSeconds == nil, "args: \(args)")
         }
     }
+
+    // MARK: Onboarding flags
+
+    private static let skip = "-uiTestingSkipOnboarding"
+    private static let resetOnboarding = "-uiTestingResetOnboarding"
+
+    /// Every subset of this pool, in pool order and in reverse order, plus the empty list.
+    /// The pool holds both known flags, near misses (suffix, missing dash, different case) and unrelated strings.
+    private static let argumentPool = [
+        skip, resetOnboarding, "-uiTestingResetOnboardingX", "uiTestingSkipOnboarding",
+        "-UITESTINGSKIPONBOARDING", "/path/to/app",
+    ]
+
+    private static let argumentLists: [[String]] = {
+        var lists: [[String]] = []
+        for mask in 0..<(1 << argumentPool.count) {
+            let subset = argumentPool.indices.filter { mask & (1 << $0) != 0 }.map { argumentPool[$0] }
+            lists.append(subset)
+            if subset.count > 1 { lists.append(subset.reversed()) }
+        }
+        return lists
+    }()
+
+    // Feature: onboarding-flow, Property 4: Launch arguments parse by exact match
+    // Exhaustive over subsets and orders of a fixed pool of known, near-miss and unrelated arguments.
+    @Test(arguments: argumentLists)
+    func onboardingArgumentsParseByExactMatch(arguments: [String]) {
+        let options = LaunchOptions(arguments: arguments)
+        #expect(options.skipOnboarding == arguments.contains { $0 == Self.skip }, "args: \(arguments)")
+        #expect(options.resetOnboarding == arguments.contains { $0 == Self.resetOnboarding }, "args: \(arguments)")
+        // The onboarding flags do not affect the other flags.
+        #expect(options.resetFavorites == false)
+        #expect(options.splashMinimumSeconds == nil)
+    }
+
+    @Test func emptyArgumentListLeavesOnboardingFlagsFalse() {
+        let options = LaunchOptions(arguments: [])
+        #expect(options.skipOnboarding == false)
+        #expect(options.resetOnboarding == false)
+    }
+
+    struct FlagCombination: Sendable, CustomTestStringConvertible {
+        let resetFavorites: Bool
+        let skipOnboarding: Bool
+        let resetOnboarding: Bool
+
+        var testDescription: String {
+            "resetFavorites=\(resetFavorites) skip=\(skipOnboarding) resetOnboarding=\(resetOnboarding)"
+        }
+
+        var arguments: [String] {
+            var args = ["/path/to/app"]
+            if resetFavorites { args.append("-uiTestingReset") }
+            if skipOnboarding { args.append("-uiTestingSkipOnboarding") }
+            if resetOnboarding { args.append("-uiTestingResetOnboarding") }
+            return args
+        }
+
+        static let all: [FlagCombination] = [false, true].flatMap { favorites in
+            [false, true].flatMap { skip in
+                [false, true].map { FlagCombination(resetFavorites: favorites, skipOnboarding: skip, resetOnboarding: $0) }
+            }
+        }
+    }
+
+    // Feature: onboarding-flow, Property 5: Onboarding flag action precedence
+    // Exhaustive over all 8 combinations, built from launch arguments.
+    @Test(arguments: FlagCombination.all)
+    func onboardingFlagActionPrecedence(combination: FlagCombination) {
+        let options = LaunchOptions(arguments: combination.arguments)
+        let expected: LaunchOptions.OnboardingFlagAction =
+            combination.resetOnboarding ? .reset
+            : (combination.skipOnboarding || combination.resetFavorites) ? .markSeen
+            : .none
+        #expect(options.onboardingFlagAction == expected)
+    }
+
+    @Test func onboardingFlagActionExamples() {
+        #expect(LaunchOptions(arguments: ["/app"]).onboardingFlagAction == .none)
+        #expect(LaunchOptions(arguments: ["/app", Self.skip]).onboardingFlagAction == .markSeen)
+        #expect(LaunchOptions(arguments: ["/app", Self.resetOnboarding]).onboardingFlagAction == .reset)
+        #expect(LaunchOptions(arguments: ["/app", Self.skip, Self.resetOnboarding]).onboardingFlagAction == .reset)
+    }
 }

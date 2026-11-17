@@ -24,9 +24,26 @@ nonisolated struct LaunchOptions: Equatable, Sendable {
     /// Argument: `-uiTestingSplashMinimumSeconds <seconds>` (positive, finite).
     var splashMinimumSeconds: Double?
 
+    /// Marks onboarding as seen at launch. Argument: `-uiTestingSkipOnboarding`.
+    var skipOnboarding = false
+
+    /// Removes the onboarding flag at launch, so onboarding shows. Argument: `-uiTestingResetOnboarding`.
+    var resetOnboarding = false
+
+    /// What launch does to the onboarding flag. `-uiTestingResetOnboarding` wins over the other two.
+    nonisolated enum OnboardingFlagAction: Equatable, Sendable { case none, markSeen, reset }
+
+    var onboardingFlagAction: OnboardingFlagAction {
+        if resetOnboarding { return .reset }
+        if skipOnboarding || resetFavorites { return .markSeen }
+        return .none
+    }
+
     /// Builds options from launch arguments (e.g. `ProcessInfo.processInfo.arguments`).
     /// Each flag is true when its argument is contained in `arguments`.
     init(arguments: [String]) {
+        skipOnboarding = arguments.contains("-uiTestingSkipOnboarding")
+        resetOnboarding = arguments.contains("-uiTestingResetOnboarding")
         resetFavorites = arguments.contains("-uiTestingReset")
         failDownload = arguments.contains("-uiTestingFailDownload")
         muteSounds = arguments.contains("-uiTestingMuteSounds")
@@ -34,6 +51,17 @@ nonisolated struct LaunchOptions: Equatable, Sendable {
            arguments.indices.contains(index + 1),
            let seconds = Double(arguments[index + 1]), seconds.isFinite, seconds > 0 {
             splashMinimumSeconds = seconds
+        }
+    }
+}
+
+extension LaunchOptions.OnboardingFlagAction {
+    /// Performs the write: sets `true`, removes the key, or does nothing.
+    func apply(to defaults: UserDefaults, key: String = OnboardingDecision.defaultsKey) {
+        switch self {
+        case .none: break
+        case .markSeen: defaults.set(true, forKey: key)
+        case .reset: defaults.removeObject(forKey: key)
         }
     }
 }

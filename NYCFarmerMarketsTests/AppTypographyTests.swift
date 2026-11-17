@@ -70,6 +70,11 @@ struct AppTypographyTests {
         #expect(AppTypography.Role.caption.effectiveSize == 14)
     }
 
+    @Test func splashRoleIsFortyFourPoints() {
+        #expect(AppTypography.Role.splash.size == 44)
+        #expect(AppTypography.Role.splash.effectiveSize == 44)
+    }
+
     @Test func displayRolesKeepTheirDesignSize() {
         for role in AppTypography.Role.allCases where role.family == .display {
             #expect(role.effectiveSize == role.size)

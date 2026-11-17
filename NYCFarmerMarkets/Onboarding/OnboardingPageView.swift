@@ -21,6 +21,7 @@ struct OnboardingPageView: View {
                     .appFont(.detailTitle)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(AppPalette.textPrimary.color)
+                    .accessibilityAddTraits(.isHeader)
 
                 Text(page.message)
                     .appFont(.body)
@@ -30,7 +31,7 @@ struct OnboardingPageView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(page.bullets, id: \.self) { bullet in
                         HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "moon.stars.fill")
+                            AppIcon.onboardingBullet.image
                                 .foregroundStyle(AppPalette.accentSecondary.color)
                                 .accessibilityHidden(true)
                             Text(bullet)
@@ -53,6 +54,7 @@ struct OnboardingPageView: View {
         .contentMargins(.bottom, bottomInset, for: .scrollContent)
         // Soft fade where content passes under the glass controls.
         .scrollEdgeEffectStyle(.soft, for: [.top, .bottom])
+        .accessibilityIdentifier("onboarding-page-\(page.id)")
     }
 
     private var hero: some View {
@@ -91,14 +93,13 @@ struct OnboardingPageView: View {
                     )
                     .frame(width: 180, height: 180)
                     .overlay {
-                        Image(systemName: page.symbol)
-                            .font(.system(size: 72))
+                        IconView(page.symbol, size: 72)
                             .foregroundStyle(AppPalette.onAccentFill.color)
                     }
             }
 
             Text(page.emoji)
-                .font(.system(size: 44))
+                .appFont(.splash)
         }
         .accessibilityHidden(true)
     }

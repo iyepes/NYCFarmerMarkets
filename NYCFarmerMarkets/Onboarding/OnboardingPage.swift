@@ -1,17 +1,17 @@
 import Foundation
 
 /// How a page's hero image is presented.
-enum HeroStyle {
+nonisolated enum HeroStyle: Sendable {
     case illustration   // transparent PNG, shown on a light circle
     case framed         // opaque picture such as a map, shown in a rounded frame
 }
 
 /// Content for one onboarding screen.
-struct OnboardingPage: Identifiable {
+nonisolated struct OnboardingPage: Identifiable, Sendable {
     let id: Int
     let eyebrow: String      // small label above the title
     let emoji: String        // Halloween accent shown with the symbol
-    let symbol: String       // SF Symbol
+    let symbol: AppIcon      // themed icon
     var heroImage: String? = nil   // image name; replaces the symbol when set
     var heroStyle: HeroStyle = .illustration
     let title: String
@@ -23,7 +23,7 @@ struct OnboardingPage: Identifiable {
             id: 0,
             eyebrow: "THE HAUNTING",
             emoji: "🦇",
-            symbol: "shippingbox.fill",
+            symbol: .onboardingShipping,
             heroImage: "pirate-ship",
             title: "Your dinner has traveled farther than you have",
             message: "Big cities lean on big stores, and much of that food crosses coast to coast or travel an ocean before it reaches you. Meanwhile, small farms and family food makers lurk just around the corner, with no way to reach you.",
@@ -37,7 +37,7 @@ struct OnboardingPage: Identifiable {
             id: 1,
             eyebrow: "THE SPELL",
             emoji: "🎃",
-            symbol: "map.fill",
+            symbol: .onboardingMap,
             heroImage: "map-image",
             heroStyle: .framed,
             title: "We conjured up your nearest market",
@@ -52,7 +52,7 @@ struct OnboardingPage: Identifiable {
             id: 2,
             eyebrow: "THE GUEST LIST",
             emoji: "👻",
-            symbol: "person.2.fill",
+            symbol: .onboardingPeople,
             heroImage: "dairy-products-pallete",
             title: "Neighbors and growers, come on in",
             message: "Hungry for fresher food close to home? Or existent farmers who bring their products? Spooky Markets brings you together, no scary middlemen required.",

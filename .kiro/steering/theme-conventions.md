@@ -19,10 +19,12 @@ Everything visual comes from `NYCFarmerMarkets/Theme/`. Views use semantic names
 - Every icon is an `AppIcon` case with a `source` (`.symbol` SF Symbol or `.asset`) and a plain `accessibilityName`. Views use `IconView(.case, size:)` or `AppIcon.case.image`; never `Image(systemName: "...")` or `systemImage: "..."` with a literal outside `Theme/`.
 - Spooky assets: `icon-pumpkin` (Markets tab), `icon-ghost-filled` / `icon-ghost-outline` (favorites), `icon-bat` (map pin), `logo-carrot` (splash logo, now drawn as a pumpkin face; the asset name was kept).
 
+- Onboarding page icons: `onboardingBullet` (`moon.stars.fill`), `onboardingShipping` (`shippingbox.fill`), `onboardingMap` (`map.fill`), `onboardingPeople` (`person.2.fill`). The hero symbol is drawn by `IconView` at 72 pt; the page emoji uses `.appFont(.splash)`.
+
 ## Fonts: `AppTypography`
 
 - Two families: **display** Grim Creeper (`Grim-Creeper-Regular`) and **body** Breath of the House (`Breath-of-the-House`). Each has one weight; do not ask for bold or semibold (it would be synthetic). Hierarchy comes from role, size and family.
-- Views set fonts only with `.appFont(.role)`. Roles: display `splash` (40), `splashHint` (22), `tabTitle` (34), `tabBarLabel` (12), `navigationTitle` (20), `detailTitle` (30), `sectionHeader` (30), `favoriteItemTitle` (20); body `body` (17), `bodyEmphasis` (17), `subheadline` (15), `caption` (12), `footnote` (13).
+- Views set fonts only with `.appFont(.role)`. Roles: display `splash` (44), `splashHint` (22), `tabTitle` (34), `tabBarLabel` (12), `navigationTitle` (20), `detailTitle` (30), `sectionHeader` (30), `favoriteItemTitle` (20); body `body` (17), `bodyEmphasis` (17), `subheadline` (15), `caption` (12), `footnote` (13).
 - Body sizes are multiplied by `sizeScale` 1.15 with a 14 pt floor (`effectiveSize`); every role scales with Dynamic Type via `relativeTo`. If a family fails to load, the role falls back to the system font with the same text style and `fallbackWeight`.
 - A new role needs: a case in `Role`, entries in `family`, `size`, `textStyle`, `fallbackWeight` and `uiTextStyle` (`AppTypography+UIKit.swift`), and the exhaustive family test in `AppTypographyTests`.
 - UIKit-drawn bars (tab bar, navigation bar, search field) get fonts in `ThemeAppearance` through `AppTypography.uiFont(_:)`, re-applied on `UIContentSizeCategory.didChangeNotification`. The tab bar label is capped at 15 pt (`maximumPointSize`).
@@ -33,6 +35,7 @@ Everything visual comes from `NYCFarmerMarkets/Theme/`. Views use semantic names
 ## Copy: `AppCopy`
 
 - Spooky user-facing text (splash caption, offline banner, search prompt and empty state, map filter summary, missing values) lives in `AppCopy`, each with a plain `...Accessibility` counterpart where VoiceOver needs one. Add new spooky strings there; keep the tone light, never alarming.
+- Onboarding strings: `AppCopy.onboardingSkip`, `onboardingNext`, `onboardingEnter`, `onboardingPrimaryLabel(isLast:)` and `onboardingPageIndicator(page:count:)` ("Page 1 of 3").
 - Accessibility labels, hints and identifiers stay plain and are not themed.
 
 ## Sounds: `AppSound`
@@ -41,11 +44,13 @@ Everything visual comes from `NYCFarmerMarkets/Theme/`. Views use semantic names
 - Removing a favorite (swipe "Remove", the "Remove from favorites" accessibility action, or the detail toggle turning it off) plays `.ay` through `FavoriteCue` instead of the hiss; adding a favorite keeps the hiss. Views call `FavoriteCue`, never `.ay`. Like every sound, Ay is silent while VoiceOver runs.
 - Sound toggle icons: `AppIcon.soundOn` ("Sounds on") and `soundOff` ("Sounds off"), used by `SoundToggleButton` (identifier `sound-toggle`, label "Sounds", value "On"/"Off").
 - New buttons that use `ThemedButtonStyle` hiss on press automatically. Plain-style buttons call `sounds.play(.hiss)` in their action.
+- Onboarding buttons use glass styling (`.glass` for Skip, `.plain` with `.glassEffect` for the primary button) instead of `ThemedButtonStyle`, so they call `sounds.play(.hiss)` explicitly.
 
 ## Accessibility
 
 - Every interactive control has a plain `accessibilityLabel`; decorative icons are hidden (`IconView` does this).
 - New UI-test-reachable elements get a kebab-case `accessibilityIdentifier`.
+- Onboarding identifiers: `onboarding-screen`, `onboarding-skip`, `onboarding-next`, `onboarding-page-indicator`, `onboarding-page-<id>`.
 - Do not claim WCAG compliance; full validation needs manual testing with assistive technologies.
 
 ## Convention check (must print zero lines)

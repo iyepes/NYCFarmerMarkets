@@ -39,6 +39,19 @@ nonisolated enum AppCopy {
         return "Showing \(count) \(noun) for \(MarketSearch.normalized(query))"
     }
 
+    // MARK: Onboarding
+    static let onboardingSkip = "Skip"
+    static let onboardingNext = "Next"
+    static let onboardingEnter = "Enter the market"
+
+    static func onboardingPrimaryLabel(isLast: Bool) -> String {
+        isLast ? onboardingEnter : onboardingNext
+    }
+
+    static func onboardingPageIndicator(page: Int, count: Int) -> String {
+        "Page \(page) of \(count)"
+    }
+
     // MARK: Detail view
     static let missingValue = "Shrouded in mist"
     static let missingValueAccessibility = "Not listed"

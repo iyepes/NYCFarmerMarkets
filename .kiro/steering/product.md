@@ -11,10 +11,12 @@ SwiftUI app that lists New York City farmers markets with a light, spooky theme.
 - Source: NYC Open Data dataset `8vwk-6iz2` (`MarketService.defaultURL`, `$limit=5000`). The dataset has one row per market per year; `MarketService.parse` keeps only the most recent year and removes duplicate ids.
 - Offline cache: the last successful fetch is saved as JSON (`MarketCache`, `Application Support/markets-cache.json`). On launch the cache is shown first, then refreshed from the network. If the refresh fails with cached data, an offline banner is shown; with no data, the splash shows a friendly failure (`LoadFailureMessage`) and a Retry button.
 - Favorites: market ids in `UserDefaults` key `favoriteMarketIDs` (`FavoritesStore`). Ids with no matching market are kept in storage but not shown.
+- Onboarding seen: `UserDefaults` key `hasSeenOnboarding` (`OnboardingDecision.defaultsKey`), set to true when the user finishes or skips onboarding.
 
 ## Screens
 
 - Splash (`SplashView`): logo, loading caption, minimum display time (`SplashDecision`), failure message and Retry.
+- Onboarding (`OnboardingView`): three swipeable pages with Skip and Next (last page: "Enter the market"). Shown once, after the first successful load and before the tabs, until `hasSeenOnboarding` is true (`OnboardingDecision`).
 - Tabs (`RootTabView`):
   - **Markets**: list grouped by borough (Manhattan, Brooklyn, Queens, Bronx, Staten Island, then unknown) in collapsible sections, with search by name, address or borough.
   - **Map**: pins for markets; shows the same search results as the Markets list (`MarketStore.searchQuery` is shared) with a filter indicator.
