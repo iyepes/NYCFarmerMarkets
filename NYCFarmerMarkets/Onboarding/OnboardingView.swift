@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    @Binding var hasSeenOnboarding: Bool
+    @Environment(SoundController.self) private var sounds
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selection = 0
 
     private let pages = OnboardingPage.all
@@ -16,22 +18,35 @@ struct OnboardingView: View {
                 AppPalette.background.color
                     .ignoresSafeArea()
 
-                TabView(selection: $selection) {
-                    ForEach(pages) { page in
-                        OnboardingPageView(
-                            page: page,
-                            topInset: proxy.safeAreaInsets.top + Layout.skipAreaHeight,
-                            bottomInset: proxy.safeAreaInsets.bottom + Layout.controlsAreaHeight
-                        )
-                        .tag(page.id)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .ignoresSafeArea()
+                pager(topInset: proxy.safeAreaInsets.top + Layout.skipAreaHeight,
+                      bottomInset: proxy.safeAreaInsets.bottom + Layout.controlsAreaHeight)
+                    .ignoresSafeArea()
             }
             .overlay(alignment: .topTrailing) { skipButton }
             .overlay(alignment: .bottom) { bottomControls }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("onboarding-screen")
+    }
+
+    @ViewBuilder
+    private func pager(topInset: CGFloat, bottomInset: CGFloat) -> some View {
+        #if os(macOS)
+        // The paged TabView style does not exist on macOS, so show only the current page.
+        // Next and Skip drive `selection` the same way.
+        if pages.indices.contains(selection) {
+            OnboardingPageView(page: pages[selection], topInset: topInset, bottomInset: bottomInset)
+                .id(pages[selection].id)
+        }
+        #else
+        TabView(selection: $selection) {
+            ForEach(pages) { page in
+                OnboardingPageView(page: page, topInset: topInset, bottomInset: bottomInset)
+                    .tag(page.id)
+            }
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        #endif
     }
 
     private enum Layout {
@@ -41,14 +56,17 @@ struct OnboardingView: View {
     }
 
     private var skipButton: some View {
-        Button("Skip") { finish() }
+        Button(AppCopy.onboardingSkip, action: skip)
             .appFont(.body)
+            .accessibilityLabel(AppCopy.onboardingSkip)
+            .accessibilityIdentifier("onboarding-skip")
             .buttonStyle(.glass)
             .padding(.top, 8)
             .foregroundStyle(AppPalette.textPrimary.color)
             .padding(.horizontal, 24)
             .opacity(isLast ? 0 : 1)
             .disabled(isLast)
+            .accessibilityHidden(isLast)
     }
 
     private var bottomControls: some View {
@@ -64,11 +82,12 @@ struct OnboardingView: View {
             .padding(.vertical, 10)
             .glassEffect(.regular, in: .capsule)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Page \(selection + 1) of \(pages.count)")
+            .accessibilityLabel(AppCopy.onboardingPageIndicator(page: selection + 1, count: pages.count))
+            .accessibilityIdentifier("onboarding-page-indicator")
 
             // Tinted, translucent glass so the page shows through (glassProminent is nearly opaque).
             Button(action: advance) {
-                Text(isLast ? "Enter the market" : "Next")
+                Text(AppCopy.onboardingPrimaryLabel(isLast: isLast))
                     .appFont(.bodyEmphasis)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -79,24 +98,33 @@ struct OnboardingView: View {
                     )
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(AppCopy.onboardingPrimaryLabel(isLast: isLast))
+            .accessibilityIdentifier("onboarding-next")
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 8)
     }
 
+    private func skip() {
+        guard !hasSeenOnboarding else { return }
+        sounds.play(.hiss)
+        hasSeenOnboarding = true
+    }
+
     private func advance() {
+        guard !hasSeenOnboarding else { return }
+        sounds.play(.hiss)
         if isLast {
-            finish()
+            hasSeenOnboarding = true
+        } else if reduceMotion {
+            selection += 1
         } else {
             withAnimation(.easeInOut) { selection += 1 }
         }
     }
-
-    private func finish() {
-        hasSeenOnboarding = true
-    }
 }
 
 #Preview {
-    OnboardingView()
+    OnboardingView(hasSeenOnboarding: .constant(false))
+        .environment(SoundController(testMuted: true, player: SilentSoundPlayer()))
 }

@@ -82,7 +82,7 @@ nonisolated enum AppTypography {
         /// Point size at the default Dynamic Type size.
         var size: CGFloat {
             switch self {
-            case .splash: 40
+            case .splash: 44
             case .splashHint: 22
             case .tabTitle: 34
             case .tabBarLabel: 12

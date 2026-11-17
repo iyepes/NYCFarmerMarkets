@@ -15,12 +15,18 @@ struct SplashView: View {
     let onRetry: () -> Void
 
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
-            LogoView()
-            Spacer()
-            footer
-            Spacer()
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(spacing: 32) {
+                    Spacer()
+                    LogoView()
+                    Spacer()
+                    footer
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, minHeight: proxy.size.height)
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
         .foregroundStyle(AppPalette.onAppIconBackground.color)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -12,9 +12,10 @@ inclusion: always
 
 ## Layout (`NYCFarmerMarkets/`)
 
-- `Models/`: pure value types and logic (`Market`, `MarketGrouping`, `MarketSearch`, `SectionExpansion`, `SplashDecision`, `LoadFailureMessage`, `LaunchOptions`, `SingleMarketMap`, `SectionHeaderAccessibility`). Keep logic here so it can be unit tested.
+- `Models/`: pure value types and logic (`Market`, `MarketGrouping`, `MarketSearch`, `SectionExpansion`, `SplashDecision`, `LoadFailureMessage`, `LaunchOptions`, `SingleMarketMap`, `SectionHeaderAccessibility`, `OnboardingDecision` with `RootScreen`). Keep logic here so it can be unit tested.
 - `Services/`: `MarketService` (network + parsing), `MarketCache` (JSON file), `SoundPlayer` (`AVAudioPlayer` per sound; `SilentSoundPlayer` for muted UI tests; both behind `SoundPlaying`).
 - `Stores/`: `@Observable final class` stores injected with `.environment(...)` from `NYCFarmerMarketsApp`: `MarketStore` (markets, load state, offline flag, failure, selected market, search query), `FavoritesStore` and `SoundController` (sound on/off in `UserDefaults` key `soundEnabled`, VoiceOver mute, current loop; views send cues, `SoundPolicy` decides). Dependencies are injected through initializers (`MarketStore(cache:fetch:)`, `FavoritesStore(defaults:key:)`) so tests can replace them.
+- `Onboarding/`: first-run onboarding screens (`OnboardingView`, `OnboardingPageView`, `OnboardingPage`), shown after the splash until `hasSeenOnboarding` (`UserDefaults`) is true; `OnboardingDecision` picks the screen.
 - `Theme/`: the only place for colors, icons, fonts and spooky copy (see `theme-conventions.md`).
 - `Views/`: screens; `Views/Shared/`: reusable views (`MarketRow`, `MarketPin`, `OfflineBanner`, `MapFilterIndicator`, `MarketDetailToolbar`).
 - `fonts/`: `Grim Creeper.ttf`, `Breath of the House.ttf`, listed in `Info.plist` `UIAppFonts` and registered at runtime by `AppTypography.registerFonts()`.
@@ -27,7 +28,7 @@ inclusion: always
 
 ## Launch arguments (UI tests only)
 
-Parsed by `LaunchOptions`; inert unless passed: `-uiTestingReset` (clear favorites and the `soundEnabled` setting), `-uiTestingFailDownload` (empty cache + failing fetch), `-uiTestingMuteSounds` (silent player, no audio session; every UI test passes it), `-uiTestingSplashMinimumSeconds <n>`. Add new test hooks here the same way, never as build-time switches.
+Parsed by `LaunchOptions`; inert unless passed: `-uiTestingReset` (clear favorites and the `soundEnabled` setting), `-uiTestingFailDownload` (empty cache + failing fetch), `-uiTestingMuteSounds` (silent player, no audio session; every UI test passes it), `-uiTestingSplashMinimumSeconds <n>`, `-uiTestingSkipOnboarding` (writes `hasSeenOnboarding = true`), `-uiTestingResetOnboarding` (removes the flag so onboarding shows; wins over `-uiTestingSkipOnboarding` and `-uiTestingReset`). `-uiTestingReset` also writes `hasSeenOnboarding = true`, unless `-uiTestingResetOnboarding` is present. Add new test hooks here the same way, never as build-time switches.
 
 ## Tests
 

@@ -24,6 +24,8 @@ struct NYCFarmerMarketsApp: App {
             UserDefaults.standard.removeObject(forKey: "favoriteMarketIDs")
             UserDefaults.standard.removeObject(forKey: SoundController.defaultsKey)
         }
+        // Onboarding flag: applied before the root view exists so it reads the final value.
+        options.onboardingFlagAction.apply(to: .standard)
         if options.failDownload {
             let emptyCache = MarketCache(
                 fileURL: FileManager.default.temporaryDirectory

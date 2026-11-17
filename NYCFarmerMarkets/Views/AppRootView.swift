@@ -16,6 +16,7 @@ struct AppRootView: View {
 
     var minimumDisplayTime: Duration = SplashDecision.minimumDisplayTime
 
+    @AppStorage(OnboardingDecision.defaultsKey) private var hasSeenOnboarding = false
     @State private var minimumTimeElapsed = false
     @State private var hasDismissed = false
 
@@ -47,16 +48,28 @@ struct AppRootView: View {
         )
     }
 
+    /// The screen to show. `hasDismissed` keeps the splash from returning after a later refresh.
+    private var screen: RootScreen {
+        OnboardingDecision.screen(
+            phase: hasDismissed ? .dismissed : phase,
+            hasSeenOnboarding: hasSeenOnboarding
+        )
+    }
+
     var body: some View {
         ZStack {
-            if hasDismissed {
-                RootTabView()
-            } else {
+            switch screen {
+            case .splash:
                 SplashView(phase: phase, hint: errorHint) { Task { await store.refresh() } }
                     .transition(reduceMotion ? .identity : .opacity)
+            case .onboarding:
+                OnboardingView(hasSeenOnboarding: $hasSeenOnboarding)
+                    .transition(reduceMotion ? .identity : .opacity)
+            case .tabs:
+                RootTabView()
             }
         }
-        .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: hasDismissed)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: screen)
         .task { await store.load() }  // started once, from the splash phase
         .task {
             try? await Task.sleep(for: minimumDisplayTime)

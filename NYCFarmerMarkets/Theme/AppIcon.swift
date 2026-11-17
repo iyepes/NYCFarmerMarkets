@@ -34,6 +34,10 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
     case searchFilter
     case soundOn
     case soundOff
+    case onboardingBullet
+    case onboardingShipping
+    case onboardingMap
+    case onboardingPeople
 
     enum Source: Equatable, Sendable {
         case symbol(String)
@@ -67,6 +71,10 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
         case .searchFilter: .symbol("line.3.horizontal.decrease.circle.fill")
         case .soundOn: .symbol("speaker.wave.2.fill")
         case .soundOff: .symbol("speaker.slash.fill")
+        case .onboardingBullet: .symbol("moon.stars.fill")
+        case .onboardingShipping: .symbol("shippingbox.fill")
+        case .onboardingMap: .symbol("map.fill")
+        case .onboardingPeople: .symbol("person.2.fill")
         }
     }
 
@@ -106,6 +114,10 @@ nonisolated enum AppIcon: String, CaseIterable, Sendable {
         case .searchFilter: "Filtered"
         case .soundOn: "Sounds on"
         case .soundOff: "Sounds off"
+        case .onboardingBullet: "Bullet"
+        case .onboardingShipping: "Shipping"
+        case .onboardingMap: "Map"
+        case .onboardingPeople: "Neighbors and growers"
         }
     }
 }
