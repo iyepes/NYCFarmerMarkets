@@ -36,4 +36,12 @@
 
 Paths were sanitized (repository path replaced by <repo>, home directory by ~). pr-body.md is not archived. The issue body, pr.json and respond.json are added after the merge by the final archive_pr step.
 
-pr.json, respond.json and pr-body.md are not part of this archive.
+pr-body.md is not part of this archive.
+
+## Added after the merge (PR #24, 2026-11-18)
+
+- `issue-body-onboarding-accessibility-fixes.md`: the body of issue #23 as it stood on GitHub.
+- `pr.json`: the PR number, URL, title and branch from the submit step.
+- `respond.json`: the PR loop's response record.
+
+These files are created after the push, so the archive step cannot include them.
