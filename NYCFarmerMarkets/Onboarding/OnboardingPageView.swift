@@ -7,6 +7,13 @@ struct OnboardingPageView: View {
     /// Space to keep clear at the bottom (safe area + glass controls).
     var bottomInset: CGFloat = 150
 
+    /// Width and height of the illustration circle and the framed picture.
+    static let heroSize: CGFloat = 190
+    /// Width and height of the symbol fallback circle.
+    static let heroFallbackSize: CGFloat = 160
+    /// Corner radius of the framed picture.
+    static let framedCornerRadius: CGFloat = 32
+
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
@@ -58,14 +65,15 @@ struct OnboardingPageView: View {
     }
 
     private var hero: some View {
-        ZStack(alignment: .topTrailing) {
+        // Emoji at the leading corner, away from the Skip button on the trailing side.
+        ZStack(alignment: .topLeading) {
             if let heroImage = page.heroImage {
                 switch page.heroStyle {
                 case .illustration:
                     // Lavender circle keeps the dark purple parts of the art visible in both appearances.
                     Circle()
                         .fill(AppPalette.accentFill.color)
-                        .frame(width: 220, height: 220)
+                        .frame(width: Self.heroSize, height: Self.heroSize)
                         .overlay {
                             Image(heroImage)
                                 .resizable()
@@ -76,10 +84,10 @@ struct OnboardingPageView: View {
                     Image(heroImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 220, height: 220)
-                        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                        .frame(width: Self.heroSize, height: Self.heroSize)
+                        .clipShape(RoundedRectangle(cornerRadius: Self.framedCornerRadius, style: .continuous))
                         .overlay {
-                            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                            RoundedRectangle(cornerRadius: Self.framedCornerRadius, style: .continuous)
                                 .strokeBorder(AppPalette.accentSecondary.color, lineWidth: 3)
                         }
                 }
@@ -91,7 +99,7 @@ struct OnboardingPageView: View {
                             center: .center, startRadius: 10, endRadius: 100
                         )
                     )
-                    .frame(width: 180, height: 180)
+                    .frame(width: Self.heroFallbackSize, height: Self.heroFallbackSize)
                     .overlay {
                         IconView(page.symbol, size: 72)
                             .foregroundStyle(AppPalette.onAccentFill.color)

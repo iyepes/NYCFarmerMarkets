@@ -227,7 +227,7 @@ Commands (repo root):
   - Requirements: 4.1, 4.2, 6.5.
   - Verify: `-only-testing:NYCFarmerMarketsTests/OnboardingHeroLayoutTests` passes.
 
-- [ ] 4. Hero size and emoji position
+- [x] 4. Hero size and emoji position
   - In `NYCFarmerMarkets/Onboarding/OnboardingPageView.swift`: add `static let heroSize: CGFloat = 190` and `static let heroFallbackSize: CGFloat = 160`; use them at lines 68, 79 (220) and 94 (180); change the `ZStack` alignment (line 61) from `.topTrailing` to `.topLeading`; keep the ZStack `.accessibilityHidden(true)`, tokens and `.appFont(.splash)`. Also add a static for the framed corner radius (32; read the real value from the file) so `OnboardingView` can pass it.
   - Requirements: 4.3.
   - Verify: iOS build succeeds.
