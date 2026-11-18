@@ -2828,7 +2828,7 @@ sequenceDiagram
     opt if -uiTestingReset
         A->>A: Clear UserDefaults
     end
-    opt if -uiTestingFailDownload
+    alt if -uiTestingFailDownload
         A->>S: Initialize with empty cache & failing fetcher
     else Normal
         A->>S: Initialize with default MarketStore
