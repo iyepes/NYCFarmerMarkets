@@ -55,7 +55,7 @@ nonisolated struct OnboardingPage: Identifiable, Sendable {
             symbol: .onboardingPeople,
             heroImage: "dairy-products-pallete",
             title: "Neighbors and growers, come on in",
-            message: "Hungry for fresher food close to home? Or existent farmers who bring their products? Spooky Markets brings you together, no scary middlemen required.",
+            message: "Hungry for fresher food close to home? Or willing to know farmers who bring their products? Spooky Markets brings you together, no scary middlemen required.",
             bullets: [
                 "New Yorkers who crave fresh, local food",
                 "Farmers and family food businesses",
