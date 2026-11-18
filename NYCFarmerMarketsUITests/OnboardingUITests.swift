@@ -116,13 +116,76 @@ final class OnboardingUITests: XCTestCase {
         launchWithOnboarding()
         XCTAssertTrue(onboardingScreen.waitForExistence(timeout: 30), "Onboarding did not appear")
         XCTAssertTrue(pageIndicator.waitForExistence(timeout: 5))
-        XCTAssertEqual(pageIndicator.label, "Page 1 of 3")
+        XCTAssertEqual(indicatorValue, "Page 1 of 3")
 
         onboardingScreen.swipeLeft()
 
-        let moved = NSPredicate(format: "label == %@", "Page 2 of 3")
-        expectation(for: moved, evaluatedWith: pageIndicator)
-        waitForExpectations(timeout: 5)
-        XCTAssertEqual(pageIndicator.label, "Page 2 of 3")
+        waitForIndicator("Page 2 of 3")
+        XCTAssertEqual(indicatorValue, "Page 2 of 3")
+    }
+
+    @MainActor
+    func testNextTapsOutsideTextAdvance() throws {
+        launchWithOnboarding()
+        XCTAssertTrue(nextButton.waitForExistence(timeout: 30), "Next did not appear")
+        XCTAssertTrue(pageIndicator.waitForExistence(timeout: 5))
+        XCTAssertEqual(indicatorValue, "Page 1 of 3")
+
+        // Inside the capsule, far left of the centered text.
+        nextButton.coordinate(withNormalizedOffset: CGVector(dx: 0.04, dy: 0.5)).tap()
+
+        waitForIndicator("Page 2 of 3")
+    }
+
+    @MainActor
+    func testPageIndicatorFrameIsAtLeast44Points() throws {
+        launchWithOnboarding()
+        XCTAssertTrue(pageIndicator.waitForExistence(timeout: 30), "Indicator did not appear")
+        let frame = pageIndicator.frame
+        XCTAssertGreaterThanOrEqual(frame.height, 44, "Indicator height \(frame.height)")
+        XCTAssertGreaterThanOrEqual(frame.width, 44, "Indicator width \(frame.width)")
+    }
+
+    // No UI test for the indicator's adjust actions: XCUITest's adjust(toNormalizedSliderPosition:)
+    // only works on sliders. OnboardingPagingTests and the owner's VoiceOver check cover it (AC 6.2).
+
+    @MainActor
+    func testOnboardingScreenshotsAtDefaultAndLargestText() throws {
+        for size in [nil, "UICTContentSizeCategoryAccessibilityXXXL"] {
+            var arguments = ["-uiTestingReset", "-uiTestingResetOnboarding", "-uiTestingMuteSounds"]
+            if let size { arguments += ["-UIPreferredContentSizeCategoryName", size] }
+            app.launchArguments = arguments
+            app.launch()
+            let tag = size == nil ? "default" : "ax-xxxl"
+            XCTAssertTrue(nextButton.waitForExistence(timeout: 30), "Next did not appear (\(tag))")
+            attachScreenshot("onboarding-page0-\(tag) skip=\(skipButton.frame) next=\(nextButton.frame)")
+
+            nextButton.tap()
+            nextButton.tap()
+            waitForIndicator("Page 3 of 3")
+            XCTAssertTrue(nextButton.isHittable, "Next not hittable on the last page (\(tag))")
+            XCTAssertTrue(pageIndicator.isHittable, "Indicator not hittable on the last page (\(tag))")
+            attachScreenshot("onboarding-page2-\(tag) next=\(nextButton.frame)")
+            app.terminate()
+        }
+    }
+
+    // MARK: Indicator helpers
+
+    private var indicatorValue: String? { pageIndicator.value as? String }
+
+    private func waitForIndicator(_ value: String, file: StaticString = #filePath, line: UInt = #line) {
+        let predicate = NSPredicate(format: "value == %@", value)
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: pageIndicator)
+        let result = XCTWaiter().wait(for: [expectation], timeout: 5)
+        XCTAssertEqual(result, .completed, "Indicator value is \(indicatorValue ?? "nil"), expected \(value)",
+                       file: file, line: line)
+    }
+
+    private func attachScreenshot(_ name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }

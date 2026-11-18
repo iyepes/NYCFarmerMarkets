@@ -19,6 +19,9 @@ struct OnboardingView: View {
                 AppPalette.background.color
                     .ignoresSafeArea()
 
+                // The page ScrollView adds the top safe area on top of this inset, so the
+                // "beside Skip" result lands about one safe area lower, below Skip. The owner
+                // accepted that position (about 40 pt higher than the old safe + 48 inset).
                 pager(topInset: heroTopInset(safeAreaTop: proxy.safeAreaInsets.top, width: proxy.size.width),
                       bottomInset: proxy.safeAreaInsets.bottom + Layout.controlsAreaHeight)
                     .ignoresSafeArea()
@@ -54,7 +57,7 @@ struct OnboardingView: View {
         static let skipTopPadding: CGFloat = 8
         static let skipTrailingPadding: CGFloat = 24
         /// Skip size used until the button is measured.
-        static let defaultSkipSize = CGSize(width: 70, height: 34)
+        static let defaultSkipSize = CGSize(width: 55, height: 34)
         static let dotDiameter: CGFloat = 12
         static let dotSpacing: CGFloat = 12
         static let indicatorMinimumSize: CGFloat = 44
@@ -107,6 +110,8 @@ struct OnboardingView: View {
             .padding(.vertical, 16)
             .frame(minWidth: Layout.indicatorMinimumSize, minHeight: Layout.indicatorMinimumSize)
             .glassEffect(.regular, in: .capsule)
+            // Without this the accessibility frame shrinks to the 12 pt dots.
+            .contentShape(.accessibility, .capsule)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(AppCopy.onboardingPageIndicatorLabel)
             .accessibilityValue(AppCopy.onboardingPageIndicator(page: selection + 1, count: pages.count))

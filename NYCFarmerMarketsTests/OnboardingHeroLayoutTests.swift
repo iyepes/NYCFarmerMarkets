@@ -3,7 +3,8 @@ import CoreGraphics
 @testable import NYCFarmerMarkets
 
 struct OnboardingHeroLayoutTests {
-    private let skip = CGSize(width: 70, height: 34)
+    /// Skip size measured on the iPhone 17 simulator at the default text size.
+    private let skip = CGSize(width: 55, height: 34)
 
     private func inset(width: CGFloat, radius: CGFloat, skip: CGSize, safe: CGFloat = 59,
                        heroWidth: CGFloat = 190) -> CGFloat {
@@ -12,19 +13,20 @@ struct OnboardingHeroLayoutTests {
             skipSize: skip, skipTopPadding: 8, skipTrailingPadding: 24)
     }
 
-    @Test(arguments: [375.0, 390.0, 393.0])
+    @Test(arguments: [375.0, 390.0, 393.0, 402.0])
     func circleRisesBesideSkip(width: Double) {
         #expect(inset(width: width, radius: 95, skip: skip) == 67)
     }
 
     // Framed radius 32: the full half-width (95) applies at Skip's bottom (y = 34 >= 32).
-    // 393: 196.5 + 95 + 4 = 295.5 <= 393 - 24 - 70 = 299, rises.
-    // 390: 195 + 99 = 294 <= 296, rises.
-    // 375: 187.5 + 99 = 286.5 > 281, falls back below Skip (59 + 8 + 34 + 3 = 104).
+    // 393: 196.5 + 95 + 4 = 295.5 <= 393 - 24 - 55 = 314, rises.
+    // 375: 187.5 + 99 = 286.5 <= 296, rises.
+    // With the earlier 70 pt estimate, 375 fell back: 286.5 > 281 gives 59 + 8 + 34 + 3 = 104.
     @Test func framedResultsPerWidth() {
         #expect(inset(width: 393, radius: 32, skip: skip) == 67)
         #expect(inset(width: 390, radius: 32, skip: skip) == 67)
-        #expect(inset(width: 375, radius: 32, skip: skip) == 104)
+        #expect(inset(width: 375, radius: 32, skip: skip) == 67)
+        #expect(inset(width: 375, radius: 32, skip: CGSize(width: 70, height: 34)) == 104)
     }
 
     @Test func largeSkipFallsBackBelowSkip() {

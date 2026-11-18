@@ -242,7 +242,7 @@ Commands (repo root):
   - Requirements: 1.1 to 1.7, 2.1 to 2.4, 3.1 to 3.3, 4.1 to 4.4.
   - Verify: iOS build and macOS build succeed; run the convention check from theme-conventions (zero lines).
 
-- [ ] 6. UI tests
+- [x] 6. UI tests
   - File: `NYCFarmerMarketsUITests/OnboardingUITests.swift`; all tests keep `launchWithOnboarding()` and `-uiTestingMuteSounds`; no identifier renames.
   - Update `testSwipeMovesToSecondPage` (lines 115 to 126) to read `value as? String` (add an `indicatorValue` helper) and use a `value == %@` predicate.
   - Add `testNextTapsOutsideTextAdvance`: tap `nextButton.coordinate(withNormalizedOffset: CGVector(dx: 0.04, dy: 0.5))`, wait for "Page 2 of 3".

@@ -625,3 +625,10 @@ These notes override anything earlier in this document that conflicts with them.
 3. **Names (NIT).** One constant each: `OnboardingPageView.heroSize = 190`, `OnboardingPageView.heroFallbackSize = 160`, read by `OnboardingView`. State is `skipSize` with `Layout.defaultSkipSize`; replace every `skipHeight`/"default 34" mention accordingly.
 4. **Adjust test decision path (NIT).** If the spike for the indicator's increment/decrement UI test fails, the coder sends `send_message` to 'parent' with severity 'warning' and waits; it does not edit AC 6.2 itself.
 5. **Expected spike result (NIT).** `adjust(toNormalizedSliderPosition:)` will probably fail on "Page 1 of 3" because XCTest parses slider values. That failure is the expected spike outcome and goes straight to the warning in note 4, not to view changes.
+
+### Implementation results (2026-11-17)
+
+- **Hero position (owner accepted option (b)).** The page `ScrollView` adds the top safe area on top of the inset from `OnboardingHeroLayout.topInset`. The "beside Skip" result (safe-area top + 8) therefore puts the Hero top about one safe area lower, below Skip. On the iPhone 17 simulator (402 pt wide, 62 pt safe area, default text) the Hero top is about 129 pt; the old inset (safe + 48, plus the same safe area) put it at about 172 pt. The Hero is about 40 pt higher and never under Skip. By owner decision the ScrollView and the inset stay unchanged; a comment at the call site in `OnboardingView` explains the extra offset. `OnboardingHeroLayoutTests` pass as written.
+- **Measured Skip size:** 55 x 34 pt at default text, 129 x 69 pt at AX-XXXL. `Layout.defaultSkipSize` and the unit tests use 55 x 34.
+- **Indicator accessibility frame:** without `.contentShape(.accessibility, .capsule)`, XCUITest reported a 12 pt high frame (the dots only). With it the frame is at least 44 pt.
+- **Adjust UI test (AC 6.2 amended):** `adjust(toNormalizedSliderPosition:)` throws on non-slider elements, so `testPageIndicatorAdjustActions` was removed. `OnboardingPagingTests` and the owner's VoiceOver check cover the adjust behavior; the view keeps `accessibilityAdjustableAction`.
