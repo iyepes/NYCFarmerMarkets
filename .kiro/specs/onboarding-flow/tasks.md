@@ -232,7 +232,7 @@ Commands (repo root):
   - Requirements: 4.3.
   - Verify: iOS build succeeds.
 
-- [ ] 5. OnboardingView: adjustable larger indicator, whole-capsule Next, measured Skip, hero inset
+- [x] 5. OnboardingView: adjustable larger indicator, whole-capsule Next, measured Skip, hero inset
   - File: `NYCFarmerMarkets/Onboarding/OnboardingView.swift`. Depends on tasks 1 to 4.
   - Replace `skipAreaHeight` with `Layout` constants `skipTopPadding = 8`, `skipTrailingPadding = 24`, `defaultSkipSize = CGSize(width: 70, height: 34)`, `dotDiameter = 12`, `dotSpacing = 12`, `indicatorMinimumSize = 44`, `controlsAreaHeight = 166`. Add `@State private var skipSize = Layout.defaultSkipSize`; measure Skip with `.onGeometryChange(for: CGSize.self) { $0.size } action: { skipSize = $0 }` placed before its top and horizontal padding; keep the opacity/disabled/hidden behavior on the last page.
   - Compute `topInset` with `OnboardingHeroLayout.topInset(...)` from `proxy.safeAreaInsets.top`, `proxy.size.width`, `OnboardingPageView.heroSize`, the corner radius (use the circle radius `heroSize / 2` for the clearance since all page styles share one inset: pass the larger-extent case, i.e. the framed radius if any page uses `framed`; follow design note 1 and state the choice in a comment), `skipSize` and the paddings; pass it to `pager`.
