@@ -1,0 +1,12 @@
+{
+  "pr": "https://github.com/iyepes/NYCFarmerMarkets/pull/24",
+  "state": "MERGED",
+  "headSha": "54686961beebc00628239d5e2fd717eb05d07444",
+  "reviewComments": 0,
+  "failedChecks": 0,
+  "fixes": [],
+  "escalations": [],
+  "justifications": [],
+  "status": "done",
+  "notes": "PR merged with no open feedback and no failed checks. No code changes made in this step."
+}
