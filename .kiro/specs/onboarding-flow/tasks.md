@@ -252,7 +252,7 @@ Commands (repo root):
   - Requirements: 6.1 to 6.4, 6.6, 2.4, 4.2.
   - Verify: UI test command; the new and updated onboarding tests pass (or the adjust test is handled as above).
 
-- [ ] 7. Full verification
+- [x] 7. Full verification
   - Run iOS build, macOS build, full unit tests, and the full tests command from the project rules (skip the launch and performance tests). Run the convention check. Confirm `git -C /Users/isabelyepes/Documents/XCode/NYCFarmerMarkets status` shows only the planned files and nothing under `.agents/tasks/` is staged. Remove any temporary files created, stating literal paths.
   - Requirements: Non-functional 1 to 3.
   - Verify: all commands succeed.
