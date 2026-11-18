@@ -44,7 +44,7 @@ struct AppCopyTests {
             AppCopy.mapFilterSummary(query: "q", count: 0), AppCopy.mapFilterSummary(query: "q", count: 1),
             AppCopy.mapFilterSummary(query: "q", count: 2),
             AppCopy.onboardingSkip, AppCopy.onboardingNext, AppCopy.onboardingEnter,
-            AppCopy.onboardingPageIndicator(page: 1, count: 3)
+            AppCopy.onboardingPageIndicator(page: 1, count: 3), AppCopy.onboardingPageIndicatorLabel
         ]
     }
 
@@ -53,8 +53,11 @@ struct AppCopyTests {
             AppCopy.splashLoadingAccessibility, AppCopy.offlineBannerAccessibility,
             AppCopy.noResultsTitleAccessibility, AppCopy.missingValueAccessibility,
             AppCopy.mapFilterAccessibility(query: "q", count: 0), AppCopy.mapFilterAccessibility(query: "q", count: 1),
-            AppCopy.mapFilterAccessibility(query: "q", count: 2)
+            AppCopy.mapFilterAccessibility(query: "q", count: 2), AppCopy.onboardingPageIndicatorLabel
         ]
+    }
+    @Test func onboardingPageIndicatorLabelIsPlain() {
+        #expect(AppCopy.onboardingPageIndicatorLabel == "Page indicator")
     }
 
     // Feature: onboarding-flow, Property 7: Button and indicator labels follow the page

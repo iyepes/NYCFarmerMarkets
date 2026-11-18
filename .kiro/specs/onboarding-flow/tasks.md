@@ -207,7 +207,7 @@ Commands (repo root):
 - Unit tests: iOS command with `test -only-testing:NYCFarmerMarketsTests`
 - UI tests: iOS command with `test -only-testing:NYCFarmerMarketsUITests/NYCFarmerMarketsUITests` (class holding the onboarding tests in `OnboardingUITests.swift`; confirm the class name when opening the file). Re-run once on a transient xctrunner error. `-resultBundlePath` must not exist yet.
 
-- [ ] 1. Copy fix and indicator label string
+- [x] 1. Copy fix and indicator label string
   - Change page 0 "travel an ocean" to "travels an ocean" in `NYCFarmerMarkets/Onboarding/OnboardingPage.swift`.
   - Add `static let onboardingPageIndicatorLabel = "Page indicator"` to `NYCFarmerMarkets/Theme/AppCopy.swift` (next to `onboardingPageIndicator(page:count:)`, line 51).
   - Tests: in `NYCFarmerMarketsTests/OnboardingPageTests.swift` assert `OnboardingPage.all[0].message` contains "travels an ocean" and not "travel an ocean", and that `all[2].message` still contains "Or existent farmers". In `NYCFarmerMarketsTests/AppCopyTests.swift` assert the label equals "Page indicator" and add it to `plainStrings` (line 51) and `allVisibleStrings` (line 40).
