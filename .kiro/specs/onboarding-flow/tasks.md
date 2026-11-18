@@ -214,7 +214,7 @@ Commands (repo root):
   - Requirements: 5.1, 5.2, 1.7, 6.5.
   - Verify: unit tests (`-only-testing:NYCFarmerMarketsTests`) pass.
 
-- [ ] 2. Pure paging logic
+- [x] 2. Pure paging logic
   - Create `NYCFarmerMarkets/Models/OnboardingPaging.swift`: `nonisolated enum OnboardingPaging { static func target(from current: Int, delta: Int, count: Int) -> Int? }`. Return nil for `count <= 0`, `current` outside `0..<count`, or a result outside `0..<count`; no clamping.
   - Create `NYCFarmerMarketsTests/OnboardingPagingTests.swift` (Swift Testing): +1 and -1 in the middle, nil at both ends, count 0 and 1, current out of range, delta 0, delta +-2.
   - Requirements: 1.3, 1.4, 1.5, 6.5.
