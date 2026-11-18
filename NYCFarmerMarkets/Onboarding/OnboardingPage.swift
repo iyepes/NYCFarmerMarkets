@@ -26,7 +26,7 @@ nonisolated struct OnboardingPage: Identifiable, Sendable {
             symbol: .onboardingShipping,
             heroImage: "pirate-ship",
             title: "Your dinner has traveled farther than you have",
-            message: "Big cities lean on big stores, and much of that food crosses coast to coast or travel an ocean before it reaches you. Meanwhile, small farms and family food makers lurk just around the corner, with no way to reach you.",
+            message: "Big cities lean on big stores, and much of that food crosses coast to coast or travels an ocean before it reaches you. Meanwhile, small farms and family food makers lurk just around the corner, with no way to reach you.",
             bullets: [
                 "Your groceries rack up frequent-flyer miles",
                 "Local growers are locked out of the big channels",

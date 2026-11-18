@@ -48,6 +48,7 @@ nonisolated enum AppCopy {
         isLast ? onboardingEnter : onboardingNext
     }
 
+    static let onboardingPageIndicatorLabel = "Page indicator"
     static func onboardingPageIndicator(page: Int, count: Int) -> String {
         "Page \(page) of \(count)"
     }

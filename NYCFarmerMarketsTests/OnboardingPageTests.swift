@@ -30,6 +30,13 @@ struct OnboardingPageTests {
         }
     }
 
+    @Test func pageCopyFixes() {
+        let pages = OnboardingPage.all
+        #expect(pages[0].message.contains("travels an ocean"))
+        #expect(!pages[0].message.contains("travel an ocean"))
+        #expect(pages[2].message.contains("Or existent farmers"))
+    }
+
     // Feature: onboarding-flow, Property 9: Hero images exist
     // Validates: Requirements 7.7, 10.12
     @MainActor
