@@ -1,0 +1,11 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {"id": 1, "severity": "MEDIUM", "summary": "01-requirements.md AC 4.1 still says 'half' while the design delivers 67 pt (37%), a 190 pt hero and moved emoji; owner approval of option (c) is not traceable. Update AC 4.1/4.3 and cite the owner decision."},
+    {"id": 2, "severity": "MEDIUM", "summary": "Clearance rule falls back on 375 pt iPhones (SE, mini) and has 2 pt slack at 390 pt; the 320 pt example is not a supported device. State 375/390 results, add tests, or make the rule shape-aware."},
+    {"id": 3, "severity": "NIT", "summary": "Inconsistent names: heroSize/Layout.heroSize/Layout.heroWidth/heroFallbackSize; skipHeight vs skipSize in Error handling."},
+    {"id": 4, "severity": "NIT", "summary": "Define that on adjust-test spike failure the coder sends a warning and waits; it must not amend AC 6.2 itself."},
+    {"id": 5, "severity": "NIT", "summary": "adjust(toNormalizedSliderPosition:) likely rejects the non-percentage value 'Page 1 of 3'; state that this outcome goes straight to the AC 6.2 fallback."}
+  ],
+  "reviewDoc": "<repo>/.agents/tasks/feature-to-pr/03-design-review.md"
+}
