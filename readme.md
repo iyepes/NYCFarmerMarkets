@@ -17,6 +17,6 @@ By Downloading or Using NY Farmers Markets App you agree with the Terms of Use. 
 
 Icon Attribution
 
-- Icon based on [Good Ware](https://www.flaticon.com/authors/good-ware) from (www.flaticon.com)
+- Icon based on [Good Ware](https://www.flaticon.com/authors/good-ware) from www.flaticon.com
 - [Dairy products icons created by smashingstocks - Flaticon](https://www.flaticon.com/free-icons/dairy-products)
-Icon made by [Smashicons](https://www.flaticon.com/authors/smashicons) from (www.flaticon.com)
+- Icon made by [Smashicons](https://www.flaticon.com/authors/smashicons) from www.flaticon.com
