@@ -3,6 +3,8 @@
 ## Overview
 
 > Tasks 1-9 are the original plan, done in PR #8 (the body font there became Dr. Caligari). Tasks 10-14 cover the manual changes after PR #8: the body font is now Breath of the House. See the design "Amendment 2".
+>
+> **Note (2026-11-20):** the body font is now Black Chancery and Breath of the House is removed (design "Amendment 3"). Task 12 (Breath license) no longer applies: neither bundled font is paid or limited, and the notices are in `fonts-licensing/`. Task 13 now concerns Black Chancery and stays an owner on-screen review (spec `body-font-black-chancery-fix`, task 5). Task 14 is done: the gate pattern is `Grim|Chancery|BLKCHCRY|\.ttf`.
 
 Add `AppTypography` (Grim Creeper for title roles, N8ghtmare for the rest) in `Theme/`, register the fonts at runtime with CoreText, switch every view to `.appFont(role)`, style the UIKit bars in `ThemeAppearance`, extend the convention gate, then verify with builds, tests, screenshots and a license report. New files under `NYCFarmerMarkets/` and `NYCFarmerMarketsTests/` are picked up automatically (synchronized groups); do not edit `project.pbxproj`. All paths are under `/Users/isabelyepes/Documents/XCode/NYCFarmerMarkets/`. Run git as `git -C <repo> ...`; never stage anything under `.agents/`.
 

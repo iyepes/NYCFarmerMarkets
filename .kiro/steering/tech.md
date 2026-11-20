@@ -18,7 +18,8 @@ inclusion: always
 - `Onboarding/`: first-run onboarding screens (`OnboardingView`, `OnboardingPageView`, `OnboardingPage`), shown after the splash until `hasSeenOnboarding` (`UserDefaults`) is true; `OnboardingDecision` picks the screen.
 - `Theme/`: the only place for colors, icons, fonts and spooky copy (see `theme-conventions.md`).
 - `Views/`: screens; `Views/Shared/`: reusable views (`MarketRow`, `MarketPin`, `OfflineBanner`, `MapFilterIndicator`, `MarketDetailToolbar`).
-- `fonts/`: `Grim Creeper.ttf`, `Breath of the House.ttf`, listed in `Info.plist` `UIAppFonts` and registered at runtime by `AppTypography.registerFonts()`.
+- `fonts/`: `Grim Creeper.ttf`, `BLKCHCRY.TTF`, listed in `Info.plist` `UIAppFonts` and registered at runtime by `AppTypography.registerFonts()`.
+- Root `fonts-licensing/` holds one notice per bundled font and is not bundled into the app.
 - `Sounds/`: the owner's recordings (`human-steps`, `cat-steps`, `door`, `door-and-hit`, `short-hiss`, `ay`, all `.m4a`), bundled automatically and named only in `Theme/AppSound.swift`.
 
 ## Error handling and logging

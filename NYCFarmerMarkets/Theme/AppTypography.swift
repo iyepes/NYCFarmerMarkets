@@ -16,25 +16,26 @@ nonisolated enum AppTypography {
     nonisolated enum Family: CaseIterable, Sendable {
         /// Grim Creeper: titles.
         case display
-        /// Breath of the House: all other text.
+        /// Black Chancery (public domain): all other text.
         case body
 
         var postScriptName: String {
             switch self {
             case .display: "Grim-Creeper-Regular"
-            case .body: "Breath-of-the-House"
+            case .body: "BlackChancery"
             }
         }
 
         var fileName: String {
             switch self {
             case .display: "Grim Creeper.ttf"
-            case .body: "Breath of the House.ttf"
+            case .body: "BLKCHCRY.TTF"
             }
         }
 
-        /// Multiplier applied to a role's design size. Breath of the House has a small x-height and
-        /// thin strokes, so it needs about 15% more size to read like the system text.
+        /// Multiplier applied to a role's design size. The 1.15 scale and the 14 pt floor below are
+        /// carried over from the previous body font; checking them on screen with Black Chancery is
+        /// still open.
         var sizeScale: CGFloat {
             switch self {
             case .display: 1
@@ -176,14 +177,33 @@ nonisolated enum AppTypography {
         registration
     }
 
+    /// First URL whose file name equals `fileName`, ignoring case (the bundle may hold `.TTF` or `.ttf`).
+    nonisolated static func fontURL(named fileName: String, in urls: [URL]) -> URL? {
+        urls.first { $0.lastPathComponent.caseInsensitiveCompare(fileName) == .orderedSame }
+    }
+
+    /// Font file candidates in the bundle root and `fonts/`, for `ttf` and `TTF`, without duplicate paths.
+    nonisolated static func bundledFontURLs(in bundle: Bundle) -> [URL] {
+        var paths = Set<String>()
+        var result: [URL] = []
+        for ext in ["ttf", "TTF"] {
+            for subdirectory in [nil, "fonts"] as [String?] {
+                for url in bundle.urls(forResourcesWithExtension: ext, subdirectory: subdirectory) ?? []
+                where paths.insert(url.standardizedFileURL.path).inserted {
+                    result.append(url)
+                }
+            }
+        }
+        return result
+    }
+
     private static func register() -> Registration {
-        let urls = (Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: nil) ?? [])
-            + (Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: "fonts") ?? [])
+        let urls = bundledFontURLs(in: .main)
         var seen = Set<String>()
         var available = Set<Family>()
 
         for family in Family.allCases {
-            if let url = urls.first(where: { $0.lastPathComponent == family.fileName }),
+            if let url = fontURL(named: family.fileName, in: urls),
                seen.insert(family.fileName).inserted {
                 var error: Unmanaged<CFError>?
                 if !CTFontManagerRegisterFontsForURL(url as CFURL, .process, &error) {

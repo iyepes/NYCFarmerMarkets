@@ -23,7 +23,7 @@ Everything visual comes from `NYCFarmerMarkets/Theme/`. Views use semantic names
 
 ## Fonts: `AppTypography`
 
-- Two families: **display** Grim Creeper (`Grim-Creeper-Regular`) and **body** Breath of the House (`Breath-of-the-House`). Each has one weight; do not ask for bold or semibold (it would be synthetic). Hierarchy comes from role, size and family.
+- Two families: **display** Grim Creeper (`Grim-Creeper-Regular`) and **body** Black Chancery (`BlackChancery`, file `BLKCHCRY.TTF`, public domain). Each has one weight; do not ask for bold or semibold (it would be synthetic). Hierarchy comes from role, size and family.
 - Views set fonts only with `.appFont(.role)`. Roles: display `splash` (44), `splashHint` (22), `tabTitle` (34), `tabBarLabel` (12), `navigationTitle` (20), `detailTitle` (30), `sectionHeader` (30), `favoriteItemTitle` (20); body `body` (17), `bodyEmphasis` (17), `subheadline` (15), `caption` (12), `footnote` (13).
 - Body sizes are multiplied by `sizeScale` 1.15 with a 14 pt floor (`effectiveSize`); every role scales with Dynamic Type via `relativeTo`. If a family fails to load, the role falls back to the system font with the same text style and `fallbackWeight`.
 - A new role needs: a case in `Role`, entries in `family`, `size`, `textStyle`, `fallbackWeight` and `uiTextStyle` (`AppTypography+UIKit.swift`), and the exhaustive family test in `AppTypographyTests`.
@@ -59,7 +59,7 @@ Run from the repo root before finishing any UI change:
 
 ```sh
 grep -rnE '\.custom\(|\bFont\.(system|custom)\(' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
-grep -rnE 'Grim|Breath|\.ttf' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
+grep -rniE 'Grim|Chancery|BLKCHCRY|\.ttf' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
 grep -rnE '\.font\(\s*(\.|Font\.)' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
 grep -rnE 'Image\(systemName:|systemImage: *"|0x[0-9A-Fa-f]{6}|"#[0-9A-Fa-f]{6}"|Color\.(red|blue|green|orange|yellow|purple|pink|gray|black|white)\b' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true
 grep -rnE 'human-steps|cat-steps|door-and-hit|short-hiss|\.m4a' NYCFarmerMarkets --include='*.swift' | grep -v '^NYCFarmerMarkets/Theme/' || true

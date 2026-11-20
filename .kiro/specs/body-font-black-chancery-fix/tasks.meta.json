@@ -1,0 +1,174 @@
+{
+  "pbtResults": {
+    "1. Write bug condition exploration test": {
+      "status": "passed",
+      "failingExample": "postScriptNames: Family.body.postScriptName == \"BLKCHCRY\" (expected \"BlackChancery\"); bodyRolesResolveToBlackChancery: resolvedFont gives .custom(name: \"BLKCHCRY\", ...); bothFamiliesResolveAfterRegistration: body family not in availableFamilies after registerFonts(); fontFilesAreInTheAppBundle fails (BLKCHCRY.TTF not found by the \"ttf\" lookup)",
+      "lastRunTimestamp": 1795190360548
+    },
+    "3.4 Verify bug condition exploration test now passes": {
+      "status": "passed",
+      "lastRunTimestamp": 1795191540666
+    },
+    "3.5 Verify preservation tests still pass": {
+      "status": "passed",
+      "lastRunTimestamp": 1795191655352
+    }
+  },
+  "executionHistory": {
+    "1. Write bug condition exploration test": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190206852
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190214054
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190383429
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190206945
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190386900
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190621813
+      }
+    ],
+    "3.1 Fix font lookup and PostScript name in `AppTypography`": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190207010
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190625173
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190888545
+      }
+    ],
+    "3.2 Remove Breath of the House from the bundle and `UIAppFonts`": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190207029
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190891996
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191209649
+      }
+    ],
+    "3.3 Update the documents that name the body font": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190207092
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191213070
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191382269
+      }
+    ],
+    "3.4 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190207114
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191386451
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191548482
+      }
+    ],
+    "3.5 Verify preservation tests still pass": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190207138
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191551670
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191662826
+      }
+    ],
+    "4. Checkpoint - Final verification": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190207168
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191667050
+      },
+      {
+        "executionId": "bbda8782-56e7-42fc-b529-0a36c5250150",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795192563500
+      }
+    ],
+    "5. Owner-only: review Black Chancery on screen (not for the agent)": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795190207245
+      },
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795192247304
+      }
+    ],
+    "3. Fix for body font Black Chancery not loading and Breath of the House removal": [
+      {
+        "executionId": "0e99836c-1961-4a41-b64d-13e1fb738468",
+        "chatSessionId": "sess_ae0e2252-b3d7-4d3f-89ca-64d73619d589",
+        "timestamp": 1795191662927
+      }
+    ]
+  }
+}
