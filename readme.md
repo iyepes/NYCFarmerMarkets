@@ -11,9 +11,9 @@ Locate the markets by name or just tap the Map View. Easy and simple for your co
 
 ***
 
-The information displayed by NY Farmers Markets App comes from New York City Open Data, update frequency is determined by them. It is available for the general public [HERE](https://data.cityofnewyork.us/Health/NYC-Farmers-Markets/8vwk-6iz2/about_data).  NY Farmers Markets App has no direct affiliation with New York City.
+The information displayed by Spooky Markets App comes from New York City Open Data, update frequency is determined by them. It is available for the general public [HERE](https://data.cityofnewyork.us/Health/NYC-Farmers-Markets/8vwk-6iz2/about_data).  Spooky Markets App has no direct affiliation with New York City.
 
-By Downloading or Using NY Farmers Markets App you agree with the Terms of Use. You can read the Terms [HERE](https://blog.hacemoscontactos.com/ny-farmers-markets-terms-of-use/)
+By Downloading or Using Spooky Markets App you agree with the Terms of Use. You can read the Terms [HERE](https://blog.hacemoscontactos.com/ny-farmers-markets-terms-of-use/)
 
 Icon Attribution
 
