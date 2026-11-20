@@ -8,7 +8,8 @@ This feature integrates two custom fonts, Grim Creeper (titles) and Breath of th
 
 - **Original (issue #7):** body font N8ghtmare; Dr. Caligari bundled and unused.
 - **PR #8 (`cd3812d`):** body font changed to Dr. Caligari after visual review (N8ghtmare digits unreadable); body size scale 1.15 with a 14 pt floor; tab bar label capped at 15 pt. See the design "Amendment after visual review".
-- **Manual commits after PR #8 (`d74e03e`, `40dd19c`, `a3ad360`, 2026-11-10/11):** body font changed to Breath of the House for readability; `DrCaligari.ttf` and `N8ghtmare.ttf` removed from the repo; section headers moved to the display font at 30 pt; splash text 40 pt. See the design "Amendment 2". This document describes the current state.
+- **Manual commits after PR #8 (`d74e03e`, `40dd19c`, `a3ad360`, 2026-11-10/11):** body font changed to Breath of the House for readability; `DrCaligari.ttf` and `N8ghtmare.ttf` removed from the repo; section headers moved to the display font at 30 pt; splash text 40 pt. See the design "Amendment 2". This document describes the state after those commits.
+- **Note (2026-11-20):** the body font is now Black Chancery (`BLKCHCRY.TTF`, public domain) and `Breath of the House.ttf` is removed; where this document says Breath of the House or Body_Font it is historical. Requirement 2.4 (a paid or limited font must not be distributed) is now met. License notices are in `fonts-licensing/`. See the design "Amendment 3".
 
 ## Glossary
 
@@ -54,7 +55,7 @@ This feature integrates two custom fonts, Grim Creeper (titles) and Breath of th
 1. THE feature SHALL report the license and copyright metadata found in the name tables of every bundled font file, quoting what the metadata says.
 2. IF the metadata is missing, personal-use-only or unclear, THEN THE report SHALL flag it clearly and SHALL NOT guess the license terms.
 3. THE report SHALL be included in the pull request description.
-4. IF a bundled font requires payment or limits redistribution, THEN THE report SHALL say so, and the font SHALL NOT be distributed (App Store or public repository) until the owner confirms the license is met. Current state: Breath of the House asks for a €2 payment per project; see the design "Amendment 2".
+4. IF a bundled font requires payment or limits redistribution, THEN THE report SHALL say so, and the font SHALL NOT be distributed (App Store or public repository) until the owner confirms the license is met. Current state: Breath of the House asks for a €2 payment per project; see the design "Amendment 2". (2026-11-20: superseded; Black Chancery is public domain, see Amendment 3.)
 
 ### Requirement 3: Central typography type
 **User Story:** As the owner of the App, I want fonts defined in one place, so that changing a font is a one-file change.

@@ -34,7 +34,7 @@ struct OnboardingPageTests {
         let pages = OnboardingPage.all
         #expect(pages[0].message.contains("travels an ocean"))
         #expect(!pages[0].message.contains("travel an ocean"))
-        #expect(pages[2].message.contains("Or existent farmers"))
+        #expect(pages[2].message.contains("Or willing to know farmers"))
     }
 
     // Feature: onboarding-flow, Property 9: Hero images exist

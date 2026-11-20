@@ -5,6 +5,17 @@ They supersede what `.kiro/specs/custom-fonts-integration/` and the PR #8 notes 
 
 ## Fonts
 
+### 2026-11-20: body font Black Chancery
+
+Spec `body-font-black-chancery-fix` (branch `fix/body-font-black-chancery`). Supersedes the Breath of the House notes below.
+
+- **Body font is Black Chancery** (`NYCFarmerMarkets/fonts/BLKCHCRY.TTF`, PostScript `BlackChancery`, public domain per the embedded copyright). `Breath of the House.ttf` is deleted. `UIAppFonts`: `Grim Creeper.ttf`, `BLKCHCRY.TTF`.
+- **Font lookup is case-insensitive** (`AppTypography.fontURL(named:in:)`, `bundledFontURLs(in:)`; `ttf`/`TTF`, bundle root and `fonts/`).
+- **Licenses:** the root folder `fonts-licensing/` holds `BLACKCHA.txt` (Black Chancery) and `Grim Creeper Font Info and Read Me - Sinister Fonts.txt` (Grim Creeper). It is not bundled into the app. The Breath of the House paid-license notes below no longer apply.
+- Body `sizeScale` 1.15 and 14 pt floor are unchanged; the on-screen review is open (see `.kiro/steering/known-limits.md`).
+
+### Earlier changes (2026-11-10 to 11-14)
+
 Commits: `d74e03e` "Replace fonts for readability, correct section header size",
 `40dd19c` "Correct Section headers size", `a3ad360` "update test to match change in Family Font role".
 

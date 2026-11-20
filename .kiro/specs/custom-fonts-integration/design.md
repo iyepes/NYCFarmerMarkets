@@ -1,6 +1,6 @@
 # Design: Custom fonts integration (issue #7)
 
-> **Current state:** the body font is now **Breath of the House** and `sectionHeader` is a display role. The sections below are the original design (N8ghtmare), then "Amendment after visual review" (Dr. Caligari, PR #8), then "Amendment 2" (manual changes after PR #8). Later sections win where they conflict.
+> **Current state:** the body font is now **Black Chancery** (see "Amendment 3", 2026-11-20) and `sectionHeader` is a display role. The sections below are the original design (N8ghtmare), then "Amendment after visual review" (Dr. Caligari, PR #8), then "Amendment 2" (Breath of the House, manual changes after PR #8), then "Amendment 3". Later sections win where they conflict.
 
 ## Overview
 
@@ -300,3 +300,15 @@ The owner changed the typography by hand on `main` after PR #8 was merged (`d74e
 - Map tab tab-bar labels use the system font (cause not confirmed).
 - macOS tab and navigation titles stay in the system font (owner's decision).
 - Not verified: visionOS; macOS at runtime; the new font at large Dynamic Type sizes.
+
+## Amendment 3 (2026-11-20): body font Black Chancery
+
+Fix from spec `body-font-black-chancery-fix`. Where this section conflicts with earlier text, including Amendment 2, this section wins.
+
+1. **The body font is Black Chancery** (`BLKCHCRY.TTF`). Embedded copyright: "From Doug Miles' Black Chancery bitmap font. Outlines by Earl Allen & Doug Miles. Public domain." `Family.body.postScriptName` is `"BlackChancery"` (the earlier code asked for `BLKCHCRY`, which did not match the embedded name).
+2. **Case-insensitive lookup.** The file has an upper-case `.TTF` extension, which the old exact `ttf` lookup missed. `AppTypography.bundledFontURLs(in:)` collects `ttf` and `TTF` files from the bundle root and `fonts/`, and `AppTypography.fontURL(named:in:)` matches the file name with `caseInsensitiveCompare`.
+3. **Breath of the House removed.** `Breath of the House.ttf` is deleted from `NYCFarmerMarkets/fonts/`. `Info.plist` `UIAppFonts` lists exactly `Grim Creeper.ttf` and `BLKCHCRY.TTF`. The Breath notes in Amendment 2 (family, PostScript name, paid license, "·" glyph) are historical.
+4. **License source.** The root folder `fonts-licensing/` holds the notices: `BLACKCHA.txt` (Black Chancery, public domain) and `Grim Creeper Font Info and Read Me - Sinister Fonts.txt` (free for personal and commercial use; the author asks that the read me be included wherever the font is offered for download). The folder is not bundled into the app.
+5. **Requirement 2.4 / task 12 met.** The requirement that a paid or redistribution-limited font must not be distributed is now met: neither bundled font is paid or limited. Tasks 12 to 14 are superseded (see the notes in `tasks.md`).
+6. **Unchanged and open.** Body `sizeScale` 1.15 and 14 pt floor are kept. Their on-screen review for Black Chancery (small-size legibility, address glyph coverage, Dynamic Type at the largest sizes) is an owner task. The ", " row separator stays; Black Chancery has no "·".
+7. **Convention gate.** The font-name pattern is now `grep -rniE 'Grim|Chancery|BLKCHCRY|\.ttf'` in both the workflow gate and `theme-conventions.md`.
