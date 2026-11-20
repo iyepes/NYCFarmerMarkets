@@ -1,8 +1,8 @@
 # iyepes/NYCFarmerMarkets Wiki
 
-Version: 3
+Version: 4
 
-Updated 2026-11-17 from version 2 (generated at commit `123ebba`) to match commit `ad3bdcf`. Source links inside pages kept from version 2 still point to `123ebba`; new and updated pages point to `ad3bdcf`. See the Changelog at the end.
+Updated 2026-11-20 from version 3 to match commit `e97e8ca` (the body font change, PR #29). Source links kept from earlier versions still point to `123ebba` or `ad3bdcf`; passages changed in version 4 point to `e97e8ca`. See the Changelog at the end.
 
 ## Overview
 
@@ -103,7 +103,7 @@ The application utilizes a custom "Spooky" theme characterized by specific typog
 ### Typography System
 The app uses two primary font families. `AppTypography` manages the registration and mapping of these fonts to semantic roles.
 - **Display Family**: "Grim Creeper" used for titles and headers.
-- **Body Family**: "Breath of the House" used for general content and captions.
+- **Body Family**: "Black Chancery" (PostScript name `BlackChancery`, file `BLKCHCRY.TTF`, public domain) used for general content and captions. *Updated in v4.* Sources: [NYCFarmerMarkets/Theme/AppTypography.swift](https://github.com/iyepes/NYCFarmerMarkets/blob/e97e8caebc0fa13f0d8ea80b889a18de722def14/NYCFarmerMarkets/Theme/AppTypography.swift)
 
 Sources: [Design/design-changes.md:12-18](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/Design/design-changes.md#L12-L18), [NYCFarmerMarkets/Theme/AppTypography.swift:17-30](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/NYCFarmerMarkets/Theme/AppTypography.swift#L17-L30)
 
@@ -168,7 +168,7 @@ The application uses a specialized configuration structure to parse command-line
 The `NYCFarmerMarketsApp` struct serves as the entry point for the application. It performs several critical setup tasks in its `init()` method before the main view body executes.
 
 ### Initialization Sequence
-1.  **Typography Registration**: The app registers custom font families (`Grim Creeper` and `Breath of the House`) to make them available to the system.
+1.  **Typography Registration**: The app registers custom font families (`Grim Creeper` and `Black Chancery`) to make them available to the system.
 2.  **Global Appearance**: The `ThemeAppearance.apply()` function configures global UIKit styles for navigation and tab bars.
 3.  **Launch Option Parsing**: The system checks `ProcessInfo.processInfo.arguments` to determine if specific testing flags are present.
 4.  **State Initialization**: The `MarketStore`, `FavoritesStore`, and `SoundController` are instantiated based on the parsed launch options.
@@ -226,7 +226,9 @@ Sources: [NYCFarmerMarkets/NYCFarmerMarketsApp.swift:25-45](https://github.com/i
 Typography setup is a prerequisite for the UI because system-rendered bars (tab bars and navigation bars) require the fonts to be registered before they can be styled.
 
 ### Font Registration
-The `AppTypography.registerFonts()` method iterates through bundled `.ttf` files and uses `CTFontManagerRegisterFontsForURL` to register them for the process. If registration fails and the error is not "already registered," the failure is logged.
+The `AppTypography.registerFonts()` method collects the bundled font files with `bundledFontURLs(in:)`: files with a `ttf` or `TTF` extension, in the bundle root and in `fonts/`, without duplicate paths. For each family, `fontURL(named:in:)` picks the file whose name matches `Family.fileName` ignoring case, so `BLKCHCRY.TTF` is found. It then registers the file with `CTFontManagerRegisterFontsForURL` for the process. If registration fails and the error is not "already registered," the failure is logged. A family counts as available only when CoreText returns exactly its PostScript name, which is why the body family uses the name embedded in the file (`BlackChancery`), not the file name.
+
+*Updated in v4.* Sources: [NYCFarmerMarkets/Theme/AppTypography.swift](https://github.com/iyepes/NYCFarmerMarkets/blob/e97e8caebc0fa13f0d8ea80b889a18de722def14/NYCFarmerMarkets/Theme/AppTypography.swift)
 
 Sources: [NYCFarmerMarkets/Theme/AppTypography.swift:135-160](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/NYCFarmerMarkets/Theme/AppTypography.swift#L135-L160)
 
@@ -378,9 +380,9 @@ Typography is managed through a `Role` enum, mapping semantic uses (e.g., `secti
 | Family | PostScript Name | Usage |
 |---|---|---|
 | `display` | `Grim-Creeper-Regular` | Titles, Splash, Section Headers |
-| `body` | `Breath-of-the-House` | Body text, Captions, Footnotes |
+| `body` | `BlackChancery` | Body text, Captions, Footnotes |
 
-The `body` family uses a `sizeScale` of 1.15 to improve readability, ensuring the font does not drop below a 14 pt floor.
+The `body` family uses a `sizeScale` of 1.15 and a 14 pt floor. Both values were tuned for an earlier body font and are kept for Black Chancery until the owner reviews it on screen. *Updated in v4.* Sources: [NYCFarmerMarkets/Theme/AppTypography.swift](https://github.com/iyepes/NYCFarmerMarkets/blob/e97e8caebc0fa13f0d8ea80b889a18de722def14/NYCFarmerMarkets/Theme/AppTypography.swift)
 
 Sources: [Theme/AppTypography.swift:20-60](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/Theme/AppTypography.swift#L20-L60), [Design/design-changes.md:10-35](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/Design/design-changes.md#L10-L35)
 
@@ -1217,7 +1219,7 @@ Sources: [NYCFarmerMarkets/Models/SectionHeaderAccessibility.swift:4-22](https:/
 
 ## Typography and Dynamic Type
 
-The system utilizes `AppTypography` to manage font scaling and accessibility. It implements a dual-family system: `Grim Creeper` for display roles and `Breath of the House` for body content. 
+The system utilizes `AppTypography` to manage font scaling and accessibility. It implements a dual-family system: `Grim Creeper` for display roles and `Black Chancery` for body content. 
 
 ### Scaling Logic
 - **Body Family Scaling**: The body family uses a `sizeScale` of 1.15 to compensate for thin strokes and a small x-height, ensuring legibility at standard sizes.
@@ -2213,9 +2215,11 @@ Sources: [NYCFarmerMarkets/Theme/AppTypography.swift:1-10](https://github.com/iy
 The typography system manages two custom font families and maps them to semantic roles. It handles runtime font registration through CoreText and provides a safe fallback to system fonts if custom files are unavailable.
 
 ### Font Families
-The app utilizes two primary font families bundled as `.ttf` files:
+The app utilizes two primary font families bundled as TrueType files (`Grim Creeper.ttf` and `BLKCHCRY.TTF`):
 *   **Display (`Grim-Creeper-Regular`)**: Used for titles, splash screens, and headers to provide a "spooky" aesthetic.
-*   **Body (`Breath-of-the-House`)**: Used for all standard reading text. It includes a `sizeScale` of 1.15 to compensate for its small x-height and thin strokes.
+*   **Body (`BlackChancery`)**: Used for all standard reading text. It keeps the `sizeScale` of 1.15 and the 14 pt floor carried over from the previous body font; whether they suit Black Chancery is an open on-screen check. Black Chancery has no "·" glyph, so composed text keeps the ", " separator.
+
+*Updated in v4.* Sources: [NYCFarmerMarkets/Theme/AppTypography.swift](https://github.com/iyepes/NYCFarmerMarkets/blob/e97e8caebc0fa13f0d8ea80b889a18de722def14/NYCFarmerMarkets/Theme/AppTypography.swift), [NYCFarmerMarkets/Info.plist](https://github.com/iyepes/NYCFarmerMarkets/blob/e97e8caebc0fa13f0d8ea80b889a18de722def14/NYCFarmerMarkets/Info.plist)
 
 Sources: [NYCFarmerMarkets/Theme/AppTypography.swift:18-50](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/NYCFarmerMarkets/Theme/AppTypography.swift#L18-L50), [Design/design-changes.md:14-25](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/Design/design-changes.md#L14-L25)
 
@@ -2380,7 +2384,7 @@ Sources: [NYCFarmerMarkets/Theme/AppPalette.swift:15-56](https://github.com/iyep
 
 ## Typography
 
-The typography system manages two custom font families: **Grim Creeper** (Display) and **Breath of the House** (Body). It includes a registration system that falls back to system fonts if the custom files are unavailable.
+The typography system manages two custom font families: **Grim Creeper** (Display) and **Black Chancery** (Body). It includes a registration system that falls back to system fonts if the custom files are unavailable.
 
 ### Font Roles and Families
 Fonts are assigned based on semantic `Role`. Each role defines its own size, associated `TextStyle` for Dynamic Type scaling, and a fallback weight for system fonts.
@@ -2619,13 +2623,13 @@ Colors are defined as `ColorToken` objects that store distinct hex values for li
 Sources: [NYCFarmerMarkets/Theme/AppPalette.swift:65-85](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/NYCFarmerMarkets/Theme/AppPalette.swift#L65-L85)
 
 ### Typography Roles
-The application uses two primary font families: **Grim Creeper** (display) for titles and **Breath of the House** (body) for general text. The `AppTypography.Role` enum defines how these fonts scale and fall back to system defaults.
+The application uses two primary font families: **Grim Creeper** (display) for titles and **Black Chancery** (body) for general text. The `AppTypography.Role` enum defines how these fonts scale and fall back to system defaults.
 
 ```mermaid
 flowchart TD
     Role[Typography Role] --> Family{Font Family}
     Family -- display --> GC[Grim-Creeper-Regular]
-    Family -- body --> BH[Breath-of-the-House]
+    Family -- body --> BH[BlackChancery]
     
     GC --> Size[Design Size]
     BH --> Scale[Size * 1.15 Scale]
@@ -2901,7 +2905,7 @@ Sources: [NYCFarmerMarketsTests/SoundControllerTests.swift:42-120](https://githu
 
 The testing strategy includes checks for visual and structural design requirements.
 
-*   **Typography:** Tests verify that font files (`Grim Creeper.ttf`, `Breath of the House.ttf`) are correctly bundled and that PostScript names resolve to the expected font families.
+*   **Typography:** Tests verify that font files (`Grim Creeper.ttf`, `BLKCHCRY.TTF`) are correctly bundled and that PostScript names resolve to the expected font families. *Updated in v4:* the bundle check uses the same case-insensitive lookup as the app, and `fontURL(named:in:)` has its own tests with synthetic URLs.
 *   **Accessibility Scaling:** Tests ensure that body roles (e.g., `.caption`) never fall below a 14pt floor and apply a 1.15x scale factor.
 *   **Color Contrast:** A suite of contrast tests validates that foreground/background pairs meet WCAG AA standards (4.5:1 ratio), while splash graphics meet the 3.0:1 threshold.
 
@@ -3055,10 +3059,12 @@ Tests added since version 2 of this wiki:
 | `OnboardingHeroLayoutTests` | Hero inset for 375, 390 and 393 pt widths, circle and framed styles, and large Skip sizes. |
 | `FavoriteCueTests` | `.ay` for removal, `.hiss` for adding. |
 | `AppCopyTests`, `AppTypographyTests` (extended) | Onboarding labels; `splash` role at 44 pt. |
+| `AppTypographyTests` (v4, PR #29) | Body family resolves to `BlackChancery`; `fontURL(named:in:)` finds `.TTF` and `.ttf` names in any case and returns nil when missing; preservation tests over every role (family, size, text style, fallback weight, scale and floor, system fallback). |
+| `OnboardingPageTests` (v4, PR #29) | `pageCopyFixes()` now expects the current page 3 copy, "Or willing to know farmers". |
 
 `OnboardingUITests` (XCTest) launches with `-uiTestingReset -uiTestingResetOnboarding -uiTestingMuteSounds` and covers: onboarding shows after the splash without the tabs, Next twice then "Enter the market", Skip, onboarding shows only once after relaunch, swipe to page 2, Next tapped outside its text, a page indicator of at least 44 pt, and screenshots at the default and largest text sizes.
 
-XCUITest cannot trigger the page indicator's VoiceOver adjust action, so that behavior is covered by `OnboardingPagingTests` and the owner's device check. The PR #24 run reported 165 tests passing; this wiki update did not re-run the tests.
+XCUITest cannot trigger the page indicator's VoiceOver adjust action, so that behavior is covered by `OnboardingPagingTests` and the owner's device check. The PR #24 run reported 165 tests passing. The PR #29 run reported 154 iOS and 153 macOS unit tests passing (UI tests not run). These wiki updates did not re-run the tests.
 
 ## Deployment and Infrastructure
 
@@ -3086,7 +3092,9 @@ The following files were used as context for this section (added in v3):
 | Signing | Automatic; macOS uses the App Sandbox |
 | Category | Food and drink |
 
-Build commands for the simulator and macOS are in `.kiro/steering/tech.md`. Fonts, sounds and images are bundled automatically from the synchronized `NYCFarmerMarkets/` folder; fonts are also listed in `Info.plist` `UIAppFonts`.
+Build commands for the simulator and macOS are in `.kiro/steering/tech.md`. Fonts, sounds and images are bundled automatically from the synchronized `NYCFarmerMarkets/` folder; fonts are also listed in `Info.plist` `UIAppFonts` (`Grim Creeper.ttf`, `BLKCHCRY.TTF`).
+
+*Updated in v4.* Font licenses: the root folder [fonts-licensing/](https://github.com/iyepes/NYCFarmerMarkets/blob/e97e8caebc0fa13f0d8ea80b889a18de722def14/fonts-licensing) holds one notice per bundled font. `BLACKCHA.txt` states that Black Chancery is public domain. `Grim Creeper Font Info and Read Me - Sinister Fonts.txt` states that Grim Creeper is free for personal and commercial use and asks that the read me be included wherever the font is offered for download. The folder is outside `NYCFarmerMarkets/`, so it is not bundled into the app. Breath of the House, a paid font, was removed in PR #29.
 
 Release is manual. The owner raised the build number for App Store uploads in commits `123ebba` and `eab5ca6`; archiving and uploading happen in Xcode. The repository has no CI configuration and no scripted release.
 
@@ -3183,14 +3191,14 @@ classDiagram
     }
     AppTypography --> Role : assigns
     Role ..> FamilyDisplay : uses Grim Creeper
-    Role ..> FamilyBody : uses Breath of the House
+    Role ..> FamilyBody : uses Black Chancery
 ```
 *The class diagram illustrates how semantic roles are mapped to specific font families.*
 
 | Family | Roles | Scaling Strategy |
 | :--- | :--- | :--- |
 | **Display** (Grim Creeper) | Splash, SectionHeader, Titles | Fixed design size (e.g., SectionHeader at 30pt). |
-| **Body** (Breath of the House) | Body, Subheadline, Caption | 1.15x scale with 14pt minimum floor. |
+| **Body** (Black Chancery) | Body, Subheadline, Caption | 1.15x scale with 14pt minimum floor (carried over; open on-screen check). |
 
 Sources: [Design/design-changes.md:12-25](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/Design/design-changes.md#L12-L25), [NYCFarmerMarkets/Theme/AppTypography.swift:55-80](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/NYCFarmerMarkets/Theme/AppTypography.swift#L55-L80), [NYCFarmerMarkets/Theme/AppTypography.swift:90-100](https://github.com/iyepes/NYCFarmerMarkets/blob/123ebba3a0dbcb9994b77ae727c7753a9eea85fc/NYCFarmerMarkets/Theme/AppTypography.swift#L90-L100)
 
@@ -3228,7 +3236,7 @@ Note: the page "Steering System & AI Agents" above (from v2) describes runtime d
 | Folder | Content |
 | :--- | :--- |
 | `.kiro/steering/` | Rules every Kiro session follows: `product.md`, `tech.md`, `theme-conventions.md` (Swift files only), `git-and-workflow.md`, `known-limits.md` (manual). |
-| `.kiro/specs/` | One folder per feature with `requirements.md`, `design.md`, `tasks.md`: `nyc-farmer-markets`, `splash-screen-collapsible-boroughs`, `spooky-copy`, `map-shows-list-search-results`, `internal-map-and-directions-button`, `custom-fonts-integration`, `interaction-sounds`, `onboarding-flow`. Later changes are dated amendments. |
+| `.kiro/specs/` | One folder per feature with `requirements.md`, `design.md`, `tasks.md`: `nyc-farmer-markets`, `splash-screen-collapsible-boroughs`, `spooky-copy`, `map-shows-list-search-results`, `internal-map-and-directions-button`, `custom-fonts-integration`, `interaction-sounds`, `onboarding-flow`. Bugfix specs use `bugfix.md` instead of `requirements.md`: `body-font-black-chancery-fix`. Later changes are dated amendments (the body font change is Amendment 3 of `custom-fonts-integration`). |
 | `.kiro/hooks/` | `security-review-before-commit.json`: before each `git commit`, reviews staged Swift files for security issues. |
 | `.kiro/workflows/` | `feature-to-pr.workflow.json`, the feature workflow below. |
 | `.kiro/agents/` | `wiki-documenter.md`, the custom agent that maintains this wiki. |
@@ -3259,6 +3267,18 @@ flowchart LR
 
 
 ## Changelog
+
+### Version 4 (2026-11-20)
+
+Compared version 3 (at `ad3bdcf`) with commit `e97e8ca`. Changes in that range: wiki v3 (PR #28) and the body font change (PR #29).
+
+- Body font: Breath of the House replaced by Black Chancery (`BlackChancery`, `BLKCHCRY.TTF`, public domain) in the Overview, initialization, architecture, accessibility, theme, shared components, testing and steering pages, including two Mermaid diagrams.
+- Font registration: described the case-insensitive lookup (`bundledFontURLs(in:)`, `fontURL(named:in:)`) and why the PostScript name must match the embedded name.
+- Size scale and floor: noted that 1.15 and 14 pt are carried over and still need an on-screen check; removed the x-height rationale that described the old font.
+- Deployment: added `UIAppFonts` contents and the `fonts-licensing/` folder.
+- Kiro page: added the `body-font-black-chancery-fix` bugfix spec and Amendment 3.
+- Tests: added the new typography tests, the onboarding copy test fix and the PR #29 test counts.
+- Versions 2 and 3 of this wiki are removed; version 4 replaces them. Their content is in git history.
 
 ### Version 3 (2026-11-17)
 
